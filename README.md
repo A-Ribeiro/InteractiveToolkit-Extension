@@ -29,10 +29,17 @@ git submodule add https://github.com/A-Ribeiro/InteractiveToolkit-Extension.git 
 In your CMakeLists.txt:
 
 ```cmake
+# at the beginning of yout root 'CMakeLists.txt':
+
+unset (CMAKE_MODULE_PATH CACHE)
+unset (CMAKE_PREFIX_PATH CACHE)
+
+# include libs in sequence:
+
 add_subdirectory(libs/InteractiveToolkit "${CMAKE_BINARY_DIR}/lib/InteractiveToolkit")
 add_subdirectory(libs/InteractiveToolkit-Extension "${CMAKE_BINARY_DIR}/lib/InteractiveToolkit-Extension")
 
-#...
+# in your lib or binary file:
 
 add_library(YOUR_LIBRARY STATIC)
 target_link_libraries(YOUR_LIBRARY PUBLIC InteractiveToolkit-Extension)
@@ -56,10 +63,17 @@ git submodule add git@github.com:A-Ribeiro/InteractiveToolkit-Extension.git libs
 In your CMakeLists.txt:
 
 ```cmake
+# at the beginning of yout root 'CMakeLists.txt':
+
+unset (CMAKE_MODULE_PATH CACHE)
+unset (CMAKE_PREFIX_PATH CACHE)
+
+# include libs in sequence:
+
 add_subdirectory(libs/InteractiveToolkit "${CMAKE_BINARY_DIR}/lib/InteractiveToolkit")
 add_subdirectory(libs/InteractiveToolkit-Extension "${CMAKE_BINARY_DIR}/lib/InteractiveToolkit-Extension")
 
-#...
+# in your lib or binary file:
 
 add_library(YOUR_LIBRARY STATIC)
 target_link_libraries(YOUR_LIBRARY PUBLIC InteractiveToolkit-Extension)
