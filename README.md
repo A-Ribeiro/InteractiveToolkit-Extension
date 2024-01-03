@@ -13,7 +13,7 @@ Here you can deal with image loading (PNG/JPG), Binary data writing and reading,
 
 The main dependency is the [https://github.com/A-Ribeiro/InteractiveToolkit](https://github.com/A-Ribeiro/InteractiveToolkit) itself.
 
-You can take a look at the example repository at: [https://github.com/A-Ribeiro/InteractiveToolkit-Examples](https://github.com/A-Ribeiro/InteractiveToolkit-Examples) itself.
+You can take a look at the example repository at: [https://github.com/A-Ribeiro/InteractiveToolkit-Examples](https://github.com/A-Ribeiro/InteractiveToolkit-Examples).
 
 ## How to Import the Library?
 
