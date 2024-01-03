@@ -37,8 +37,6 @@ if(LIB_FREETYPE STREQUAL FromSource)
         "${freetype_BINARY_PATH}/include"
         "${freetype_DOWNLOADED_PATH}/include")
 
-    message(${freetype_INCLUDE_PATH})
-
     set(FREETYPE_INCLUDE_DIR ${freetype_INCLUDE_PATH})
     set(FREETYPE_INCLUDE_DIRS ${FREETYPE_INCLUDE_DIR})
     set(FREETYPE_LIBRARY libjpeg)
