@@ -1,11 +1,10 @@
-#ifndef ft2_rect__h__
-#define ft2_rect__h__
+#pragma once
 
-#include <aRibeiroCore/aRibeiroCore.h>
-#include <vector>
+#include <InteractiveToolkit/InteractiveToolkit.h>
 
-namespace ft2Wrapper {
-    
+namespace ITKWrappers {
+    namespace FT2 {
+
     /// \brief FT2 wrapper rectangle
     ///
     /// It holds one character metrics information.
@@ -23,5 +22,4 @@ namespace ft2Wrapper {
     };
     
 }
-
-#endif
+}

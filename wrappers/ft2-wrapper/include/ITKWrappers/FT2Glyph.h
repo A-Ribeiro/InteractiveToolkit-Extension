@@ -1,11 +1,12 @@
-#ifndef ft2_glyph__h__
-#define ft2_glyph__h__
+#pragma once
 
-#include <aRibeiroCore/aRibeiroCore.h>
+#include <InteractiveToolkit/InteractiveToolkit.h>
+
 #include "FT2Rect.h"
 
-namespace ft2Wrapper {
-    
+namespace ITKWrappers {
+    namespace FT2 {
+
     /// \brief FT2 wrapper glyph representation
     ///
     /// It is possible to use this class as an auxiliary structure with the glyph information.
@@ -98,4 +99,4 @@ namespace ft2Wrapper {
     
 }
 
-#endif
+}

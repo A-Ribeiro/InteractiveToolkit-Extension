@@ -1,16 +1,15 @@
-#ifndef ft2__h__
-#define ft2__h__
+#pragma once
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_STROKER_H
 
-#include <aRibeiroCore/aRibeiroCore.h>
+#include <InteractiveToolkit/InteractiveToolkit.h>
 
 #include "FT2Glyph.h"
 
-namespace ft2Wrapper {
-    
+namespace ITKWrappers {
+    namespace FT2 {
 
     /// \brief Wrapper class to the FreeType 2 library
     ///
@@ -158,5 +157,4 @@ namespace ft2Wrapper {
     };
     
 }
-
-#endif
+}
