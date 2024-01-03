@@ -33,10 +33,14 @@ if(LIB_FREETYPE STREQUAL FromSource)
     tool_include_lib(freetype)
 
     tool_get_dirs(freetype_DOWNLOADED_PATH freetype_BINARY_PATH freetype)
-    set(freetype_INCLUDE_PATH "${freetype_BINARY_PATH}/include")
+    set(freetype_INCLUDE_PATH 
+        "${freetype_BINARY_PATH}/include"
+        "${freetype_DOWNLOADED_PATH}/include")
 
-    set(FREETYPE_INCLUDE_DIR "${freetype_INCLUDE_PATH}")
-    set(FREETYPE_INCLUDE_DIRS "${FREETYPE_INCLUDE_DIR}")
+    message(${freetype_INCLUDE_PATH})
+
+    set(FREETYPE_INCLUDE_DIR ${freetype_INCLUDE_PATH})
+    set(FREETYPE_INCLUDE_DIRS ${FREETYPE_INCLUDE_DIR})
     set(FREETYPE_LIBRARY libjpeg)
     set(FREETYPE_LIBRARIES ${FREETYPE_LIBRARY})
 

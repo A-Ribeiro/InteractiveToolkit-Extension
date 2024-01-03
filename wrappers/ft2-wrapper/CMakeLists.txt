@@ -2,6 +2,10 @@ project (ft2-wrapper)
 
 find_package(InteractiveToolkit REQUIRED QUIET)
 
+if (NOT TARGET InteractiveToolkit-Extension)
+    add_subdirectory(../../ "${CMAKE_BINARY_DIR}/lib/InteractiveToolkit-Extension")
+endif()
+
 include(../../cmake/libfreetype.cmake)
 
 FILE( GLOB_RECURSE PUBLIC_HEADERS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" *.h)
@@ -29,10 +33,12 @@ target_include_directories(${PROJECT_NAME}
 PUBLIC
     ${INTERACTIVETOOLKIT_INCLUDE_DIRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    ${FREETYPE_INCLUDE_DIRS}
 )
 
 target_link_libraries(${PROJECT_NAME} 
 PUBLIC 
     ${INTERACTIVETOOLKIT_LIBRARIES}
     freetype
+    InteractiveToolkit-Extension
 )
