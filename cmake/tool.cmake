@@ -105,3 +105,90 @@ macro (tool_remove_from_list item_list regular_expression)
     endforeach(item)
     # set(${item_list} ${${item_list}} PARENT_SCOPE)
 endmacro()
+
+macro(tool_define_source_group )
+    foreach(entry IN ITEMS ${ARGN})
+        get_filename_component(dirname "${entry}" DIRECTORY )
+        if (dirname)
+            string(REPLACE "/" "\\" dirname_replaced ${dirname})
+            source_group(${dirname_replaced} FILES ${entry})
+        else()
+            source_group("" FILES ${entry})
+        endif()
+    endforeach()
+endmacro()
+
+macro(tool_define_source_group_base_path base_path )
+    foreach(entry IN ITEMS ${ARGN})
+        get_filename_component(dirname "${entry}" DIRECTORY )
+        if (dirname)
+            
+            string(FIND "${dirname}" "${base_path}" found)
+
+            if (found VERSION_EQUAL 0)
+                string(LENGTH "${base_path}" base_path_length)
+                string(LENGTH "${dirname}" dirname_length)
+                math(EXPR new_length "${dirname_length} - ${base_path_length}")
+                string(SUBSTRING "${dirname}" 
+                        "${base_path_length}" 
+                        "${new_length}" dirname)
+            endif()
+
+            string(FIND "${dirname}" "/" found)
+            if (found VERSION_EQUAL 0)
+                string(LENGTH "${dirname}" dirname_length)
+                math(EXPR new_length "${dirname_length} - 1")
+                string(SUBSTRING "${dirname}" 
+                        "1" 
+                        "${new_length}" dirname)
+            endif()
+
+            string(LENGTH "${dirname}" dirname_length)
+            if (dirname_length VERSION_GREATER 0)
+                string(REPLACE "/" "\\" dirname_replaced ${dirname})
+                source_group(${dirname_replaced} FILES ${entry})
+            else()
+                source_group("" FILES ${entry})
+            endif()
+
+        else()
+            source_group("" FILES ${entry})
+        endif()
+    endforeach()
+endmacro()
+
+macro(tool_copy_file_after_build PROJECT_NAME)
+    foreach(FILENAME IN ITEMS ${ARGN})
+        if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}")
+			get_filename_component(FILENAME_WITHOUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}" NAME)
+            add_custom_command(
+                TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy
+                        ${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}
+                        $<TARGET_FILE_DIR:${PROJECT_NAME}>/${FILENAME_WITHOUT_PATH} )
+        elseif(EXISTS "${FILENAME}")
+			get_filename_component(FILENAME_WITHOUT_PATH "${FILENAME}" NAME)
+            add_custom_command(
+                TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy
+                        ${FILENAME}
+                        $<TARGET_FILE_DIR:${PROJECT_NAME}>/${FILENAME_WITHOUT_PATH} )
+        else()
+            message(FATAL_ERROR "File Does Not Exists: ${FILENAME}")
+        endif()
+    endforeach()
+endmacro()
+
+macro(tool_copy_directory_after_build PROJECT_NAME)
+    foreach(DIRECTORY IN ITEMS ${ARGN})
+        if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DIRECTORY}")
+            add_custom_command(
+                TARGET ${PROJECT_NAME} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_directory
+                        ${CMAKE_CURRENT_SOURCE_DIR}/${DIRECTORY}
+                        $<TARGET_FILE_DIR:${PROJECT_NAME}>/${DIRECTORY} )
+        else()
+            message(FATAL_ERROR "Directory Does Not Exists: ${DIRECTORY}")
+        endif()
+    endforeach()
+endmacro()
