@@ -192,3 +192,49 @@ macro(tool_copy_directory_after_build PROJECT_NAME)
         endif()
     endforeach()
 endmacro()
+
+
+
+macro(tool_download_git_package REPOSITORY_URL LIBNAME)
+    if(NOT EXISTS "${ARIBEIRO_LIBS_DIR}/${LIBNAME}/")
+        file(MAKE_DIRECTORY "${ARIBEIRO_LIBS_DIR}")
+        message(STATUS "[${LIBNAME}] cloning...")
+
+        find_package(Git REQUIRED)
+
+        execute_process(
+            COMMAND "${GIT_EXECUTABLE}" clone --recurse-submodules "${REPOSITORY_URL}" "${ARIBEIRO_LIBS_DIR}/${LIBNAME}/"
+            OUTPUT_VARIABLE result
+            #COMMAND_ERROR_IS_FATAL ANY
+        )
+
+        if(NOT EXISTS "${ARIBEIRO_LIBS_DIR}/${LIBNAME}/")
+            message(FATAL_ERROR "Error to clone repository: ${REPOSITORY_URL}")
+        endif()
+
+        message(STATUS "[${LIBNAME}] done")
+
+    endif()
+endmacro()
+
+macro(tool_download_git_package_branch REPOSITORY_URL BRANCH LIBNAME)
+    if(NOT EXISTS "${ARIBEIRO_LIBS_DIR}/${LIBNAME}/")
+        file(MAKE_DIRECTORY "${ARIBEIRO_LIBS_DIR}")
+        message(STATUS "[${LIBNAME}] cloning...")
+
+        find_package(Git REQUIRED)
+
+        execute_process(
+            COMMAND "${GIT_EXECUTABLE}" clone --recurse-submodules --branch ${BRANCH} "${REPOSITORY_URL}" "${ARIBEIRO_LIBS_DIR}/${LIBNAME}/"
+            OUTPUT_VARIABLE result
+            #COMMAND_ERROR_IS_FATAL ANY
+        )
+
+        if(NOT EXISTS "${ARIBEIRO_LIBS_DIR}/${LIBNAME}/")
+            message(FATAL_ERROR "Error to clone repository: ${REPOSITORY_URL}")
+        endif()
+
+        message(STATUS "[${LIBNAME}] done")
+
+    endif()
+endmacro()

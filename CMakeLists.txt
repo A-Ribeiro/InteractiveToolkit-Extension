@@ -44,7 +44,7 @@ endif()
 
 add_library(${PROJECT_NAME} STATIC ${PUBLIC_HEADERS} ${PUBLIC_INL} ${SRC})
 
-set_property(TARGET ${PROJECT_NAME} PROPERTY ENABLE_EXPORTS 1)
+#set_property(TARGET ${PROJECT_NAME} PROPERTY ENABLE_EXPORTS 1)
 
 # set the target's folder (for IDEs that support it, e.g. Visual Studio)
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "LIBS")
