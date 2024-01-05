@@ -12,7 +12,7 @@ namespace ITKExtension
         template <typename T>
         void WriteCustomVector(ITKExtension::IO::AdvancedWriter *writer, const std::vector<T> &v)
         {
-            writer->writeUInt32(v.size());
+            writer->writeUInt32((uint32_t)v.size());
             for (size_t i = 0; i < v.size(); i++)
                 v[i].write(writer);
         }
@@ -20,7 +20,7 @@ namespace ITKExtension
         template <typename T>
         void WriteCustomStringMap(ITKExtension::IO::AdvancedWriter *writer, const std::map<std::string, T> &v)
         {
-            writer->writeUInt32(v.size());
+            writer->writeUInt32((uint32_t)v.size());
             typename std::map<std::string, T>::const_iterator it;
             for (it = v.begin(); it != v.end(); it++)
             {
