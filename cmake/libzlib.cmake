@@ -88,7 +88,7 @@ elseif(LIB_ZLIB STREQUAL UsingFindPackage)
     add_library(zlib INTERFACE)
     set_target_properties(zlib PROPERTIES LINKER_LANGUAGE CXX)
     set_target_properties(zlib PROPERTIES FOLDER "LIBS")
-    target_include_directories(zlib PRIVATE ${ZLIB_INCLUDE_DIR})
+    #target_include_directories(zlib INTERFACE ${ZLIB_INCLUDE_DIR})
     target_link_libraries(zlib INTERFACE ${ZLIB_LIBRARIES})
 
 else()

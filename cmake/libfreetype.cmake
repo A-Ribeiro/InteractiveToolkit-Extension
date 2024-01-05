@@ -59,7 +59,7 @@ elseif(LIB_FREETYPE STREQUAL UsingFindPackage)
         add_library(freetype INTERFACE)
         set_target_properties(freetype PROPERTIES LINKER_LANGUAGE CXX)
         set_target_properties(freetype PROPERTIES FOLDER "LIBS")
-        target_include_directories(freetype INTERFACE ${FREETYPE_INCLUDE_DIRS})
+        #target_include_directories(freetype INTERFACE ${FREETYPE_INCLUDE_DIRS})
         target_link_libraries(freetype INTERFACE ${FREETYPE_LIBRARIES})
 
     endif()

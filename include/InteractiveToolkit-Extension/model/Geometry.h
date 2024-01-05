@@ -64,7 +64,7 @@ namespace ITKExtension
             std::vector<MathCore::vec4f> color[8]; // RGBA
             // std::vector<uint32_t> color[8];//RGBA
 
-            std::vector<uint16_t> indice;
+            std::vector<uint32_t> indice;
 
             uint32_t materialIndex;
 
@@ -93,7 +93,7 @@ namespace ITKExtension
                 for (int i = 0; i < 8; i++)
                     writer->write<std::vector<MathCore::vec4f>>(color[i]);
                 // writer->writeVectorUInt32(color[i]);//RGBA
-                writer->write<std::vector<uint16_t>>(indice);
+                writer->write<std::vector<uint32_t>>(indice);
 
                 WriteCustomVector<Bone>(writer, bones);
             }
@@ -122,7 +122,7 @@ namespace ITKExtension
                 for (int i = 0; i < 8; i++)
                     color[i] = reader->read<std::vector<MathCore::vec4f>>();
                 // reader->readVectorUInt32(&color[i]);//RGBA
-                indice = reader->read<std::vector<uint16_t>>();
+                indice = reader->read<std::vector<uint32_t>>();
 
                 ReadCustomVector<Bone>(reader, &bones);
             }
