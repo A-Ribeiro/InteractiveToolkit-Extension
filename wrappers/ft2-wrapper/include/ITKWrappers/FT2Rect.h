@@ -1,6 +1,7 @@
 #pragma once
 
-#include <InteractiveToolkit/InteractiveToolkit.h>
+#include <stdint.h>
+// #include <InteractiveToolkit/InteractiveToolkit.h>
 
 namespace ITKWrappers {
     namespace FT2 {

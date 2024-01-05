@@ -1,3 +1,7 @@
+#include <InteractiveToolkit/ITKCommon/ITKCommon.h> // ITKAbort
+// #include <InteractiveToolkit-Extension/io/AdvancedReader.h>
+#include <InteractiveToolkit-Extension/io/AdvancedWriter.h>
+
 #include <InteractiveToolkit-Extension/font/FontWriter.h>
 #include <InteractiveToolkit-Extension/image/PNG.h>
 #include <InteractiveToolkit-Extension/image/JPG.h>

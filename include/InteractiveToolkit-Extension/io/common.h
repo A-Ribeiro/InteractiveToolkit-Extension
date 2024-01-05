@@ -1,6 +1,6 @@
 #pragma once
 
-#include <InteractiveToolkit/InteractiveToolkit.h>
+// #include <InteractiveToolkit/InteractiveToolkit.h>
 #include <ITKWrappers/ZLIB.h>
 
 namespace ITKExtension

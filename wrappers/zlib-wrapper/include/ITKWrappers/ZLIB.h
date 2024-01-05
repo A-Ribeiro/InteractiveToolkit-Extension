@@ -1,6 +1,9 @@
 #pragma once
 
-#include <InteractiveToolkit/InteractiveToolkit.h>
+// #include <InteractiveToolkit/InteractiveToolkit.h>
+
+#include <InteractiveToolkit/Platform/Core/ObjectBuffer.h>
+#include <InteractiveToolkit/EventCore/Callback.h>
 
 namespace ITKWrappers {
     namespace ZLIB {

@@ -1,6 +1,8 @@
 #pragma once
 
-#include <InteractiveToolkit/InteractiveToolkit.h>
+#include <string>
+#include <stdint.h>
+// #include <InteractiveToolkit/InteractiveToolkit.h>
 
 #include "FT2Rect.h"
 

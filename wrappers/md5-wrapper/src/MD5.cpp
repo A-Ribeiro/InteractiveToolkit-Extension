@@ -1,3 +1,5 @@
+#include <InteractiveToolkit/ITKCommon/ITKCommon.h> // ITKAbort
+
 #include <ITKWrappers/MD5.h>
 #include <md5/md5.h>
 

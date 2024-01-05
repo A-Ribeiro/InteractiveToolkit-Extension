@@ -1,6 +1,7 @@
 #pragma once
 
-#include <InteractiveToolkit/InteractiveToolkit.h>
+// #include <InteractiveToolkit/InteractiveToolkit.h>
+#include <string>
 
 namespace ITKWrappers {
     namespace MD5 {

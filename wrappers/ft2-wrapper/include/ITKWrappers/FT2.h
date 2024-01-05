@@ -4,7 +4,9 @@
 #include FT_FREETYPE_H
 #include FT_STROKER_H
 
-#include <InteractiveToolkit/InteractiveToolkit.h>
+#include <string>
+#include <stdint.h>
+// #include <InteractiveToolkit/InteractiveToolkit.h>
 
 #include "FT2Glyph.h"
 

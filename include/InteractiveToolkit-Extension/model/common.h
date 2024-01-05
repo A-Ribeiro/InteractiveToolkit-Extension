@@ -1,6 +1,7 @@
 #pragma once
 
-#include <InteractiveToolkit/InteractiveToolkit.h>
+// #include <InteractiveToolkit/InteractiveToolkit.h>
+#include <InteractiveToolkit/MathCore/MathCore.h>
 #include <InteractiveToolkit-Extension/io/AdvancedReader.h>
 #include <InteractiveToolkit-Extension/io/AdvancedWriter.h>
 

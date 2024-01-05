@@ -1,7 +1,9 @@
 #pragma warning(disable : 4996)
 
 #include <InteractiveToolkit-Extension/image/JPG.h>
-#include <InteractiveToolkit/InteractiveToolkit.h>
+// #include <InteractiveToolkit/InteractiveToolkit.h>
+#include <InteractiveToolkit/ITKCommon/Memory.h>
+#include <InteractiveToolkit/ITKCommon/StringUtil.h>
 #include <jpeglib.h>
 #include <setjmp.h>
 

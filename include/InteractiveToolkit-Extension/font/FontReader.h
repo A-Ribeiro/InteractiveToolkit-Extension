@@ -1,9 +1,13 @@
 #pragma once
 
-#include <InteractiveToolkit/InteractiveToolkit.h>
+// #include <InteractiveToolkit/InteractiveToolkit.h>
 
-#include <InteractiveToolkit-Extension/io/AdvancedWriter.h>
-#include <InteractiveToolkit-Extension/io/AdvancedReader.h>
+// #include <InteractiveToolkit-Extension/io/AdvancedWriter.h>
+// #include <InteractiveToolkit-Extension/io/AdvancedReader.h>
+
+#include <string>
+#include <vector>
+#include <stdint.h>
 
 #include <InteractiveToolkit-Extension/font/FontReaderSize.h>
 #include <InteractiveToolkit-Extension/font/FontReaderBitmapRef.h>
@@ -11,6 +15,12 @@
 
 namespace ITKExtension
 {
+    namespace IO
+    {
+        class AdvancedWriter;
+        class AdvancedReader;
+    }
+
     namespace Font
     {
 

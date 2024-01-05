@@ -1,6 +1,9 @@
 
 #include <InteractiveToolkit-Extension/image/PNG.h>
-#include <InteractiveToolkit/InteractiveToolkit.h>
+// #include <InteractiveToolkit/InteractiveToolkit.h>
+#include <InteractiveToolkit/ITKCommon/Memory.h>
+#include <InteractiveToolkit/ITKCommon/StringUtil.h>
+
 #include <png.h>
 
 //----------------------------------------------------------------------------------

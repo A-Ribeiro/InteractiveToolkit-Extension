@@ -1,15 +1,24 @@
 #pragma once
 
-#include <InteractiveToolkit/InteractiveToolkit.h>
+// #include <InteractiveToolkit/InteractiveToolkit.h>
 
-#include <InteractiveToolkit-Extension/io/AdvancedWriter.h>
-#include <InteractiveToolkit-Extension/io/AdvancedReader.h>
+// #include <InteractiveToolkit-Extension/io/AdvancedWriter.h>
+// #include <InteractiveToolkit-Extension/io/AdvancedReader.h>
+
+#include <stdint.h>
+#include <map>
 
 #include <InteractiveToolkit-Extension/atlas/Atlas.h>
 #include <InteractiveToolkit-Extension/font/FontWriterGlyph.h>
 
 namespace ITKExtension
 {
+    namespace IO
+    {
+        class AdvancedWriter;
+        class AdvancedReader;
+    }
+
     namespace Font
     {
 

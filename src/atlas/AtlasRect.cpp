@@ -1,4 +1,6 @@
 #include <InteractiveToolkit-Extension/atlas/AtlasRect.h>
+#include <InteractiveToolkit-Extension/io/AdvancedReader.h>
+#include <InteractiveToolkit-Extension/io/AdvancedWriter.h>
 
 namespace ITKExtension
 {
