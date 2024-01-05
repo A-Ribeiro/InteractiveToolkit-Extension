@@ -1,6 +1,7 @@
 #include <ITKWrappers/FT2Glyph.h>
 
-#include <InteractiveToolkit/ITKCommon/ITKCommon.h> // ITKAbort
+// #include <InteractiveToolkit/ITKCommon/ITKCommon.h> // ITKAbort
+#include <InteractiveToolkit/ITKCommon/ITKAbort.h>
 
 #include <InteractiveToolkit-Extension/image/PNG.h> // PNGHelper
 

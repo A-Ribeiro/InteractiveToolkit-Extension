@@ -1,4 +1,6 @@
-#include <InteractiveToolkit/ITKCommon/ITKCommon.h> // ITKAbort
+// #include <InteractiveToolkit/ITKCommon/ITKCommon.h> // ITKAbort
+#include <InteractiveToolkit/ITKCommon/ITKAbort.h>
+
 #include <InteractiveToolkit-Extension/io/AdvancedReader.h>
 // #include <InteractiveToolkit-Extension/io/AdvancedWriter.h>
 

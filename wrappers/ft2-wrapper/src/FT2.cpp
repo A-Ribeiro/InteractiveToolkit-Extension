@@ -1,6 +1,7 @@
 #include <ITKWrappers/FT2.h>
 
-#include <InteractiveToolkit/ITKCommon/ITKCommon.h> // ITKAbort
+// #include <InteractiveToolkit/ITKCommon/ITKCommon.h> // ITKAbort
+#include <InteractiveToolkit/ITKCommon/ITKAbort.h>
 
 
 #define __STDC_CONSTANT_MACROS
