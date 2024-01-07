@@ -238,3 +238,14 @@ macro(tool_download_git_package_branch REPOSITORY_URL BRANCH LIBNAME)
 
     endif()
 endmacro()
+
+# macro(tool_remove_compile_options)
+#     get_directory_property(compile_opts COMPILE_OPTIONS)
+
+#     foreach(entry IN ITEMS ${ARGN})
+#         list(REMOVE_ITEM compile_opts ${entry})
+#     endforeach()
+
+#     #set_property(DIRECTORY ${CMAKE_CURRENT_SRC_DIR} APPEND PROPERTY COMPILE_OPTIONS ${compile_opts})
+#     set_property(DIRECTORY ${CMAKE_CURRENT_SRC_DIR} PROPERTY COMPILE_OPTIONS ${compile_opts})
+# endmacro()
