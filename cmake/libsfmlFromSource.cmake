@@ -28,11 +28,20 @@ endif()
 
 if(LIB_SFML STREQUAL FromSource)
 
+    message(STATUS "")
     message(STATUS "BUILDING SFML FROM SOURCE")
+    message(STATUS "")
     message(STATUS "You need to run the following code:")
-    message(STATUS "    - sudo apt install libxrandr-dev libxcursor-dev")
-    message(STATUS "    - sudo apt install libudev-dev libopenal-dev ")
-    message(STATUS "    - sudo apt install libogg-dev libvorbis-dev libflac-dev")
+    message(STATUS "")
+    message(STATUS "    sudo apt install libxrandr-dev libxcursor-dev")
+    message(STATUS "    sudo apt install libudev-dev libopenal-dev ")
+    message(STATUS "    sudo apt install libogg-dev libvorbis-dev libflac-dev")
+    message(STATUS "    sudo apt install libfreetype6-dev")
+    message(STATUS "")
+    message(STATUS "In case opengl is not found:")
+    message(STATUS "")
+    message(STATUS "    sudo apt install libgl1-mesa-dev")
+    message(STATUS "")
     
     tool_download_git_package("https://github.com/SFML/SFML.git" sfml)
 
