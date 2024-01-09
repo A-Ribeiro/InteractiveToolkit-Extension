@@ -63,9 +63,9 @@ if(LIB_SFML STREQUAL FromSource)
             set( ARCH_TARGET x86 )
         endif()
 
-        set(STR_TO_ADD "tool_copy_file_after_build( sfml-audio \"\${ARIBEIRO_LIBS_DIR}/sfml/extlibs/bin/${ARCH_TARGET}/openal32.dll\" )")
-
         tool_get_dirs(sfml_DOWNLOADED_PATH sfml_BINARY_PATH sfml)
+
+        set(STR_TO_ADD "tool_copy_file_after_build( sfml-audio \"\${sfml_DOWNLOADED_PATH}/extlibs/bin/${ARCH_TARGET}/openal32.dll\" )")
 
         # Insert the copy of openal32.dll to bin folder at build time
         file(READ "${sfml_DOWNLOADED_PATH}/src/SFML/Audio/CMakeLists.txt" AUX)
