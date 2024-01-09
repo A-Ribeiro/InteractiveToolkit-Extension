@@ -57,13 +57,21 @@ if(LIB_SFML STREQUAL FromSource)
     #     add_compile_options(-w)
     # endif()
 
-    if(OS_TARGET STREQUAL win)
+    if(WIN32)
+        set( ARCH_TARGET x64 )
+        if( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+            set( ARCH_TARGET x86 )
+        endif()
+
+        set(STR_TO_ADD "tool_copy_file_after_build( sfml-audio \"\${ARIBEIRO_LIBS_DIR}/sfml/extlibs/bin/${ARCH_TARGET}/openal32.dll\" )")
+
+        tool_get_dirs(sfml_DOWNLOADED_PATH sfml_BINARY_PATH freetype)
 
         # Insert the copy of openal32.dll to bin folder at build time
-        file(READ "${ARIBEIRO_LIBS_DIR}/sfml/src/SFML/Audio/CMakeLists.txt" AUX)
-        string(FIND "${AUX}" "copy_file_after_build( sfml-audio \"\${ARIBEIRO_LIBS_DIR}/sfml/extlibs/bin/${ARCH_TARGET}/openal32.dll\" )" matchres)
+        file(READ "${sfml_DOWNLOADED_PATH}/src/SFML/Audio/CMakeLists.txt" AUX)
+        string(FIND "${AUX}" "${STR_TO_ADD}" matchres)
         if(${matchres} EQUAL -1)
-            file(APPEND "${ARIBEIRO_LIBS_DIR}/sfml/src/SFML/Audio/CMakeLists.txt" "\ntool_copy_file_after_build( sfml-audio \"\${ARIBEIRO_LIBS_DIR}/sfml/extlibs/bin/${ARCH_TARGET}/openal32.dll\" )\n")
+            file(APPEND "${sfml_DOWNLOADED_PATH}/src/SFML/Audio/CMakeLists.txt" "\n${STR_TO_ADD}\n")
         endif ()
 
         # replace wrong identifier on VS
@@ -105,7 +113,7 @@ if(LIB_SFML STREQUAL FromSource)
         target_compile_definitions(sfml-graphics PUBLIC -DSFML_STATIC)
         set_target_properties(sfml-graphics PROPERTIES FOLDER "LIBS/SFML")
         set_target_properties(sfml-graphics PROPERTIES CXX_STANDARD 11)
-        if(OS_TARGET STREQUAL win)
+        if(WIN32)
             #target_compile_options(sfml-graphics PUBLIC /Zc:noexceptTypes- )
             #set_target_properties(sfml-graphics PROPERTIES CXX_STANDARD 11)
             #set_target_properties(sfml-graphics PROPERTIES CXX_STANDARD_REQUIRED ON)
