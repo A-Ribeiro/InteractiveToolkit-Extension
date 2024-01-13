@@ -1,6 +1,7 @@
 #pragma once
 
 // #include <InteractiveToolkit/InteractiveToolkit.h>
+#include <InteractiveToolkit/MathCore/MathCore.h>
 #include <ITKWrappers/ZLIB.h>
 
 namespace ITKExtension
