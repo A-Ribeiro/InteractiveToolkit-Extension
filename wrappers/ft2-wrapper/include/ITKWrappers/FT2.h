@@ -72,7 +72,7 @@ namespace ITKWrappers {
         
     public:
         FT2();
-        virtual ~FT2();
+        ~FT2();
         void clear();
         
         /// \brief Open a font file using pixel size as reference.

@@ -84,7 +84,7 @@ namespace ITKExtension
 
             FontWriter();
 
-            virtual ~FontWriter();
+            ~FontWriter();
 
             /// \brief Setup this FontWriter to work with an #Atlas instance
             ///

@@ -101,7 +101,7 @@ namespace ITKExtension
             /// \param yspacing Vertical pixel spacing between sprites
             ///
             Atlas(int xspacing, int yspacing);
-            virtual ~Atlas();
+            ~Atlas();
 
             /// \brief Add new atlas element internal reference into this Atlas
             ///

@@ -96,7 +96,7 @@ namespace ITKWrappers {
         void saveStrokeRGBAPNG(const std::string& filename);
         
         FT2Glyph();
-        virtual ~FT2Glyph();
+        ~FT2Glyph();
     };
     
 }

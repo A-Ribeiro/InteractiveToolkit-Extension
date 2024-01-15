@@ -76,7 +76,7 @@ namespace ITKExtension
             char *bitmap;                          ///< The alpha channel bitmap
 
             FontReader();
-            virtual ~FontReader();
+            ~FontReader();
 
             /// \brief Read the data saved with the #FontWriter class.
             ///

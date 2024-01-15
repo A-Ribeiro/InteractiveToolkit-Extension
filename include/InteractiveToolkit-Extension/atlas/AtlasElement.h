@@ -84,7 +84,7 @@ namespace ITKExtension
             ///
             AtlasElement();
 
-            virtual ~AtlasElement();
+            ~AtlasElement();
 
             /// \brief Read this single atlas internal rectangle and name references
             ///
