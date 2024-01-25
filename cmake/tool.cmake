@@ -135,7 +135,10 @@ macro(tool_define_source_group_base_path base_path )
             endif()
 
             string(FIND "${dirname}" "/" found)
-            if (found VERSION_EQUAL 0)
+            string(LENGTH "${dirname}" dirname_length)
+
+            if (found VERSION_EQUAL 0 AND dirname_length VERSION_GREATER 0)
+                # message("dirname: ${dirname}")
                 string(LENGTH "${dirname}" dirname_length)
                 math(EXPR new_length "${dirname_length} - 1")
                 string(SUBSTRING "${dirname}" 
