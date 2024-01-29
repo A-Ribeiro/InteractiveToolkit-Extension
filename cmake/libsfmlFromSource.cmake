@@ -62,6 +62,12 @@ if(LIB_SFML STREQUAL FromSource)
         if( CMAKE_SIZEOF_VOID_P EQUAL 4 )
             set( ARCH_TARGET x86 )
         endif()
+        if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")
+            set( ARCH_TARGET arm64 )
+            if( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+                set( ARCH_TARGET arm32 )
+            endif()
+        endif()
 
         tool_get_dirs(sfml_DOWNLOADED_PATH sfml_BINARY_PATH sfml)
 
