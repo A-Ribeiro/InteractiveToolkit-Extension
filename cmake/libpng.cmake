@@ -33,6 +33,14 @@ if(LIB_PNG STREQUAL FromSource)
     option(PNG_SHARED "Build shared lib" OFF)
     option(PNG_STATIC "Build static lib" ON)
     option(PNG_TESTS  "Build libpng tests" OFF)
+
+    if (APPLE)
+    set(PNG_ARM_NEON off CACHE STRING "Enable ARM NEON optimizations:
+        check: (default) use internal checking code;
+        off: disable the optimizations;
+        on: turn on unconditionally.")
+    endif()
+
     tool_include_lib(libpng)
 
     #include_directories("${ARIBEIRO_GEN_INCLUDE_DIR}/libpng/")
@@ -48,6 +56,15 @@ if(LIB_PNG STREQUAL FromSource)
     tool_make_global(PNG_INCLUDE_DIR)
     tool_make_global(PNG_LIBRARY)
     tool_make_global(PNG_LIBRARIES)
+
+    if (APPLE)
+        #ifndef PNG_ARM_NEON_FILE
+        #  ifdef __APPLE__
+        #     define PNG_ARM_NEON_FILE "arm_neon.h"
+        #  endif
+        #endif
+        target_compile_definitions(png_static PUBLIC PNG_ARM_NEON_FILE="arm_neon.h")
+    endif()
 
 elseif(LIB_PNG STREQUAL UsingFindPackage)
 

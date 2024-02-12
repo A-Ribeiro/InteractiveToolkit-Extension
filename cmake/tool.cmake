@@ -120,15 +120,23 @@ endmacro()
 
 macro(tool_define_source_group_base_path base_path )
     foreach(entry IN ITEMS ${ARGN})
+    #message(STATUS "entry:${entry}")
         get_filename_component(dirname "${entry}" DIRECTORY )
         if (dirname)
+            if (NOT dirname MATCHES "/$")
+                set(dirname "${dirname}/")
+            endif()
             
             string(FIND "${dirname}" "${base_path}" found)
+            
+            #message(STATUS "found:${found}")
 
             if (found VERSION_EQUAL 0)
                 string(LENGTH "${base_path}" base_path_length)
                 string(LENGTH "${dirname}" dirname_length)
                 math(EXPR new_length "${dirname_length} - ${base_path_length}")
+                #message(STATUS "base_path:${base_path}")
+                #message(STATUS "dirname:${dirname}")
                 string(SUBSTRING "${dirname}" 
                         "${base_path_length}" 
                         "${new_length}" dirname)
