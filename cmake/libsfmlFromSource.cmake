@@ -73,12 +73,14 @@ if(LIB_SFML STREQUAL FromSource)
 
         set(STR_TO_ADD "tool_copy_file_after_build( sfml-audio \"${sfml_DOWNLOADED_PATH}/extlibs/bin/${ARCH_TARGET}/openal32.dll\" )")
 
-        # Insert the copy of openal32.dll to bin folder at build time
-        file(READ "${sfml_DOWNLOADED_PATH}/src/SFML/Audio/CMakeLists.txt" AUX)
-        string(FIND "${AUX}" "${STR_TO_ADD}" matchres)
-        if(${matchres} EQUAL -1)
-            file(APPEND "${sfml_DOWNLOADED_PATH}/src/SFML/Audio/CMakeLists.txt" "\n${STR_TO_ADD}\n")
-        endif ()
+        # SFML now uses miniaudio instead OpenAL
+        #
+        # # Insert the copy of openal32.dll to bin folder at build time
+        # file(READ "${sfml_DOWNLOADED_PATH}/src/SFML/Audio/CMakeLists.txt" AUX)
+        # string(FIND "${AUX}" "${STR_TO_ADD}" matchres)
+        # if(${matchres} EQUAL -1)
+        #     file(APPEND "${sfml_DOWNLOADED_PATH}/src/SFML/Audio/CMakeLists.txt" "\n${STR_TO_ADD}\n")
+        # endif ()
 
         # replace wrong identifier on VS
         # file(READ "${ARIBEIRO_LIBS_DIR}/sfml/src/SFML/Graphics/Font.cpp" AUX)
