@@ -70,6 +70,7 @@ PUBLIC
     ${INTERACTIVETOOLKIT_LIBRARIES}
     zlib-wrapper
     md5-wrapper
+PRIVATE
     libpng
     libjpeg
 )

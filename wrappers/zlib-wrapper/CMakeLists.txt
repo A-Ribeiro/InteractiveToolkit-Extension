@@ -31,6 +31,7 @@ target_include_directories(${PROJECT_NAME}
 PUBLIC
     ${INTERACTIVETOOLKIT_INCLUDE_DIRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
+PRIVATE
     ${ZLIB_INCLUDE_DIR}
 )
 
@@ -38,5 +39,6 @@ target_link_libraries(${PROJECT_NAME}
 PUBLIC 
     ${INTERACTIVETOOLKIT_LIBRARIES}
     md5-wrapper
+PRIVATE
     zlib
 )

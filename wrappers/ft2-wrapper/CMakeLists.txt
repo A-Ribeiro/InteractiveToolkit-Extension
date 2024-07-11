@@ -33,12 +33,14 @@ target_include_directories(${PROJECT_NAME}
 PUBLIC
     ${INTERACTIVETOOLKIT_INCLUDE_DIRS}
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
+PRIVATE
     ${FREETYPE_INCLUDE_DIRS}
 )
 
 target_link_libraries(${PROJECT_NAME} 
 PUBLIC 
     ${INTERACTIVETOOLKIT_LIBRARIES}
-    freetype
     InteractiveToolkit-Extension
+PRIVATE
+    freetype
 )

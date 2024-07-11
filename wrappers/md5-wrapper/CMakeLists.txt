@@ -32,5 +32,6 @@ PUBLIC
 target_link_libraries(${PROJECT_NAME} 
 PUBLIC 
     ${INTERACTIVETOOLKIT_LIBRARIES}
+PRIVATE
     md5
 )
