@@ -62,7 +62,7 @@ namespace ITKExtension
                     // buffer = zlib.zlibOutput;
                     Platform::ObjectBuffer output_buffer;
                     ITKWrappers::ZLIB::compress(
-                        Platform::ObjectBuffer(buffer.data(), (uint32_t)buffer.size()),
+                        Platform::ObjectBuffer(buffer.data(), (int64_t)buffer.size()),
                         &output_buffer,
                         [](const std::string &str_error)
                         {
@@ -100,7 +100,7 @@ namespace ITKExtension
                 if (compress)
                 {
                     ITKWrappers::ZLIB::compress(
-                        Platform::ObjectBuffer(buffer.data(), (uint32_t)buffer.size()),
+                        Platform::ObjectBuffer(buffer.data(), (int64_t)buffer.size()),
                         objectBuffer,
                         [](const std::string &str_error)
                         {
@@ -111,7 +111,7 @@ namespace ITKExtension
                     return;
                 }
 
-                objectBuffer->setSize((uint32_t)buffer.size());
+                objectBuffer->setSize((int64_t)buffer.size());
                 if (buffer.size() > 0)
                     memcpy(objectBuffer->data, buffer.data(), buffer.size());
                 reset();

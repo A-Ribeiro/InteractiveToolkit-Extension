@@ -53,7 +53,7 @@ namespace ITKExtension
             Platform::ObjectBuffer buffer;
             reader->readBuffer(&buffer);
             pngBuffer = buffer.data;
-            pngBufferSize = buffer.size;
+            pngBufferSize = (uint32_t)buffer.size;
 
             int w, h, chann, pixel_depth;
             bitmap = ITKExtension::Image::PNG::readPNGFromMemory((char *)pngBuffer, pngBufferSize, &w, &h, &chann, &pixel_depth);

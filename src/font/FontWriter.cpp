@@ -96,7 +96,7 @@ namespace ITKExtension
             atlas->releaseA(&grayBuffer);
 
             writer->writeBuffer(
-                Platform::ObjectBuffer((uint8_t *)result, size)
+                Platform::ObjectBuffer((uint8_t *)result, (int64_t)size)
             );
 
             ITKExtension::Image::PNG::closePNG(result);

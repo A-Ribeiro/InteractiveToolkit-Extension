@@ -82,7 +82,7 @@ namespace ITKExtension
                 {
                     Platform::ObjectBuffer output_buffer;
                     ITKWrappers::ZLIB::uncompress(
-                        Platform::ObjectBuffer(buffer.data(), (uint32_t)buffer.size()),
+                        Platform::ObjectBuffer(buffer.data(), (int64_t)buffer.size()),
                         &output_buffer,
                         [](const std::string &str_error)
                         {
