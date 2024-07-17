@@ -6,6 +6,8 @@
 #endif
 
 #include "common.h"
+#include <InteractiveToolkit/ITKCommon/FileSystem/File.h>
+
 
 namespace ITKExtension
 {
@@ -60,23 +62,30 @@ namespace ITKExtension
                     buffer.resize(0);
             }
 
-            void readFromFile(const char *filename, bool compressed = true)
+            bool readFromFile(const char *filename, bool compressed = true, std::string *errorStr = NULL)
             {
-                if (directStreamIn != NULL)
-                    return;
-                buffer.resize(0);
-                FILE *in = fopen(filename, "rb");
-                if (in)
-                {
-                    //
-                    // optimized reading
-                    //
-                    fseek(in, 0, SEEK_END);
-                    buffer.resize(ftell(in));
-                    fseek(in, 0, SEEK_SET);
-                    int readed_size = (int)fread(buffer.data(), sizeof(uint8_t), buffer.size(), in);
-                    fclose(in);
-                }
+                ON_COND_SET_ERRORSTR_RETURN(directStreamIn != NULL, false, "directStreamIn is set.\n");
+                
+                if (!ITKCommon::FileSystem::File::FromPath(filename).
+                    readContentToVector(&buffer, errorStr))
+                    return false;
+
+                // buffer.resize(0);
+                // FILE *in = ITKCommon::FileSystem::File::fopen(filename, "rb", errorStr);
+                // if (!in)
+                //     return false;
+
+                // //if (in)
+                // {
+                //     //
+                //     // optimized reading
+                //     //
+                //     fseek(in, 0, SEEK_END);
+                //     buffer.resize(ftell(in));
+                //     fseek(in, 0, SEEK_SET);
+                //     int readed_size = (int)fread(buffer.data(), sizeof(uint8_t), buffer.size(), in);
+                //     fclose(in);
+                // }
 
                 if (compressed)
                 {
@@ -99,6 +108,8 @@ namespace ITKExtension
                     // buffer = zlib.zlibOutput;
                 }
                 readPos = 0;
+
+                return true;
             }
 
             void readFromBuffer(const Platform::ObjectBuffer &objectBuffer, bool compressed = true)

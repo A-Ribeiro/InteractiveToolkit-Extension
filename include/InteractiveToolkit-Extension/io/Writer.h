@@ -7,6 +7,8 @@
 
 #include "common.h"
 
+#include <InteractiveToolkit/ITKCommon/FileSystem/File.h>
+
 namespace ITKExtension
 {
     namespace IO
@@ -50,10 +52,9 @@ namespace ITKExtension
                 memcpy(&buffer[startWrite], data, size);
             }
 
-            void writeToFile(const char *filename, bool compress = true)
+            bool writeToFile(const char *filename, bool compress = true, std::string *errorStr = NULL)
             {
-                if (directStreamOut != NULL)
-                    return;
+                ON_COND_SET_ERRORSTR_RETURN(directStreamOut != NULL, false, "directStreamOut is set.\n");
 
                 if (compress)
                 {
@@ -70,26 +71,31 @@ namespace ITKExtension
                             ITK_ABORT(true, str_error.c_str());
                         });
 
-                    FILE *out = fopen(filename, "wb");
-                    if (out != NULL)
-                    {
-                        if (output_buffer.size > 0)
-                            fwrite(output_buffer.data, sizeof(uint8_t), output_buffer.size, out);
-                        fclose(out);
-                    }
+                    // FILE *out = fopen(filename, "wb");
+                    // if (out != NULL)
+                    // {
+                    //     if (output_buffer.size > 0)
+                    //         fwrite(output_buffer.data, sizeof(uint8_t), output_buffer.size, out);
+                    //     fclose(out);
+                    // }
+                    if (!ITKCommon::FileSystem::File::WriteContentFromObjectBuffer(filename,&output_buffer,false,errorStr))
+                        return false;
                     reset();
-
-                    return;
+                    return true;
                 }
 
-                FILE *out = fopen(filename, "wb");
-                if (out != NULL)
-                {
-                    if (buffer.size() > 0)
-                        fwrite(buffer.data(), sizeof(uint8_t), buffer.size(), out);
-                    fclose(out);
-                }
+                // FILE *out = fopen(filename, "wb");
+                // if (out != NULL)
+                // {
+                //     if (buffer.size() > 0)
+                //         fwrite(buffer.data(), sizeof(uint8_t), buffer.size(), out);
+                //     fclose(out);
+                // }
+                if (!ITKCommon::FileSystem::File::WriteContentFromVector(filename,&buffer,false,errorStr))
+                    return false;
+
                 reset();
+                return true;
             }
 
             void writeToBuffer(Platform::ObjectBuffer *objectBuffer, bool compress = true)
