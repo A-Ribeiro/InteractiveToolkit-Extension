@@ -7,6 +7,9 @@
 #include <jpeglib.h>
 #include <setjmp.h>
 
+#include <InteractiveToolkit/ITKCommon/FileSystem/File.h>
+
+
 namespace ITKExtension
 {
     namespace Image
@@ -60,7 +63,7 @@ namespace ITKExtension
                 longjmp(myerr->setjmp_buffer, 1);
             }
 
-            char *readJPG(const char *filename, int *w, int *h, int *chann, int *pixel_depth, bool invertY, float *gamma)
+            char *readJPG(const char *filename, int *w, int *h, int *chann, int *pixel_depth, bool invertY, float *gamma, std::string *errorStr)
             {
 
                 char *result = NULL;
@@ -85,10 +88,11 @@ namespace ITKExtension
                  * requires it in order to read binary files.
                  */
 
-                if ((infile = fopen(filename, "rb")) == NULL)
+                infile = ITKCommon::FileSystem::File::fopen(filename, "rb", errorStr);
+                if (!infile)
                 {
                     fprintf(stderr, "can't open %s\n", filename);
-                    return 0;
+                    return NULL;
                 }
 
                 /* Step 1: allocate and initialize JPEG decompression object */
@@ -109,6 +113,8 @@ namespace ITKExtension
                         ITKCommon::Memory::free(result);
                     // delete[] result;
 
+                    if (errorStr != NULL)
+                        *errorStr = "JPG Signaled an Error.\n";
                     return NULL;
                 }
                 /* Now we can initialize the JPEG decompression object. */
@@ -209,7 +215,7 @@ namespace ITKExtension
                 return result;
             }
 
-            void writeJPG(const char *file_name, int w, int h, int chann, char *buffer, int quality, bool invertY)
+            bool writeJPG(const char *file_name, int w, int h, int chann, char *buffer, int quality, bool invertY, std::string *errorStr)
             {
                 /* This struct contains the JPEG compression parameters and pointers to
                  * working space (which is allocated as needed by the JPEG library).
@@ -251,10 +257,11 @@ namespace ITKExtension
                  * VERY IMPORTANT: use "b" option to fopen() if you are on a machine that
                  * requires it in order to write binary files.
                  */
-                if ((outfile = fopen(file_name, "wb")) == NULL)
+                outfile = ITKCommon::FileSystem::File::fopen(file_name, "wb", errorStr);
+                if (!outfile)
                 {
                     fprintf(stderr, "can't open %s\n", file_name);
-                    exit(1);
+                    return false;
                 }
                 jpeg_stdio_dest(&cinfo, outfile);
 
@@ -272,8 +279,10 @@ namespace ITKExtension
                     cinfo.in_color_space = JCS_GRAYSCALE;
                 else
                 {
+                    if (errorStr != NULL)
+                        *errorStr = ITKCommon::PrintfToStdString("JPEG invalid number of channels: %i\n", chann);
                     fprintf(stderr, "JPEG invalid number of channels: %i\n", chann);
-                    exit(1);
+                    return false;
                 }
                 /* Now use the library's routine to set default compression parameters.
                  * (You must set at least cinfo.in_color_space before calling this,
@@ -327,6 +336,7 @@ namespace ITKExtension
                 jpeg_destroy_compress(&cinfo);
 
                 /* And we're done! */
+                return true;
             }
 
             char *readJPGFromMemory(const char *input_buffer, int input_buffer_size, int *w, int *h, int *chann, int *pixel_depth, bool invertY, float *gamma)

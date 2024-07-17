@@ -4,6 +4,9 @@
 #include <ITKWrappers/MD5.h>
 #include <md5/md5.h>
 
+#include <InteractiveToolkit/ITKCommon/FileSystem/File.h>
+
+
 // #include <fstream>
 // #include <iostream>
 // #include <string.h>
@@ -20,49 +23,56 @@ namespace ITKWrappers
     namespace MD5
     {
 
-        std::string getHexStringHashFromBytes(const char *buffer, int size)
+        std::string getHexStringHashFromBytes(const uint8_t *buffer, int64_t size)
         {
-            unsigned char result[16];
+            uint8_t result[16];
             get16bytesHashFromBytes(buffer, size, result);
             return _16BytesToHexString(result);
         }
 
-        void get16bytesHashFromBytes(const char *buffer, int size, unsigned char outBuffer[16])
+        void get16bytesHashFromBytes(const uint8_t *buffer, int64_t size, uint8_t outBuffer[16])
         {
             md5_state_t state;
             md5_init(&state);
-            md5_append(&state, (const md5_byte_t *)buffer, size);
+
+            int64_t input_buff_size = 64*1024;// 64 KB
+            int64_t offset = 0;
+            while (offset < size){
+                if (offset + input_buff_size > size){
+                    input_buff_size = size - offset;
+                }
+                md5_append(&state, (const md5_byte_t *)&buffer[offset], input_buff_size);
+                offset += input_buff_size;
+            }
+            
             md5_finish(&state, (md5_byte_t *)outBuffer);
         }
 
-        std::string getHexStringHashFromFile(const char *filename)
+        std::string getHexStringHashFromFile(const char *filename, std::string *errorStr)
         {
             unsigned char result[16];
-            get16bytesHashFromFile(filename, result);
+            if (!get16bytesHashFromFile(filename, result, errorStr))
+                return "";
             return _16BytesToHexString(result);
         }
 
-        void get16bytesHashFromFile(const char *filename, unsigned char outBuffer[16])
+        bool get16bytesHashFromFile(const char *filename, uint8_t outBuffer[16], std::string *errorStr)
         {
             md5_state_t state;
             md5_init(&state);
-            FILE *file = fopen(filename, "rb");
+            FILE *file = ITKCommon::FileSystem::File::fopen(filename, "rb", errorStr);
+            if (!file)
+                return false;
             unsigned char buffer[1024];
-            if (file != NULL)
-            {
-                size_t len;
-                while ((len = fread(buffer, sizeof(unsigned char), 1024, file)))
-                    md5_append(&state, (const md5_byte_t *)buffer, (int)len);
-                fclose(file);
-            }
-            else
-            {
-                ITK_ABORT(true,"File not found: %s\n", filename);
-            }
+            size_t len;
+            while ((len = fread(buffer, sizeof(unsigned char), 1024, file)))
+                md5_append(&state, (const md5_byte_t *)buffer, (int)len);
+            fclose(file);
             md5_finish(&state, (md5_byte_t *)outBuffer);
+            return true;
         }
 
-        std::string _16BytesToHexString(unsigned char md5[16])
+        std::string _16BytesToHexString(uint8_t md5[16])
         {
             char result[33];
             for (int i = 0; i < 16; i++)

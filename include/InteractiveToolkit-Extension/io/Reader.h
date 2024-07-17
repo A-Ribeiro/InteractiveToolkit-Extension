@@ -8,7 +8,6 @@
 #include "common.h"
 #include <InteractiveToolkit/ITKCommon/FileSystem/File.h>
 
-
 namespace ITKExtension
 {
     namespace IO
@@ -65,9 +64,8 @@ namespace ITKExtension
             bool readFromFile(const char *filename, bool compressed = true, std::string *errorStr = NULL)
             {
                 ON_COND_SET_ERRORSTR_RETURN(directStreamIn != NULL, false, "directStreamIn is set.\n");
-                
-                if (!ITKCommon::FileSystem::File::FromPath(filename).
-                    readContentToVector(&buffer, errorStr))
+
+                if (!ITKCommon::FileSystem::File::FromPath(filename).readContentToVector(&buffer, errorStr))
                     return false;
 
                 // buffer.resize(0);
@@ -90,14 +88,11 @@ namespace ITKExtension
                 if (compressed)
                 {
                     Platform::ObjectBuffer output_buffer;
-                    ITKWrappers::ZLIB::uncompress(
-                        Platform::ObjectBuffer(buffer.data(), (int64_t)buffer.size()),
-                        &output_buffer,
-                        [](const std::string &str_error)
-                        {
-                            // on Error
-                            ITK_ABORT(true, str_error.c_str());
-                        });
+                    if (!ITKWrappers::ZLIB::uncompress(
+                            Platform::ObjectBuffer(buffer.data(), (int64_t)buffer.size()),
+                            &output_buffer,
+                            errorStr))
+                        return false;
 
                     buffer.resize(output_buffer.size);
                     if (output_buffer.size > 0)
@@ -112,23 +107,19 @@ namespace ITKExtension
                 return true;
             }
 
-            void readFromBuffer(const Platform::ObjectBuffer &objectBuffer, bool compressed = true)
+            bool readFromBuffer(const Platform::ObjectBuffer &objectBuffer, bool compressed = true, std::string *errorStr = NULL)
             {
-                if (directStreamIn != NULL)
-                    return;
+                ON_COND_SET_ERRORSTR_RETURN(directStreamIn != NULL, false, "directStreamIn is set.\n");
 
                 if (compressed)
                 {
 
                     Platform::ObjectBuffer output_buffer;
-                    ITKWrappers::ZLIB::uncompress(
-                        Platform::ObjectBuffer(objectBuffer.data, objectBuffer.size),
-                        &output_buffer,
-                        [](const std::string &str_error)
-                        {
-                            // on Error
-                            ITK_ABORT(true, str_error.c_str());
-                        });
+                    if (!ITKWrappers::ZLIB::uncompress(
+                            Platform::ObjectBuffer(objectBuffer.data, objectBuffer.size),
+                            &output_buffer,
+                            errorStr))
+                        return false;
 
                     buffer.resize(output_buffer.size);
                     if (output_buffer.size > 0)
@@ -144,6 +135,8 @@ namespace ITKExtension
                     memcpy(buffer.data(), objectBuffer.data, objectBuffer.size);
                 }
                 readPos = 0;
+
+                return true;
             }
 
             uint8_t readUInt8()
@@ -240,7 +233,6 @@ namespace ITKExtension
                 if (size > 0)
                     readRaw(buffer->data, size);
             }
-
         };
 
     }

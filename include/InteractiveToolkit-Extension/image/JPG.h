@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdlib.h> // NULL
+#include <string>
 
 namespace ITKExtension
 {
@@ -37,9 +38,9 @@ namespace ITKExtension
             /// \param[out] gamma the gamma value stored in JPG file
             /// \return The raw image buffer or NULL if cannot open file.
             ///
-            char *readJPG(const char *file_name, int *w, int *h, int *chann, int *pixel_depth, bool invertY = false, float *gamma = NULL);
+            char *readJPG(const char *file_name, int *w, int *h, int *chann, int *pixel_depth, bool invertY = false, float *gamma = NULL, std::string *errorStr = NULL);
 
-            void writeJPG(const char *file_name, int w, int h, int chann, char *buffer, int quality = 90, bool invertY = false);
+            bool writeJPG(const char *file_name, int w, int h, int chann, char *buffer, int quality = 90, bool invertY = false, std::string *errorStr = NULL);
 
 
             /// \brief Read JPG format from memory stream

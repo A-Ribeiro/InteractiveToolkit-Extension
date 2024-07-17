@@ -2,6 +2,8 @@
 
 // #include <InteractiveToolkit/InteractiveToolkit.h>
 #include <string>
+#include <stdio.h>
+#include <stdint.h>
 
 namespace ITKWrappers {
     namespace MD5 {
@@ -28,7 +30,7 @@ namespace ITKWrappers {
         /// \param size the size of the buffer in bytes
         /// \return Hex String of the 16bytes MD hash
         ///
-        std::string getHexStringHashFromBytes(const char* buffer, int size);
+        std::string getHexStringHashFromBytes(const uint8_t* buffer, int64_t size);
 
         /// \brief Compute the MD5 hash bytes from a pointer to memory.
         ///
@@ -54,7 +56,7 @@ namespace ITKWrappers {
         /// \param size the size of the buffer in bytes
         /// \param[out] outBuffer the 16 byte output buffer
         ///
-        void get16bytesHashFromBytes(const char* buffer, int size, unsigned char outBuffer[16]);
+        void get16bytesHashFromBytes(const uint8_t* buffer, int64_t size, uint8_t outBuffer[16]);
 
         /// \brief Compute the MD5 hash bytes and return the hex string from a file.
         ///
@@ -78,7 +80,7 @@ namespace ITKWrappers {
         /// \param filename input file to compute the MD5
         /// \return Hex String of the 16bytes MD hash
         ///
-        std::string getHexStringHashFromFile(const char* filename);
+        std::string getHexStringHashFromFile(const char* filename, std::string *errorStr = NULL);
 
         /// \brief Compute the MD5 hash bytes from a file.
         ///
@@ -103,7 +105,7 @@ namespace ITKWrappers {
         /// \param filename input file to compute the MD5
         /// \param[out] outBuffer the 16 byte output buffer
         ///
-        void get16bytesHashFromFile(const char* filename, unsigned char outBuffer[16]);
+        bool get16bytesHashFromFile(const char* filename, uint8_t outBuffer[16], std::string *errorStr = NULL);
 
         /// \brief Converts the 16bytes representation to a 32 character string.
         ///
@@ -126,6 +128,6 @@ namespace ITKWrappers {
         /// \param md5 md5 16 bytes input
         /// \return Hex String of the 16bytes MD hash
         ///
-        std::string _16BytesToHexString(unsigned char md5[16]);
+        std::string _16BytesToHexString(uint8_t md5[16]);
     }
 }

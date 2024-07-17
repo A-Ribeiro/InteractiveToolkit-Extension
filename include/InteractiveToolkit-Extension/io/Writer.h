@@ -62,14 +62,11 @@ namespace ITKExtension
                     // zlib.compress(&buffer[0],(uint32_t)buffer.size());
                     // buffer = zlib.zlibOutput;
                     Platform::ObjectBuffer output_buffer;
-                    ITKWrappers::ZLIB::compress(
-                        Platform::ObjectBuffer(buffer.data(), (int64_t)buffer.size()),
-                        &output_buffer,
-                        [](const std::string &str_error)
-                        {
-                            // on Error
-                            ITK_ABORT(true, str_error.c_str());
-                        });
+                    if(!ITKWrappers::ZLIB::compress(
+                            Platform::ObjectBuffer(buffer.data(), (int64_t)buffer.size()),
+                            &output_buffer,
+                            errorStr))
+                        return false;
 
                     // FILE *out = fopen(filename, "wb");
                     // if (out != NULL)
@@ -98,29 +95,26 @@ namespace ITKExtension
                 return true;
             }
 
-            void writeToBuffer(Platform::ObjectBuffer *objectBuffer, bool compress = true)
+            bool writeToBuffer(Platform::ObjectBuffer *objectBuffer, bool compress = true, std::string *errorStr = NULL)
             {
-                if (directStreamOut != NULL)
-                    return;
+                ON_COND_SET_ERRORSTR_RETURN(directStreamOut != NULL, false, "directStreamOut is set.\n");
 
                 if (compress)
                 {
-                    ITKWrappers::ZLIB::compress(
-                        Platform::ObjectBuffer(buffer.data(), (int64_t)buffer.size()),
-                        objectBuffer,
-                        [](const std::string &str_error)
-                        {
-                            // on Error
-                            ITK_ABORT(true, str_error.c_str());
-                        });
+                    if (!ITKWrappers::ZLIB::compress(
+                            Platform::ObjectBuffer(buffer.data(), (int64_t)buffer.size()),
+                            objectBuffer,
+                            errorStr))
+                        return false;
                     reset();
-                    return;
+                    return true;
                 }
 
                 objectBuffer->setSize((int64_t)buffer.size());
                 if (buffer.size() > 0)
                     memcpy(objectBuffer->data, buffer.data(), buffer.size());
                 reset();
+                return true;
             }
 
             void writeUInt8(uint8_t v)

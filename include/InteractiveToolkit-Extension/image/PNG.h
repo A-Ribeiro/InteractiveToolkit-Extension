@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stdio.h>
+#include <string>
+
 namespace ITKExtension
 {
     namespace Image
@@ -34,7 +37,7 @@ namespace ITKExtension
             /// \param invertY should invert the loaded image vertically
             /// \return The raw image buffer or NULL if cannot open file.
             ///
-            char *readPNG(const char *file_name, int *w, int *h, int *chann, int *pixel_depth, bool invertY = false);
+            char *readPNG(const char *file_name, int *w, int *h, int *chann, int *pixel_depth, bool invertY = false, std::string *errorStr = NULL);
 
             /// \brief Write PNG format to file
             ///
@@ -66,7 +69,7 @@ namespace ITKExtension
             /// \param buffer input image buffer
             /// \param invertY should invert the loaded image vertically
             ///
-            void writePNG(const char *file_name, int w, int h, int chann, char *buffer, bool invertY = false);
+            bool writePNG(const char *file_name, int w, int h, int chann, char *buffer, bool invertY = false, std::string *errorStr = NULL);
 
             /// \brief Closes the image buffer after a read or memory write.
             ///

@@ -6,6 +6,8 @@
 
 #include <png.h>
 
+#include <InteractiveToolkit/ITKCommon/FileSystem/File.h>
+
 //----------------------------------------------------------------------------------
 /* The png_jmpbuf() macro, used in error handling, became available in
  * libpng version 1.0.6.  If you want to be able to run your code with older
@@ -65,14 +67,14 @@ namespace ITKExtension
                 fflush((FILE *)png_get_io_ptr(png_ptr));
             }
             //----------------------------------------------------------------------------------
-            void writePNG(const char *file_name, int w, int h, int chann, char *buffer, bool invertY)
+            bool writePNG(const char *file_name, int w, int h, int chann, char *buffer, bool invertY, std::string *errorStr)
             {
                 FILE *fp;
                 png_structp png_ptr;
                 png_infop info_ptr;
-                fp = fopen(file_name, "wb");
-                if (fp == NULL)
-                    return;                                                 // error
+                fp = ITKCommon::FileSystem::File::fopen(file_name, "wb", errorStr);
+                if (!fp)
+                   return false;                                           // error
                 png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, // png_voidp_NULL,
                                                   0,                        // png_error_ptr_NULL,
                                                   0                         // png_error_ptr_NULL
@@ -80,7 +82,9 @@ namespace ITKExtension
                 if (png_ptr == NULL)
                 {
                     fclose(fp);
-                    return; // error
+                    if (errorStr != NULL)
+                        *errorStr = ITKCommon::PrintfToStdString("Error on png_create_write_struct\n");
+                    return false; // error
                 }
                 info_ptr = png_create_info_struct(png_ptr);
                 if (info_ptr == NULL)
@@ -88,14 +92,18 @@ namespace ITKExtension
                     fclose(fp);
                     png_destroy_write_struct(&png_ptr, 0 // png_infopp_NULL
                     );
-                    return; // error
+                    if (errorStr != NULL)
+                        *errorStr = ITKCommon::PrintfToStdString("Error on png_create_info_struct\n");
+                    return false; // error
                 }
                 if (setjmp(png_jmpbuf(png_ptr)))
                 {
                     // If we get here, we had a problem reading the file
                     fclose(fp);
                     png_destroy_write_struct(&png_ptr, &info_ptr);
-                    return; // error
+                    if (errorStr != NULL)
+                        *errorStr = ITKCommon::PrintfToStdString("Error on png setjmp\n");
+                    return false; // error
                 }
                 png_set_write_fn(png_ptr, fp, user_write_data, user_flush_data);
                 png_init_io(png_ptr, fp);
@@ -117,7 +125,9 @@ namespace ITKExtension
                 default:
                     fclose(fp);
                     png_destroy_write_struct(&png_ptr, &info_ptr);
-                    return; // error
+                    if (errorStr != NULL)
+                        *errorStr = ITKCommon::PrintfToStdString("Invalid chann = %i.\n", chann);
+                    return false; // error
                 }
                 png_set_IHDR(png_ptr, info_ptr, w, h,
                              8,                            // bitdepth
@@ -139,6 +149,7 @@ namespace ITKExtension
                 png_write_end(png_ptr, info_ptr);
                 png_destroy_write_struct(&png_ptr, &info_ptr);
                 fclose(fp);
+                return true;
             }
             //----------------------------------------------------------------------------------
             /* Read a PNG file.  You may want to return an error code if the read
@@ -148,7 +159,7 @@ namespace ITKExtension
              * some or all of the magic bytes read - see comments above).
              */
             //----------------------------------------------------------------------------------
-            char *readPNG(const char *file_name, int *w, int *h, int *chann, int *pixel_depth, bool invertY)
+            char *readPNG(const char *file_name, int *w, int *h, int *chann, int *pixel_depth, bool invertY, std::string *errorStr)
             { /* We need to open the file */
                 png_structp png_ptr;
                 png_infop info_ptr;
@@ -156,8 +167,10 @@ namespace ITKExtension
                 // png_uint_32 width, height;
                 //   int bit_depth, color_type, interlace_type;
                 FILE *fp;
-                if ((fp = fopen(file_name, "rb")) == NULL)
-                    return (NULL);
+                
+                fp = ITKCommon::FileSystem::File::fopen(file_name, "rb", errorStr);
+                if (!fp)
+                    return NULL;
                 /* Create and initialize the png_struct with the desired error handler
                  * functions.  If you want to use the default stderr and longjump method,
                  * you can supply NULL for the last three parameters.  We also supply the
@@ -168,7 +181,9 @@ namespace ITKExtension
                 if (png_ptr == NULL)
                 {
                     fclose(fp);
-                    return (NULL);
+                    if (errorStr != NULL)
+                        *errorStr = ITKCommon::PrintfToStdString("Error on png_create_read_struct\n");
+                    return NULL;
                 }
                 /* Allocate/initialize the memory for image information.  REQUIRED. */
                 info_ptr = png_create_info_struct(png_ptr);
@@ -178,7 +193,9 @@ namespace ITKExtension
                     png_destroy_read_struct(&png_ptr, 0, // png_infopp_NULL,
                                             0            // png_infopp_NULL
                     );
-                    return (NULL);
+                    if (errorStr != NULL)
+                        *errorStr = ITKCommon::PrintfToStdString("Error on png_create_info_struct\n");
+                    return NULL;
                 }
                 /* Set error handling if you are using the setjmp/longjmp method (this is
                  * the normal method of doing things with libpng).  REQUIRED unless you
@@ -191,7 +208,9 @@ namespace ITKExtension
                     );
                     fclose(fp);
                     /* If we get here, we had a problem reading the file */
-                    return (NULL);
+                    if (errorStr != NULL)
+                        *errorStr = ITKCommon::PrintfToStdString("Error on png setjmp\n");
+                    return NULL;
                 }
                 /* Set up the input control if you are using standard C streams */
                 png_init_io(png_ptr, fp);
@@ -221,11 +240,13 @@ namespace ITKExtension
                 png_uint_32 height = png_get_image_height(png_ptr, info_ptr);
                 png_byte channels = png_get_channels(png_ptr, info_ptr);
                 png_byte depth = png_get_bit_depth(png_ptr, info_ptr);
+                
                 printf("PNG READED (w: %i h: %i chn:%i bits: %i)\n",
                        width,
                        height,
                        channels,
                        depth);
+
                 // char* retorno = new char[width*height*channels*(depth / 8)];
                 char *retorno = (char *)ITKCommon::Memory::malloc(width * height * channels * (depth / 8));
                 *w = width;
