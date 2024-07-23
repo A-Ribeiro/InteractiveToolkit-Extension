@@ -10,12 +10,12 @@ namespace ITKWrappers {
         bool compress(
             const Platform::ObjectBuffer &input,
             Platform::ObjectBuffer *output,
-            std::string *errorStr = NULL
+            std::string *errorStr = nullptr
         );
         bool uncompress(
             const Platform::ObjectBuffer &input,
             Platform::ObjectBuffer *output,
-            std::string *errorStr = NULL
+            std::string *errorStr = nullptr
         );
     }
 }

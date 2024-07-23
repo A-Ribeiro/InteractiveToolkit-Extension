@@ -91,7 +91,7 @@ namespace ITKExtension
             int size;
             char *result = ITKExtension::Image::PNG::writePNGToMemory(&size, atlas->textureResolution.w, atlas->textureResolution.h, 1, (char *)grayBuffer);
 
-            ITK_ABORT(result == NULL, "Error to write PNG to memory.\n");
+            ITK_ABORT(result == nullptr, "Error to write PNG to memory.\n");
 
             atlas->releaseA(&grayBuffer);
 

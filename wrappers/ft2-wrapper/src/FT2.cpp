@@ -27,9 +27,9 @@ namespace ITKWrappers
 
         FT2::FT2()
         {
-            library = NULL;
-            face = NULL;
-            stroker = NULL;
+            library = nullptr;
+            face = nullptr;
+            stroker = nullptr;
         }
         FT2::~FT2()
         {
@@ -38,15 +38,15 @@ namespace ITKWrappers
 
         void FT2::clear()
         {
-            if (stroker != NULL)
+            if (stroker != nullptr)
                 FT_Stroker_Done(stroker);
-            if (face != NULL)
+            if (face != nullptr)
                 FT_Done_Face(face);
-            if (library != NULL)
+            if (library != nullptr)
                 FT_Done_FreeType(library);
-            stroker = NULL;
-            face = NULL;
-            library = NULL;
+            stroker = nullptr;
+            face = nullptr;
+            library = nullptr;
         }
 
         void FT2::readFromFile_PX(const std::string &filename,
@@ -108,7 +108,7 @@ namespace ITKWrappers
         {
             FT_Int glyph_index = FT_Get_Char_Index(face, charcode_utf32);
             if (glyph_index == 0)
-                return NULL;
+                return nullptr;
 
             FT2Glyph *result = new FT2Glyph();
 
@@ -129,7 +129,7 @@ namespace ITKWrappers
 
             FT_CHECK_ERROR(FT_Load_Glyph(face, glyph_index, FT_LOAD_NO_BITMAP | FT_LOAD_TARGET_NORMAL), "Error to load the character");
 
-            FT_Glyph glyphDescStroke = NULL;
+            FT_Glyph glyphDescStroke = nullptr;
             FT_CHECK_ERROR(FT_Get_Glyph(face->glyph, &glyphDescStroke), "error to get stroke glyph");
 
             FT_CHECK_ERROR(FT_Glyph_Stroke(&glyphDescStroke, stroker, true), "error to stroke");
@@ -153,7 +153,7 @@ namespace ITKWrappers
         void FT2::releaseGlyph(FT2Glyph **glyph)
         {
             delete *glyph;
-            *glyph = NULL;
+            *glyph = nullptr;
         }
     }
 }

@@ -69,9 +69,9 @@ namespace ITKExtension
         {
 
             if (currY + yspacing >= screen.h)
-                return NULL;
+                return nullptr;
 
-            AtlasElement *result = NULL;
+            AtlasElement *result = nullptr;
 
             int ymax = screen.h;
 
@@ -131,7 +131,7 @@ namespace ITKExtension
                     if (!foundPlace)
                     {
                         AtlasElement *minY = findMinY(screen, currY, i);
-                        if (minY == NULL)
+                        if (minY == nullptr)
                             return false;
                         currY = minY->rect.maxYInclusive() + 1 + yspacing;
 
@@ -250,7 +250,7 @@ namespace ITKExtension
         void Atlas::releaseRGBA(uint8_t **data) const
         {
             delete[] *data;
-            *data = NULL;
+            *data = nullptr;
         }
 
         uint8_t *Atlas::createA() const
@@ -278,7 +278,7 @@ namespace ITKExtension
         void Atlas::releaseA(uint8_t **data) const
         {
             delete[] *data;
-            *data = NULL;
+            *data = nullptr;
         }
 
         void Atlas::write(ITKExtension::IO::AdvancedWriter *writer) const

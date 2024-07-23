@@ -75,24 +75,24 @@ namespace ITKExtension
                 fp = ITKCommon::FileSystem::File::fopen(file_name, "wb", errorStr);
                 if (!fp)
                    return false;                                           // error
-                png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, // png_voidp_NULL,
-                                                  0,                        // png_error_ptr_NULL,
-                                                  0                         // png_error_ptr_NULL
+                png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, // png_voidp_nullptr,
+                                                  0,                        // png_error_ptr_nullptr,
+                                                  0                         // png_error_ptr_nullptr
                 );
-                if (png_ptr == NULL)
+                if (png_ptr == nullptr)
                 {
                     fclose(fp);
-                    if (errorStr != NULL)
+                    if (errorStr != nullptr)
                         *errorStr = ITKCommon::PrintfToStdString("Error on png_create_write_struct\n");
                     return false; // error
                 }
                 info_ptr = png_create_info_struct(png_ptr);
-                if (info_ptr == NULL)
+                if (info_ptr == nullptr)
                 {
                     fclose(fp);
-                    png_destroy_write_struct(&png_ptr, 0 // png_infopp_NULL
+                    png_destroy_write_struct(&png_ptr, 0 // png_infopp_nullptr
                     );
-                    if (errorStr != NULL)
+                    if (errorStr != nullptr)
                         *errorStr = ITKCommon::PrintfToStdString("Error on png_create_info_struct\n");
                     return false; // error
                 }
@@ -101,7 +101,7 @@ namespace ITKExtension
                     // If we get here, we had a problem reading the file
                     fclose(fp);
                     png_destroy_write_struct(&png_ptr, &info_ptr);
-                    if (errorStr != NULL)
+                    if (errorStr != nullptr)
                         *errorStr = ITKCommon::PrintfToStdString("Error on png setjmp\n");
                     return false; // error
                 }
@@ -125,7 +125,7 @@ namespace ITKExtension
                 default:
                     fclose(fp);
                     png_destroy_write_struct(&png_ptr, &info_ptr);
-                    if (errorStr != NULL)
+                    if (errorStr != nullptr)
                         *errorStr = ITKCommon::PrintfToStdString("Invalid chann = %i.\n", chann);
                     return false; // error
                 }
@@ -170,32 +170,32 @@ namespace ITKExtension
                 
                 fp = ITKCommon::FileSystem::File::fopen(file_name, "rb", errorStr);
                 if (!fp)
-                    return NULL;
+                    return nullptr;
                 /* Create and initialize the png_struct with the desired error handler
                  * functions.  If you want to use the default stderr and longjump method,
-                 * you can supply NULL for the last three parameters.  We also supply the
+                 * you can supply nullptr for the last three parameters.  We also supply the
                  * the compiler header file version, so that we know if the application
                  * was compiled with a compatible version of the library.  REQUIRED
                  */
-                png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-                if (png_ptr == NULL)
+                png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+                if (png_ptr == nullptr)
                 {
                     fclose(fp);
-                    if (errorStr != NULL)
+                    if (errorStr != nullptr)
                         *errorStr = ITKCommon::PrintfToStdString("Error on png_create_read_struct\n");
-                    return NULL;
+                    return nullptr;
                 }
                 /* Allocate/initialize the memory for image information.  REQUIRED. */
                 info_ptr = png_create_info_struct(png_ptr);
-                if (info_ptr == NULL)
+                if (info_ptr == nullptr)
                 {
                     fclose(fp);
-                    png_destroy_read_struct(&png_ptr, 0, // png_infopp_NULL,
-                                            0            // png_infopp_NULL
+                    png_destroy_read_struct(&png_ptr, 0, // png_infopp_nullptr,
+                                            0            // png_infopp_nullptr
                     );
-                    if (errorStr != NULL)
+                    if (errorStr != nullptr)
                         *errorStr = ITKCommon::PrintfToStdString("Error on png_create_info_struct\n");
-                    return NULL;
+                    return nullptr;
                 }
                 /* Set error handling if you are using the setjmp/longjmp method (this is
                  * the normal method of doing things with libpng).  REQUIRED unless you
@@ -204,13 +204,13 @@ namespace ITKExtension
                 if (setjmp(png_jmpbuf(png_ptr)))
                 {
                     /* Free all of the memory associated with the png_ptr and info_ptr */
-                    png_destroy_read_struct(&png_ptr, &info_ptr, 0 // png_infopp_NULL
+                    png_destroy_read_struct(&png_ptr, &info_ptr, 0 // png_infopp_nullptr
                     );
                     fclose(fp);
                     /* If we get here, we had a problem reading the file */
-                    if (errorStr != NULL)
+                    if (errorStr != nullptr)
                         *errorStr = ITKCommon::PrintfToStdString("Error on png setjmp\n");
-                    return NULL;
+                    return nullptr;
                 }
                 /* Set up the input control if you are using standard C streams */
                 png_init_io(png_ptr, fp);
@@ -233,7 +233,7 @@ namespace ITKExtension
                  */
                 // png_set_expand(
                 // PNG_TRANSFORM_SWAP_ENDIAN -- PNG_TRANSFORM_IDENTITY
-                png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_SWAP_ENDIAN, 0 // png_voidp_NULL
+                png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_SWAP_ENDIAN, 0 // png_voidp_nullptr
                 );
                 /* At this point you have read the entire image */
                 png_uint_32 width = png_get_image_width(png_ptr, info_ptr);
@@ -273,7 +273,7 @@ namespace ITKExtension
                     }
                 }
                 /* clean up after the read, and free any memory allocated - REQUIRED */
-                png_destroy_read_struct(&png_ptr, &info_ptr, 0 // png_infopp_NULL
+                png_destroy_read_struct(&png_ptr, &info_ptr, 0 // png_infopp_nullptr
                 );
                 /* close the file */
                 fclose(fp);
@@ -290,21 +290,21 @@ namespace ITKExtension
                 //   int bit_depth, color_type, interlace_type;
                 /* Create and initialize the png_struct with the desired error handler
                  * functions.  If you want to use the default stderr and longjump method,
-                 * you can supply NULL for the last three parameters.  We also supply the
+                 * you can supply nullptr for the last three parameters.  We also supply the
                  * the compiler header file version, so that we know if the application
                  * was compiled with a compatible version of the library.  REQUIRED
                  */
-                png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-                if (png_ptr == NULL)
+                png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+                if (png_ptr == nullptr)
                 {
-                    return (NULL);
+                    return (nullptr);
                 }
                 /* Allocate/initialize the memory for image information.  REQUIRED. */
                 info_ptr = png_create_info_struct(png_ptr);
-                if (info_ptr == NULL)
+                if (info_ptr == nullptr)
                 {
-                    png_destroy_read_struct(&png_ptr, NULL, NULL);
-                    return (NULL);
+                    png_destroy_read_struct(&png_ptr, nullptr, nullptr);
+                    return (nullptr);
                 }
                 /* Set error handling if you are using the setjmp/longjmp method (this is
                  * the normal method of doing things with libpng).  REQUIRED unless you
@@ -313,9 +313,9 @@ namespace ITKExtension
                 if (setjmp(png_jmpbuf(png_ptr)))
                 {
                     /* Free all of the memory associated with the png_ptr and info_ptr */
-                    png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+                    png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
                     /* If we get here, we had a problem reading the file */
-                    return (NULL);
+                    return (nullptr);
                 }
 
                 DataReadInput inputBuffer;
@@ -345,7 +345,7 @@ namespace ITKExtension
                  */
                 // png_set_expand(
                 // PNG_TRANSFORM_SWAP_ENDIAN -- PNG_TRANSFORM_IDENTITY
-                png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_SWAP_ENDIAN, NULL);
+                png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_SWAP_ENDIAN, nullptr);
                 /* At this point you have read the entire image */
                 png_uint_32 width = png_get_image_width(png_ptr, info_ptr);
                 png_uint_32 height = png_get_image_height(png_ptr, info_ptr);
@@ -382,7 +382,7 @@ namespace ITKExtension
                     }
                 }
                 /* clean up after the read, and free any memory allocated - REQUIRED */
-                png_destroy_read_struct(&png_ptr, &info_ptr, 0 // png_infopp_NULL
+                png_destroy_read_struct(&png_ptr, &info_ptr, 0 // png_infopp_nullptr
                 );
                 /* that's it */
                 return retorno;
@@ -395,29 +395,29 @@ namespace ITKExtension
                 png_structp png_ptr;
                 png_infop info_ptr;
 
-                png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-                if (png_ptr == NULL)
+                png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+                if (png_ptr == nullptr)
                 {
                     // error
                     *output_size = 0;
-                    return NULL;
+                    return nullptr;
                 }
                 info_ptr = png_create_info_struct(png_ptr);
-                if (info_ptr == NULL)
+                if (info_ptr == nullptr)
                 {
                     // error
-                    png_destroy_write_struct(&png_ptr, NULL);
+                    png_destroy_write_struct(&png_ptr, nullptr);
                     *output_size = 0;
-                    return NULL;
+                    return nullptr;
                 }
                 if (setjmp(png_jmpbuf(png_ptr)))
                 {
                     // error
                     png_destroy_write_struct(&png_ptr, &info_ptr);
                     *output_size = 0;
-                    return NULL;
+                    return nullptr;
                 }
-                png_set_write_fn(png_ptr, &output, user_write_data_vector, NULL);
+                png_set_write_fn(png_ptr, &output, user_write_data_vector, nullptr);
                 // png_init_io(png_ptr, fp);
                 int colorType;
                 switch (chann)
@@ -437,7 +437,7 @@ namespace ITKExtension
                 default:
                     png_destroy_write_struct(&png_ptr, &info_ptr);
                     *output_size = 0;
-                    return NULL; // error
+                    return nullptr; // error
                 }
                 png_set_IHDR(png_ptr, info_ptr, w, h,
                              8,                            // bitdepth
@@ -473,7 +473,7 @@ namespace ITKExtension
                     return;
                 ITKCommon::Memory::free(buff);
                 // delete[]buff;
-                buff = NULL;
+                buff = nullptr;
             }
             //----------------------------------------------------------------------------------
 

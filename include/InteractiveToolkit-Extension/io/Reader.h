@@ -23,7 +23,7 @@ namespace ITKExtension
         public:
             Reader()
             {
-                directStreamIn = NULL;
+                directStreamIn = nullptr;
             }
 
             void close()
@@ -39,7 +39,7 @@ namespace ITKExtension
 
             void readRaw(void *data, size_t size)
             {
-                if (directStreamIn != NULL)
+                if (directStreamIn != nullptr)
                 {
                     size_t readed = fread(data, sizeof(uint8_t), size, directStreamIn);
 
@@ -61,9 +61,9 @@ namespace ITKExtension
                     buffer.resize(0);
             }
 
-            bool readFromFile(const char *filename, bool compressed = true, std::string *errorStr = NULL)
+            bool readFromFile(const char *filename, bool compressed = true, std::string *errorStr = nullptr)
             {
-                ON_COND_SET_ERRORSTR_RETURN(directStreamIn != NULL, false, "directStreamIn is set.\n");
+                ON_COND_SET_ERRORSTR_RETURN(directStreamIn != nullptr, false, "directStreamIn is set.\n");
 
                 if (!ITKCommon::FileSystem::File::FromPath(filename).readContentToVector(&buffer, errorStr))
                     return false;
@@ -107,9 +107,9 @@ namespace ITKExtension
                 return true;
             }
 
-            bool readFromBuffer(const Platform::ObjectBuffer &objectBuffer, bool compressed = true, std::string *errorStr = NULL)
+            bool readFromBuffer(const Platform::ObjectBuffer &objectBuffer, bool compressed = true, std::string *errorStr = nullptr)
             {
-                ON_COND_SET_ERRORSTR_RETURN(directStreamIn != NULL, false, "directStreamIn is set.\n");
+                ON_COND_SET_ERRORSTR_RETURN(directStreamIn != nullptr, false, "directStreamIn is set.\n");
 
                 if (compressed)
                 {

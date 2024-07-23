@@ -80,7 +80,7 @@ namespace ITKWrappers {
         /// \param filename input file to compute the MD5
         /// \return Hex String of the 16bytes MD hash
         ///
-        std::string getHexStringHashFromFile(const char* filename, std::string *errorStr = NULL);
+        std::string getHexStringHashFromFile(const char* filename, std::string *errorStr = nullptr);
 
         /// \brief Compute the MD5 hash bytes from a file.
         ///
@@ -105,7 +105,7 @@ namespace ITKWrappers {
         /// \param filename input file to compute the MD5
         /// \param[out] outBuffer the 16 byte output buffer
         ///
-        bool get16bytesHashFromFile(const char* filename, uint8_t outBuffer[16], std::string *errorStr = NULL);
+        bool get16bytesHashFromFile(const char* filename, uint8_t outBuffer[16], std::string *errorStr = nullptr);
 
         /// \brief Converts the 16bytes representation to a 32 character string.
         ///

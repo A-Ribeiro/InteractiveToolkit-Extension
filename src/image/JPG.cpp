@@ -66,7 +66,7 @@ namespace ITKExtension
             char *readJPG(const char *filename, int *w, int *h, int *chann, int *pixel_depth, bool invertY, float *gamma, std::string *errorStr)
             {
 
-                char *result = NULL;
+                char *result = nullptr;
 
                 /* This struct contains the JPEG decompression parameters and pointers to
                  * working space (which is allocated as needed by the JPEG library).
@@ -92,7 +92,7 @@ namespace ITKExtension
                 if (!infile)
                 {
                     fprintf(stderr, "can't open %s\n", filename);
-                    return NULL;
+                    return nullptr;
                 }
 
                 /* Step 1: allocate and initialize JPEG decompression object */
@@ -109,13 +109,13 @@ namespace ITKExtension
                     jpeg_destroy_decompress(&cinfo);
                     fclose(infile);
 
-                    if (result != NULL)
+                    if (result != nullptr)
                         ITKCommon::Memory::free(result);
                     // delete[] result;
 
-                    if (errorStr != NULL)
+                    if (errorStr != nullptr)
                         *errorStr = "JPG Signaled an Error.\n";
-                    return NULL;
+                    return nullptr;
                 }
                 /* Now we can initialize the JPEG decompression object. */
                 jpeg_create_decompress(&cinfo);
@@ -163,7 +163,7 @@ namespace ITKExtension
                 *h = cinfo.output_height;
                 *chann = cinfo.output_components;
                 *pixel_depth = 8;
-                if (gamma != NULL)
+                if (gamma != nullptr)
                     *gamma = (float)cinfo.output_gamma;
 
                 /* Step 6: while (scan lines remain to be read) */
@@ -279,7 +279,7 @@ namespace ITKExtension
                     cinfo.in_color_space = JCS_GRAYSCALE;
                 else
                 {
-                    if (errorStr != NULL)
+                    if (errorStr != nullptr)
                         *errorStr = ITKCommon::PrintfToStdString("JPEG invalid number of channels: %i\n", chann);
                     fprintf(stderr, "JPEG invalid number of channels: %i\n", chann);
                     return false;
@@ -342,7 +342,7 @@ namespace ITKExtension
             char *readJPGFromMemory(const char *input_buffer, int input_buffer_size, int *w, int *h, int *chann, int *pixel_depth, bool invertY, float *gamma)
             {
 
-                char *result = NULL;
+                char *result = nullptr;
 
                 /* This struct contains the JPEG decompression parameters and pointers to
                  * working space (which is allocated as needed by the JPEG library).
@@ -363,7 +363,7 @@ namespace ITKExtension
                  * requires it in order to read binary files.
                  */
 
-                // if ((infile = fopen(filename, "rb")) == NULL) {
+                // if ((infile = fopen(filename, "rb")) == nullptr) {
                 // fprintf(stderr, "can't open %s\n", filename);
                 // return 0;
                 //}
@@ -382,11 +382,11 @@ namespace ITKExtension
                     jpeg_destroy_decompress(&cinfo);
                     // fclose(infile);
 
-                    if (result != NULL)
+                    if (result != nullptr)
                         ITKCommon::Memory::free(result);
                     // delete[] result;
 
-                    return NULL;
+                    return nullptr;
                 }
                 /* Now we can initialize the JPEG decompression object. */
                 jpeg_create_decompress(&cinfo);
@@ -433,7 +433,7 @@ namespace ITKExtension
                 *h = cinfo.output_height;
                 *chann = cinfo.output_components;
                 *pixel_depth = 8;
-                if (gamma != NULL)
+                if (gamma != nullptr)
                     *gamma = (float)cinfo.output_gamma;
 
                 /* Step 6: while (scan lines remain to be read) */
@@ -527,7 +527,7 @@ namespace ITKExtension
                  * VERY IMPORTANT: use "b" option to fopen() if you are on a machine that
                  * requires it in order to write binary files.
                  */
-                // if ((outfile = fopen(file_name, "wb")) == NULL)
+                // if ((outfile = fopen(file_name, "wb")) == nullptr)
                 // {
                 //     fprintf(stderr, "can't open %s\n", file_name);
                 //     exit(1);
@@ -538,7 +538,7 @@ namespace ITKExtension
                 // unsigned char *first_prt = result_buff.data();
                 //result_size = 4096;
                 //unsigned char *initial_buffer = (unsigned char *) malloc(result_size);
-                unsigned char *result_ptr = NULL;// = initial_buffer;
+                unsigned char *result_ptr = nullptr;// = initial_buffer;
                 jpeg_mem_dest(&cinfo,
                               &result_ptr,
                               &result_size);
@@ -627,7 +627,7 @@ namespace ITKExtension
                     return;
                 ITKCommon::Memory::free(buff);
                 // delete[]buff;
-                buff = NULL;
+                buff = nullptr;
             }
             //----------------------------------------------------------------------------------
 

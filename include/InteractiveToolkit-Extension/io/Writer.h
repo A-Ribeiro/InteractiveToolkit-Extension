@@ -22,7 +22,7 @@ namespace ITKExtension
         public:
             Writer()
             {
-                directStreamOut = NULL;
+                directStreamOut = nullptr;
             }
 
             void setDirectStreamOut(FILE *_file_descriptor)
@@ -32,7 +32,7 @@ namespace ITKExtension
 
             void reset()
             {
-                if (directStreamOut != NULL)
+                if (directStreamOut != nullptr)
                     return;
                 // buffer.clear();
                 //  force deallocating writing buffer
@@ -41,7 +41,7 @@ namespace ITKExtension
 
             void writeRaw(const void *data, size_t size)
             {
-                if (directStreamOut != NULL)
+                if (directStreamOut != nullptr)
                 {
                     size_t written = fwrite(data, sizeof(uint8_t), size, directStreamOut);
                     ITK_ABORT(written != size, "Error to write to stream write size and written size mismatch.");
@@ -52,9 +52,9 @@ namespace ITKExtension
                 memcpy(&buffer[startWrite], data, size);
             }
 
-            bool writeToFile(const char *filename, bool compress = true, std::string *errorStr = NULL)
+            bool writeToFile(const char *filename, bool compress = true, std::string *errorStr = nullptr)
             {
-                ON_COND_SET_ERRORSTR_RETURN(directStreamOut != NULL, false, "directStreamOut is set.\n");
+                ON_COND_SET_ERRORSTR_RETURN(directStreamOut != nullptr, false, "directStreamOut is set.\n");
 
                 if (compress)
                 {
@@ -69,7 +69,7 @@ namespace ITKExtension
                         return false;
 
                     // FILE *out = fopen(filename, "wb");
-                    // if (out != NULL)
+                    // if (out != nullptr)
                     // {
                     //     if (output_buffer.size > 0)
                     //         fwrite(output_buffer.data, sizeof(uint8_t), output_buffer.size, out);
@@ -82,7 +82,7 @@ namespace ITKExtension
                 }
 
                 // FILE *out = fopen(filename, "wb");
-                // if (out != NULL)
+                // if (out != nullptr)
                 // {
                 //     if (buffer.size() > 0)
                 //         fwrite(buffer.data(), sizeof(uint8_t), buffer.size(), out);
@@ -95,9 +95,9 @@ namespace ITKExtension
                 return true;
             }
 
-            bool writeToBuffer(Platform::ObjectBuffer *objectBuffer, bool compress = true, std::string *errorStr = NULL)
+            bool writeToBuffer(Platform::ObjectBuffer *objectBuffer, bool compress = true, std::string *errorStr = nullptr)
             {
-                ON_COND_SET_ERRORSTR_RETURN(directStreamOut != NULL, false, "directStreamOut is set.\n");
+                ON_COND_SET_ERRORSTR_RETURN(directStreamOut != nullptr, false, "directStreamOut is set.\n");
 
                 if (compress)
                 {

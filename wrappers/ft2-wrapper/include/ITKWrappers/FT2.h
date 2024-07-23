@@ -49,7 +49,7 @@ namespace ITKWrappers {
     ///
     /// for ( int i=0 ; i < char_count ; i++ ) {
     ///     FT2Glyph *glyph = ft2.generateGlyph(char_array[i]);
-    ///     if (glyph == NULL) {
+    ///     if (glyph == nullptr) {
     ///         printf("Glyph not found: %u\n", char_array[i]);
     ///         continue;
     ///     }
@@ -140,7 +140,7 @@ namespace ITKWrappers {
         ///
         /// You can use the stroke bitmap to render the outline.
         ///
-        /// After call this method, if it returns any value != NULL then you need to<br />
+        /// After call this method, if it returns any value != nullptr then you need to<br />
         /// release it with #releaseGlyph method.
         /// 
         /// \author Alessandro Ribeiro

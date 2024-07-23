@@ -22,9 +22,9 @@ namespace ITKExtension
             for (size_t i = 0; i < glyphs.size(); i++)
                 delete glyphs[i];
             glyphs.clear();
-            if (bitmap != NULL)
+            if (bitmap != nullptr)
                 ITKExtension::Image::PNG::closePNG(bitmap);
-            bitmap = NULL;
+            bitmap = nullptr;
         }
 
         void FontReader::readGlyphTable(ITKExtension::IO::AdvancedReader *reader)
@@ -58,7 +58,7 @@ namespace ITKExtension
             int w, h, chann, pixel_depth;
             bitmap = ITKExtension::Image::PNG::readPNGFromMemory((char *)pngBuffer, pngBufferSize, &w, &h, &chann, &pixel_depth);
 
-            ITK_ABORT(bitmap == NULL, "Error to load image from font definition.\n");
+            ITK_ABORT(bitmap == nullptr, "Error to load image from font definition.\n");
             ITK_ABORT(w != bitmapSize.w, "Missmatch font resolution reference.\n");
             ITK_ABORT(h != bitmapSize.h, "Missmatch font resolution reference.\n");
             ITK_ABORT(chann != 1, "FontBitmap not grayscale.\n");
@@ -67,7 +67,7 @@ namespace ITKExtension
 
         FontReader::FontReader()
         {
-            bitmap = NULL;
+            bitmap = nullptr;
         }
 
         FontReader::~FontReader()
@@ -109,7 +109,7 @@ namespace ITKExtension
                 int w, h, chann, pixel_depth;
                 bitmap = ITKExtension::Image::PNG::readPNG(png_grayscale_8bits.c_str(), &w, &h, &chann, &pixel_depth);
 
-                ITK_ABORT(bitmap == NULL, "Error to load image from font definition.\n");
+                ITK_ABORT(bitmap == nullptr, "Error to load image from font definition.\n");
                 ITK_ABORT(w != bitmapSize.w, "Missmatch font resolution reference.\n");
                 ITK_ABORT(h != bitmapSize.h, "Missmatch font resolution reference.\n");
                 ITK_ABORT(chann != 1, "FontBitmap not grayscale.\n");

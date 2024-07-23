@@ -28,7 +28,7 @@ namespace ITKWrappers
             if (invert)
                 normalRect.y = normalRect.h - normalRect.y - 1;
 
-            if (bitmapGrayNormal != NULL)
+            if (bitmapGrayNormal != nullptr)
                 delete[] bitmapGrayNormal;
 
             bitmapGrayNormal = new uint8_t[normalRect.w * normalRect.h];
@@ -44,7 +44,7 @@ namespace ITKWrappers
                 memcpy(bitmapGrayNormal, src, normalRect.w * normalRect.h);
 
             // generate RGBA
-            if (bitmapRGBANormal != NULL)
+            if (bitmapRGBANormal != nullptr)
                 delete[] bitmapRGBANormal;
             bitmapRGBANormal = new uint8_t[normalRect.w * normalRect.h * 4];
             for (int y = 0; y < normalRect.h; y++)
@@ -73,7 +73,7 @@ namespace ITKWrappers
             if (invert)
                 strokeRect.y = strokeRect.h - strokeRect.y - 1;
 
-            if (bitmapGrayStroke != NULL)
+            if (bitmapGrayStroke != nullptr)
                 delete[] bitmapGrayStroke;
 
             bitmapGrayStroke = new uint8_t[strokeRect.w * strokeRect.h];
@@ -89,7 +89,7 @@ namespace ITKWrappers
                 memcpy(bitmapGrayStroke, src, strokeRect.w * strokeRect.h);
 
             // generate RGBA
-            if (bitmapRGBAStroke != NULL)
+            if (bitmapRGBAStroke != nullptr)
                 delete[] bitmapRGBAStroke;
             bitmapRGBAStroke = new uint8_t[strokeRect.w * strokeRect.h * 4];
             for (int y = 0; y < strokeRect.h; y++)
@@ -126,27 +126,27 @@ namespace ITKWrappers
 
         FT2Glyph::FT2Glyph()
         {
-            bitmapGrayNormal = NULL;
-            bitmapGrayStroke = NULL;
-            bitmapRGBANormal = NULL;
-            bitmapRGBAStroke = NULL;
+            bitmapGrayNormal = nullptr;
+            bitmapGrayStroke = nullptr;
+            bitmapRGBANormal = nullptr;
+            bitmapRGBAStroke = nullptr;
         }
 
         FT2Glyph::~FT2Glyph()
         {
-            if (bitmapGrayNormal != NULL)
+            if (bitmapGrayNormal != nullptr)
                 delete[] bitmapGrayNormal;
-            if (bitmapGrayStroke != NULL)
+            if (bitmapGrayStroke != nullptr)
                 delete[] bitmapGrayStroke;
-            if (bitmapRGBANormal != NULL)
+            if (bitmapRGBANormal != nullptr)
                 delete[] bitmapRGBANormal;
-            if (bitmapRGBAStroke != NULL)
+            if (bitmapRGBAStroke != nullptr)
                 delete[] bitmapRGBAStroke;
 
-            bitmapGrayNormal = NULL;
-            bitmapGrayStroke = NULL;
-            bitmapRGBANormal = NULL;
-            bitmapRGBAStroke = NULL;
+            bitmapGrayNormal = nullptr;
+            bitmapGrayStroke = nullptr;
+            bitmapRGBANormal = nullptr;
+            bitmapRGBAStroke = nullptr;
         }
     }
 }

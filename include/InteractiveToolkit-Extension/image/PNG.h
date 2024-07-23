@@ -22,7 +22,7 @@ namespace ITKExtension
             /// char*bufferChar;
             ///
             /// bufferChar = PNGHelper::readPNG( "file.png", &w, &h, &chn, &depth);
-            /// if (bufferChar != NULL) {
+            /// if (bufferChar != nullptr) {
             ///     ...
             ///     PNGHelper::closePNG(bufferChar);
             /// }
@@ -35,9 +35,9 @@ namespace ITKExtension
             /// \param[out] chann channels
             /// \param[out] pixel_depth pixel depth
             /// \param invertY should invert the loaded image vertically
-            /// \return The raw image buffer or NULL if cannot open file.
+            /// \return The raw image buffer or nullptr if cannot open file.
             ///
-            char *readPNG(const char *file_name, int *w, int *h, int *chann, int *pixel_depth, bool invertY = false, std::string *errorStr = NULL);
+            char *readPNG(const char *file_name, int *w, int *h, int *chann, int *pixel_depth, bool invertY = false, std::string *errorStr = nullptr);
 
             /// \brief Write PNG format to file
             ///
@@ -69,7 +69,7 @@ namespace ITKExtension
             /// \param buffer input image buffer
             /// \param invertY should invert the loaded image vertically
             ///
-            bool writePNG(const char *file_name, int w, int h, int chann, char *buffer, bool invertY = false, std::string *errorStr = NULL);
+            bool writePNG(const char *file_name, int w, int h, int chann, char *buffer, bool invertY = false, std::string *errorStr = nullptr);
 
             /// \brief Closes the image buffer after a read or memory write.
             ///
@@ -83,7 +83,7 @@ namespace ITKExtension
             /// char*bufferChar;
             ///
             /// bufferChar = PNGHelper::readPNG( "file.png", &w, &h, &chn, &depth);
-            /// if (bufferChar != NULL) {
+            /// if (bufferChar != nullptr) {
             ///     ...
             ///     PNGHelper::closePNG(bufferChar);
             /// }
@@ -109,7 +109,7 @@ namespace ITKExtension
             /// char*bufferChar;
             ///
             /// bufferChar = PNGHelper::readPNGFromMemory( input_buffer, input_buffer_size, &w, &h, &chn, &depth);
-            /// if (bufferChar != NULL) {
+            /// if (bufferChar != nullptr) {
             ///     ...
             ///     PNGHelper::closePNG(bufferChar);
             /// }
@@ -123,7 +123,7 @@ namespace ITKExtension
             /// \param[out] chann channels
             /// \param[out] pixel_depth pixel depth
             /// \param invertY should invert the loaded image vertically
-            /// \return The raw image buffer or NULL if cannot open file.
+            /// \return The raw image buffer or nullptr if cannot open file.
             ///
             char *readPNGFromMemory(const char *input_buffer, int input_buffer_size, int *w, int *h, int *chann, int *pixel_depth, bool invertY = false);
 

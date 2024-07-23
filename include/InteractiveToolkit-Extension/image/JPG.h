@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdlib.h> // NULL
+#include <stdlib.h> // nullptr
 #include <string>
 
 namespace ITKExtension
@@ -22,7 +22,7 @@ namespace ITKExtension
             /// char*bufferChar;
             ///
             /// bufferChar = JPGHelper::readJPG( "file.jpg", &w, &h, &chn, &depth);
-            /// if (bufferChar != NULL) {
+            /// if (bufferChar != nullptr) {
             ///     ...
             ///     JPGHelper::closeJPG(bufferChar);
             /// }
@@ -36,11 +36,11 @@ namespace ITKExtension
             /// \param[out] pixel_depth pixel depth
             /// \param invertY should invert the loaded image vertically
             /// \param[out] gamma the gamma value stored in JPG file
-            /// \return The raw image buffer or NULL if cannot open file.
+            /// \return The raw image buffer or nullptr if cannot open file.
             ///
-            char *readJPG(const char *file_name, int *w, int *h, int *chann, int *pixel_depth, bool invertY = false, float *gamma = NULL, std::string *errorStr = NULL);
+            char *readJPG(const char *file_name, int *w, int *h, int *chann, int *pixel_depth, bool invertY = false, float *gamma = nullptr, std::string *errorStr = nullptr);
 
-            bool writeJPG(const char *file_name, int w, int h, int chann, char *buffer, int quality = 90, bool invertY = false, std::string *errorStr = NULL);
+            bool writeJPG(const char *file_name, int w, int h, int chann, char *buffer, int quality = 90, bool invertY = false, std::string *errorStr = nullptr);
 
 
             /// \brief Read JPG format from memory stream
@@ -58,7 +58,7 @@ namespace ITKExtension
             /// char*bufferChar;
             ///
             /// bufferChar = JPGHelper::readJPGFromMemory( input_buffer, input_buffer_size, &w, &h, &chn, &depth);
-            /// if (bufferChar != NULL) {
+            /// if (bufferChar != nullptr) {
             ///     ...
             ///     JPGHelper::closeJPG(bufferChar);
             /// }
@@ -73,9 +73,9 @@ namespace ITKExtension
             /// \param[out] pixel_depth pixel depth
             /// \param invertY should invert the loaded image vertically
             /// \param[out] gamma the gamma value stored in JPG file
-            /// \return The raw image buffer or NULL if cannot open file.
+            /// \return The raw image buffer or nullptr if cannot open file.
             ///
-            char *readJPGFromMemory(const char *input_buffer, int input_buffer_size, int *w, int *h, int *chann, int *pixel_depth, bool invertY = false, float *gamma = NULL);
+            char *readJPGFromMemory(const char *input_buffer, int input_buffer_size, int *w, int *h, int *chann, int *pixel_depth, bool invertY = false, float *gamma = nullptr);
 
             char *writeJPGToMemory(int *output_size, int w, int h, int chann, char *buffer, int quality = 90, bool invertY = false);
 
@@ -92,7 +92,7 @@ namespace ITKExtension
             /// char*bufferChar;
             ///
             /// bufferChar = JPGHelper::readJPG( "file.jpg", &w, &h, &chn, &depth);
-            /// if (bufferChar != NULL) {
+            /// if (bufferChar != nullptr) {
             ///     ...
             ///     JPGHelper::closeJPG(bufferChar);
             /// }

@@ -33,21 +33,21 @@ namespace ITKExtension
 
         AtlasElement::~AtlasElement()
         {
-            if (buffer != NULL)
+            if (buffer != nullptr)
                 delete[] buffer;
         }
 
         AtlasElement::AtlasElement()
         {
-            buffer = NULL;
+            buffer = nullptr;
         }
 
         void AtlasElement::read(ITKExtension::IO::AdvancedReader *reader)
         {
-            if (buffer != NULL)
+            if (buffer != nullptr)
             {
                 delete[] buffer;
-                buffer = NULL;
+                buffer = nullptr;
             }
             name = reader->readString();
             rect.read(reader);
