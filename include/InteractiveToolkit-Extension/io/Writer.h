@@ -184,7 +184,7 @@ namespace ITKExtension
 
             void writeBuffer(const Platform::ObjectBuffer &buffer)
             {
-                writeUInt32(buffer.size);
+                writeUInt32((uint32_t)buffer.size);
                 if (buffer.size > 0)
                     writeRaw(buffer.data, buffer.size);
             }
