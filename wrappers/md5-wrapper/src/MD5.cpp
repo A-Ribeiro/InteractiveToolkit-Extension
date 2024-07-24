@@ -41,7 +41,7 @@ namespace ITKWrappers
                 if (offset + input_buff_size > size){
                     input_buff_size = size - offset;
                 }
-                md5_append(&state, (const md5_byte_t *)&buffer[offset], input_buff_size);
+                md5_append(&state, (const md5_byte_t *)&buffer[offset], (int)input_buff_size);
                 offset += input_buff_size;
             }
             
@@ -63,9 +63,10 @@ namespace ITKWrappers
             FILE *file = ITKCommon::FileSystem::File::fopen(filename, "rb", errorStr);
             if (!file)
                 return false;
-            unsigned char buffer[1024];
+            const int input_buff_size = 64*1024;// 64 KB
+            unsigned char buffer[input_buff_size];
             size_t len;
-            while ((len = fread(buffer, sizeof(unsigned char), 1024, file)))
+            while ((len = fread(buffer, sizeof(unsigned char), input_buff_size, file)))
                 md5_append(&state, (const md5_byte_t *)buffer, (int)len);
             fclose(file);
             md5_finish(&state, (md5_byte_t *)outBuffer);
