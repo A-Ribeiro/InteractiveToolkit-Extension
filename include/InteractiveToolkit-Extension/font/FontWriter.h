@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <map>
+#include <unordered_map>
 
 #include <InteractiveToolkit-Extension/atlas/Atlas.h>
 #include <InteractiveToolkit-Extension/font/FontWriterGlyph.h>
