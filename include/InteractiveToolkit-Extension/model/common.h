@@ -19,10 +19,10 @@ namespace ITKExtension
         }
 
         template <typename T>
-        void WriteCustomStringMap(ITKExtension::IO::AdvancedWriter *writer, const std::map<std::string, T> &v)
+        void WriteCustomStringMap(ITKExtension::IO::AdvancedWriter *writer, const std::unordered_map<std::string, T> &v)
         {
             writer->writeUInt32((uint32_t)v.size());
-            typename std::map<std::string, T>::const_iterator it;
+            typename std::unordered_map<std::string, T>::const_iterator it;
             for (it = v.begin(); it != v.end(); it++)
             {
                 writeString(it->first);
@@ -39,10 +39,10 @@ namespace ITKExtension
         }
 
         template <typename T>
-        void ReadCustomStringMap(ITKExtension::IO::AdvancedReader *reader, std::map<std::string, T> *result)
+        void ReadCustomStringMap(ITKExtension::IO::AdvancedReader *reader, std::unordered_map<std::string, T> *result)
         {
             uint32_t size = reader->readUInt32();
-            // std::map<std::string, T> result;
+            // std::unordered_map<std::string, T> result;
             (*result).clear();
             for (int i = 0; i < size; i++)
             {

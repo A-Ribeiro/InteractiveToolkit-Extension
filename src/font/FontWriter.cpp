@@ -22,7 +22,7 @@ namespace ITKExtension
 
         FontWriter::~FontWriter()
         {
-            std::map<uint32_t, FontWriterGlyph *>::iterator it;
+            std::unordered_map<uint32_t, FontWriterGlyph *>::iterator it;
             for (it = glyphmap.begin(); it != glyphmap.end(); it++)
                 delete it->second;
             glyphmap.clear();
@@ -78,7 +78,7 @@ namespace ITKExtension
             writer->writeUInt32(atlas->textureResolution.h);
 
             writer->writeUInt16((uint16_t)glyphmap.size());
-            std::map<uint32_t, FontWriterGlyph *>::iterator it;
+            std::unordered_map<uint32_t, FontWriterGlyph *>::iterator it;
             for (it = glyphmap.begin(); it != glyphmap.end(); it++)
             {
                 writer->writeUInt32(it->first); // charcode

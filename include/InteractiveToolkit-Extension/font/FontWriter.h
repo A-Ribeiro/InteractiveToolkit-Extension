@@ -77,7 +77,7 @@ namespace ITKExtension
         public:
             ITKExtension::Atlas::Atlas *atlas; ///< reference to sprite #Atlas of this font
 
-            std::map<uint32_t, FontWriterGlyph *> glyphmap; ///< the glyphmap (char code to FontWriterGlyph mapping)
+            std::unordered_map<uint32_t, FontWriterGlyph *> glyphmap; ///< the glyphmap (char code to FontWriterGlyph mapping)
 
             float space_width;        ///< white space horizontal increment
             float new_line_height;    ///< new line height

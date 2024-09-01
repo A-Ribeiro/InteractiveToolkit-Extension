@@ -29,7 +29,7 @@ namespace ITKExtension
         };
 
         template <class _T1, class _T2>
-        struct custom_stl_is_std_map<std::map<_T1, _T2>>
+        struct custom_stl_is_std_map<std::unordered_map<_T1, _T2>>
         {
             static constexpr bool value = true;
             using keyType = _T1;

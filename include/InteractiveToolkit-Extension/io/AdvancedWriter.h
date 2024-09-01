@@ -20,7 +20,7 @@ namespace ITKExtension
 
             // map
             template <typename _map_key, typename _map_type>
-            ITK_INLINE void writeMap(const std::map<_map_key, _map_type> &v)
+            ITK_INLINE void writeMap(const std::unordered_map<_map_key, _map_type> &v)
             {
                 writeUInt32((uint32_t)v.size());
                 for (const auto &it : v)
