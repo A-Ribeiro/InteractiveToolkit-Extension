@@ -260,3 +260,17 @@ endmacro()
 #     #set_property(DIRECTORY ${CMAKE_CURRENT_SRC_DIR} APPEND PROPERTY COMPILE_OPTIONS ${compile_opts})
 #     set_property(DIRECTORY ${CMAKE_CURRENT_SRC_DIR} PROPERTY COMPILE_OPTIONS ${compile_opts})
 # endmacro()
+
+macro(tool_replace_in_file FILE SEARCH REPLACE)
+
+    set(StringReplaceSource "${SEARCH}")
+    set(StringReplaceTarget "${REPLACE}")
+
+    file(READ "${FILE}" AUX)
+    string(FIND "${AUX}" "${StringReplaceTarget}" matchres)
+    if(${matchres} EQUAL -1)
+        string(REPLACE "${StringReplaceSource}" "${StringReplaceTarget}" output "${AUX}")
+        file(WRITE "${FILE}" "${output}")
+    endif ()
+
+endmacro()
