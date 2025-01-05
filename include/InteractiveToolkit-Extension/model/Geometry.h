@@ -8,6 +8,7 @@ namespace ITKExtension
 {
     namespace Model
     {
+        typedef uint32_t BitMask;
 
         // enum VertexFormat {
         const uint32_t CONTAINS_POS = (1 << 0);      // float3 position
@@ -52,7 +53,7 @@ namespace ITKExtension
             std::string name;
 
             // VertexFormat: CONTAINS_POS | CONTAINS_NORMAL | ...
-            uint32_t format;
+            BitMask format;
             uint32_t vertexCount;
             uint32_t indiceCountPerFace; // 1 - points, 2 - lines, 3 - triangles, 4 - quads
 
