@@ -29,7 +29,7 @@ if(LIB_ZLIB STREQUAL FromSource)
     set(LIBS_REPOSITORY_URL "https://github.com/A-Ribeiro/public_libs/raw/main")
     tool_download_lib_package(${LIBS_REPOSITORY_URL} zlib)
 
-    set(SKIP_INSTALL_ALL ON)
+    set(SKIP_INSTALL_ALL OFF)
     tool_include_lib(zlib)
     #unset(SKIP_INSTALL_ALL)
 
