@@ -534,7 +534,7 @@ namespace ITKExtension
                 // }
                 // jpeg_stdio_dest(&cinfo, outfile);
                 // std::vector<unsigned char> result_buff(w * h * chann);
-                size_t result_size = 0;
+                unsigned long result_size = 0;
                 // unsigned char *first_prt = result_buff.data();
                 //result_size = 4096;
                 //unsigned char *initial_buffer = (unsigned char *) malloc(result_size);
