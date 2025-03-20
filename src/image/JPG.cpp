@@ -48,10 +48,10 @@ namespace ITKExtension
 				jmp_buf setjmp_buffer; /* for return to caller */
 			};
 
-			typedef struct my_error_mgr* my_error_ptr;
+			typedef struct my_error_mgr *my_error_ptr;
 
 			METHODDEF(void)
-				my_error_exit(j_common_ptr cinfo)
+			my_error_exit(j_common_ptr cinfo)
 			{
 				/* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
 				my_error_ptr myerr = (my_error_ptr)cinfo->err;
@@ -64,10 +64,10 @@ namespace ITKExtension
 				longjmp(myerr->setjmp_buffer, 1);
 			}
 
-			char* readJPG(const char* filename, int* w, int* h, int* chann, int* pixel_depth, bool invertY, float* gamma, std::string* errorStr)
+			char *readJPG(const char *filename, int *w, int *h, int *chann, int *pixel_depth, bool invertY, float *gamma, std::string *errorStr)
 			{
 
-				char* result = nullptr;
+				char *result = nullptr;
 
 				/* This struct contains the JPEG decompression parameters and pointers to
 				 * working space (which is allocated as needed by the JPEG library).
@@ -79,9 +79,9 @@ namespace ITKExtension
 				 */
 				struct my_error_mgr jerr;
 				/* More stuff */
-				FILE* infile;      /* source file */
+				FILE *infile;	   /* source file */
 				JSAMPARRAY buffer; /* Output row buffer */
-				int row_stride;    /* physical row width in output buffer */
+				int row_stride;	   /* physical row width in output buffer */
 
 				/* In this example we want to open the input file before doing anything else,
 				 * so that the setjmp() error recovery below can assume the file is open.
@@ -134,32 +134,32 @@ namespace ITKExtension
 				 * See libjpeg.txt for more info.
 				 */
 
-				 /* Step 4: set parameters for decompression */
+				/* Step 4: set parameters for decompression */
 
-				 /* In this example, we don't need to change any of the defaults set by
-				  * jpeg_read_header(), so we do nothing here.
-				  */
+				/* In this example, we don't need to change any of the defaults set by
+				 * jpeg_read_header(), so we do nothing here.
+				 */
 
-				  /* Step 5: Start decompressor */
+				/* Step 5: Start decompressor */
 
 				(void)jpeg_start_decompress(&cinfo);
 				/* We can ignore the return value since suspension is not possible
 				 * with the stdio data source.
 				 */
 
-				 /* We may need to do some setup of our own at this point before reading
-				  * the data.  After jpeg_start_decompress() we have the correct scaled
-				  * output image dimensions available, as well as the output colormap
-				  * if we asked for color quantization.
-				  * In this example, we need to make an output work buffer of the right size.
-				  */
-				  /* JSAMPLEs per row in output buffer */
+				/* We may need to do some setup of our own at this point before reading
+				 * the data.  After jpeg_start_decompress() we have the correct scaled
+				 * output image dimensions available, as well as the output colormap
+				 * if we asked for color quantization.
+				 * In this example, we need to make an output work buffer of the right size.
+				 */
+				/* JSAMPLEs per row in output buffer */
 				row_stride = cinfo.output_width * cinfo.output_components;
 				/* Make a one-row-high sample array that will go away when done with image */
 				buffer = (*cinfo.mem->alloc_sarray)((j_common_ptr)&cinfo, JPOOL_IMAGE, row_stride, 1);
 
 				// result = new char[cinfo.output_width * cinfo.output_height * cinfo.output_components];
-				result = (char*)ITKCommon::Memory::malloc(cinfo.output_width * cinfo.output_height * cinfo.output_components);
+				result = (char *)ITKCommon::Memory::malloc(cinfo.output_width * cinfo.output_height * cinfo.output_components);
 				*w = cinfo.output_width;
 				*h = cinfo.output_height;
 				*chann = cinfo.output_components;
@@ -195,9 +195,9 @@ namespace ITKExtension
 				 * with the stdio data source.
 				 */
 
-				 /* Step 8: Release JPEG decompression object */
+				/* Step 8: Release JPEG decompression object */
 
-				 /* This is an important step since it will release a good deal of memory. */
+				/* This is an important step since it will release a good deal of memory. */
 				jpeg_destroy_decompress(&cinfo);
 
 				/* After finish_decompress, we can close the input file.
@@ -211,12 +211,12 @@ namespace ITKExtension
 				 * warnings occurred (test whether jerr.pub.num_warnings is nonzero).
 				 */
 
-				 /* And we're done! */
+				/* And we're done! */
 
 				return result;
 			}
 
-			bool writeJPG(const char* file_name, int w, int h, int chann, char* buffer, int quality, bool invertY, std::string* errorStr)
+			bool writeJPG(const char *file_name, int w, int h, int chann, char *buffer, int quality, bool invertY, std::string *errorStr)
 			{
 				/* This struct contains the JPEG compression parameters and pointers to
 				 * working space (which is allocated as needed by the JPEG library).
@@ -235,9 +235,9 @@ namespace ITKExtension
 				 */
 				struct jpeg_error_mgr jerr;
 				/* More stuff */
-				FILE* outfile;           /* target file */
+				FILE *outfile;			 /* target file */
 				JSAMPROW row_pointer[1]; /* pointer to JSAMPLE row[s] */
-				int row_stride;          /* physical row width in image buffer */
+				int row_stride;			 /* physical row width in image buffer */
 
 				/* Step 1: allocate and initialize JPEG compression object */
 
@@ -340,10 +340,10 @@ namespace ITKExtension
 				return true;
 			}
 
-			char* readJPGFromMemory(const char* input_buffer, int input_buffer_size, int* w, int* h, int* chann, int* pixel_depth, bool invertY, float* gamma)
+			char *readJPGFromMemory(const char *input_buffer, int input_buffer_size, int *w, int *h, int *chann, int *pixel_depth, bool invertY, float *gamma)
 			{
 
-				char* result = nullptr;
+				char *result = nullptr;
 
 				/* This struct contains the JPEG decompression parameters and pointers to
 				 * working space (which is allocated as needed by the JPEG library).
@@ -356,7 +356,7 @@ namespace ITKExtension
 				struct my_error_mgr jerr;
 				/* More stuff */
 				JSAMPARRAY buffer; /* Output row buffer */
-				int row_stride;    /* physical row width in output buffer */
+				int row_stride;	   /* physical row width in output buffer */
 
 				/* In this example we want to open the input file before doing anything else,
 				 * so that the setjmp() error recovery below can assume the file is open.
@@ -364,14 +364,14 @@ namespace ITKExtension
 				 * requires it in order to read binary files.
 				 */
 
-				 // if ((infile = fopen(filename, "rb")) == nullptr) {
-				 // fprintf(stderr, "can't open %s\n", filename);
-				 // return 0;
-				 //}
+				// if ((infile = fopen(filename, "rb")) == nullptr) {
+				// fprintf(stderr, "can't open %s\n", filename);
+				// return 0;
+				//}
 
-				 /* Step 1: allocate and initialize JPEG decompression object */
+				/* Step 1: allocate and initialize JPEG decompression object */
 
-				 /* We set up the normal JPEG error routines, then override error_exit. */
+				/* We set up the normal JPEG error routines, then override error_exit. */
 				cinfo.err = jpeg_std_error(&jerr.pub);
 				jerr.pub.error_exit = my_error_exit;
 				/* Establish the setjmp return context for my_error_exit to use. */
@@ -393,7 +393,7 @@ namespace ITKExtension
 				jpeg_create_decompress(&cinfo);
 
 				/* Step 2: specify data source (eg, a file) */
-				jpeg_mem_src(&cinfo, (unsigned char*)input_buffer, input_buffer_size);
+				jpeg_mem_src(&cinfo, (unsigned char *)input_buffer, input_buffer_size);
 
 				/* Step 3: read file parameters with jpeg_read_header() */
 
@@ -404,32 +404,32 @@ namespace ITKExtension
 				 * See libjpeg.txt for more info.
 				 */
 
-				 /* Step 4: set parameters for decompression */
+				/* Step 4: set parameters for decompression */
 
-				 /* In this example, we don't need to change any of the defaults set by
-				  * jpeg_read_header(), so we do nothing here.
-				  */
+				/* In this example, we don't need to change any of the defaults set by
+				 * jpeg_read_header(), so we do nothing here.
+				 */
 
-				  /* Step 5: Start decompressor */
+				/* Step 5: Start decompressor */
 
 				(void)jpeg_start_decompress(&cinfo);
 				/* We can ignore the return value since suspension is not possible
 				 * with the stdio data source.
 				 */
 
-				 /* We may need to do some setup of our own at this point before reading
-				  * the data.  After jpeg_start_decompress() we have the correct scaled
-				  * output image dimensions available, as well as the output colormap
-				  * if we asked for color quantization.
-				  * In this example, we need to make an output work buffer of the right size.
-				  */
-				  /* JSAMPLEs per row in output buffer */
+				/* We may need to do some setup of our own at this point before reading
+				 * the data.  After jpeg_start_decompress() we have the correct scaled
+				 * output image dimensions available, as well as the output colormap
+				 * if we asked for color quantization.
+				 * In this example, we need to make an output work buffer of the right size.
+				 */
+				/* JSAMPLEs per row in output buffer */
 				row_stride = cinfo.output_width * cinfo.output_components;
 				/* Make a one-row-high sample array that will go away when done with image */
 				buffer = (*cinfo.mem->alloc_sarray)((j_common_ptr)&cinfo, JPOOL_IMAGE, row_stride, 1);
 
 				// result = new char[cinfo.output_width * cinfo.output_height * cinfo.output_components];
-				result = (char*)ITKCommon::Memory::malloc(cinfo.output_width * cinfo.output_height * cinfo.output_components);
+				result = (char *)ITKCommon::Memory::malloc(cinfo.output_width * cinfo.output_height * cinfo.output_components);
 				*w = cinfo.output_width;
 				*h = cinfo.output_height;
 				*chann = cinfo.output_components;
@@ -465,9 +465,9 @@ namespace ITKExtension
 				 * with the stdio data source.
 				 */
 
-				 /* Step 8: Release JPEG decompression object */
+				/* Step 8: Release JPEG decompression object */
 
-				 /* This is an important step since it will release a good deal of memory. */
+				/* This is an important step since it will release a good deal of memory. */
 				jpeg_destroy_decompress(&cinfo);
 
 				/* After finish_decompress, we can close the input file.
@@ -475,18 +475,18 @@ namespace ITKExtension
 				 * so as to simplify the setjmp error logic above.  (Actually, I don't
 				 * think that jpeg_destroy can do an error exit, but why assume anything...)
 				 */
-				 // fclose(infile);
+				// fclose(infile);
 
-				 /* At this point you may want to check to see whether any corrupt-data
-				  * warnings occurred (test whether jerr.pub.num_warnings is nonzero).
-				  */
+				/* At this point you may want to check to see whether any corrupt-data
+				 * warnings occurred (test whether jerr.pub.num_warnings is nonzero).
+				 */
 
-				  /* And we're done! */
+				/* And we're done! */
 
 				return result;
 			}
 
-			char* writeJPGToMemory(int* output_size, int w, int h, int chann, char* buffer, int quality, bool invertY)
+			char *writeJPGToMemory(int *output_size, int w, int h, int chann, char *buffer, int quality, bool invertY)
 			{
 				/* This struct contains the JPEG compression parameters and pointers to
 				 * working space (which is allocated as needed by the JPEG library).
@@ -507,7 +507,7 @@ namespace ITKExtension
 				/* More stuff */
 				// FILE *outfile;           /* target file */
 				JSAMPROW row_pointer[1]; /* pointer to JSAMPLE row[s] */
-				int row_stride;          /* physical row width in image buffer */
+				int row_stride;			 /* physical row width in image buffer */
 
 				/* Step 1: allocate and initialize JPEG compression object */
 
@@ -528,31 +528,29 @@ namespace ITKExtension
 				 * VERY IMPORTANT: use "b" option to fopen() if you are on a machine that
 				 * requires it in order to write binary files.
 				 */
-				 // if ((outfile = fopen(file_name, "wb")) == nullptr)
-				 // {
-				 //     fprintf(stderr, "can't open %s\n", file_name);
-				 //     exit(1);
-				 // }
-				 // jpeg_stdio_dest(&cinfo, outfile);
-				 // std::vector<unsigned char> result_buff(w * h * chann);
+				// if ((outfile = fopen(file_name, "wb")) == nullptr)
+				// {
+				//     fprintf(stderr, "can't open %s\n", file_name);
+				//     exit(1);
+				// }
+				// jpeg_stdio_dest(&cinfo, outfile);
+				// std::vector<unsigned char> result_buff(w * h * chann);
 
-#if (JPEG_LIB_VERSION_MAJOR*100 + JPEG_LIB_VERSION_MINOR) >= 904 // check version 9.04
+#if JPEG_LIB_VERSION >= 90
 				size_t result_size = 0;
-#else
-#if UINTPTR_MAX == UINT64_MAX
-				size_t result_size = 0;
+#elif JPEG_LIB_VERSION >= 80
+				unsigned long result_size = 0;
 #else
 				unsigned long result_size = 0;
 #endif
-#endif
 
 				// unsigned char *first_prt = result_buff.data();
-				//result_size = 4096;
-				//unsigned char *initial_buffer = (unsigned char *) malloc(result_size);
-				unsigned char* result_ptr = nullptr;// = initial_buffer;
+				// result_size = 4096;
+				// unsigned char *initial_buffer = (unsigned char *) malloc(result_size);
+				unsigned char *result_ptr = nullptr; // = initial_buffer;
 				jpeg_mem_dest(&cinfo,
-					&result_ptr,
-					&result_size);
+							  &result_ptr,
+							  &result_size);
 
 				/* Step 3: set parameters for compression */
 
@@ -617,7 +615,7 @@ namespace ITKExtension
 				/* After finish_compress, we can close the output file. */
 				// fclose(outfile);
 
-				char* result_final_buffer = (char*)ITKCommon::Memory::malloc(result_size);
+				char *result_final_buffer = (char *)ITKCommon::Memory::malloc(result_size);
 				memcpy(result_final_buffer, result_ptr, result_size);
 				*output_size = (int)result_size;
 
@@ -632,7 +630,7 @@ namespace ITKExtension
 				return result_final_buffer;
 			}
 
-			void closeJPG(char*& buff)
+			void closeJPG(char *&buff)
 			{
 				if (!buff)
 					return;
@@ -642,12 +640,12 @@ namespace ITKExtension
 			}
 			//----------------------------------------------------------------------------------
 
-			bool isJPGFilename(const char* filename)
+			bool isJPGFilename(const char *filename)
 			{
 				std::string file_lower = ITKCommon::StringUtil::toLower(filename);
 				return ITKCommon::StringUtil::endsWith(file_lower, ".jpg") ||
-					ITKCommon::StringUtil::endsWith(file_lower, ".jpeg") ||
-					ITKCommon::StringUtil::endsWith(file_lower, ".jfif");
+					   ITKCommon::StringUtil::endsWith(file_lower, ".jpeg") ||
+					   ITKCommon::StringUtil::endsWith(file_lower, ".jfif");
 			}
 
 		}
