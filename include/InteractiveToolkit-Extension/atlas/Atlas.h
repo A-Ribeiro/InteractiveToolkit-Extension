@@ -64,10 +64,6 @@ namespace ITKExtension
         class Atlas
         {
 
-            // private copy constructores, to avoid copy...
-            Atlas(const Atlas &v);
-            Atlas& operator=(const Atlas &v);
-
             void resetPositions();
 
             bool colideWithAnyObject(AtlasElement *element, int maxIterate);
@@ -85,6 +81,12 @@ namespace ITKExtension
             void clearElements();
 
         public:
+
+            //deleted copy constructor and assign operator, to avoid copy...
+            Atlas(const Atlas &v) = delete;
+            Atlas& operator=(const Atlas &v) = delete;
+        
+
             AtlasRect textureResolution; ///< Will hold the image resolution that is needed to store the whole Atlas
             int xspacing;                ///< Horizontal in-between sprite space
             int yspacing;                ///< Vertical in-between sprite space

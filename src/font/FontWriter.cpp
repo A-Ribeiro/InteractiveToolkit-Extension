@@ -13,9 +13,6 @@ namespace ITKExtension
     namespace Font
     {
 
-        FontWriter::FontWriter(const FontWriter &v) {}
-        FontWriter& FontWriter::operator=(const FontWriter &v) {return *this;}
-
         FontWriter::FontWriter()
         {
         }

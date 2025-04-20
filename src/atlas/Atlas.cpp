@@ -14,16 +14,6 @@ namespace ITKExtension
     namespace Atlas
     {
 
-        // private copy constructores, to avoid copy...
-        Atlas::Atlas(const Atlas &v)
-        {
-        }
-
-        Atlas& Atlas::operator=(const Atlas &v)
-        {
-            return *this;
-        }
-
         void Atlas::resetPositions()
         {
             for (size_t i = 0; i < elements.size(); i++)

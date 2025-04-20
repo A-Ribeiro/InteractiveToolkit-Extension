@@ -29,11 +29,12 @@ namespace ITKExtension
         ///
         class AtlasElement
         {
-            // private copy constructores, to avoid copy...
-            AtlasElement(const AtlasElement &v);
-            AtlasElement& operator=(const AtlasElement &v);
-
         public:
+
+            //deleted copy constructor and assign operator, to avoid copy...
+            AtlasElement(const AtlasElement &v) = delete;
+            AtlasElement& operator=(const AtlasElement &v) = delete;
+
             AtlasRect rect;   ///< Rectangle of this element inside an #Atlas
             uint8_t *buffer;  ///< The RGBA raw buffer
             std::string name; ///< The sprite name

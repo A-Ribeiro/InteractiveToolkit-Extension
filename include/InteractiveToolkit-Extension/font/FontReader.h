@@ -63,11 +63,12 @@ namespace ITKExtension
             void readGlyphTable(ITKExtension::IO::AdvancedReader *reader);
             void readBitmap(ITKExtension::IO::AdvancedReader *reader);
 
-            // private copy constructores, to avoid copy...
-            FontReader(const FontReader &v);
-            FontReader& operator=(const FontReader &v);
-
         public:
+
+            //deleted copy constructor and assign operator, to avoid copy...
+            FontReader(const FontReader &v) = delete;
+            FontReader& operator=(const FontReader &v) = delete;
+
             float size;                            ///< The font matrix size of the loaded face.
             float space_width;                     ///< The x advance of a white space character.
             float new_line_height;                 ///< The height of a new line

@@ -13,10 +13,6 @@ namespace ITKExtension
     namespace Font
     {
 
-        // private copy constructores, to avoid copy...
-        FontReader::FontReader(const FontReader &v) {}
-        FontReader& FontReader::operator=(const FontReader &v) {return *this;}
-
         void FontReader::clear()
         {
             for (size_t i = 0; i < glyphs.size(); i++)

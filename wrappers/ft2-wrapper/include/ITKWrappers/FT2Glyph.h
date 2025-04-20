@@ -19,11 +19,11 @@ namespace ITKWrappers {
     ///
     class FT2Glyph{
         
-        //private copy constructores, to avoid copy...
-        FT2Glyph(const FT2Glyph& v);
-        FT2Glyph& operator=(const FT2Glyph& v);
-        
     public:
+
+        //deleted copy constructor and assign operator, to avoid copy...
+        FT2Glyph(const FT2Glyph& v) = delete;
+        FT2Glyph& operator=(const FT2Glyph& v) = delete;
         
         uint32_t charcode;///< UTF32 character code
         

@@ -10,10 +10,6 @@ namespace ITKWrappers
     namespace FT2
     {
 
-        // private copy constructores, to avoid copy...
-        FT2Glyph::FT2Glyph(const FT2Glyph &v) {}
-        FT2Glyph& FT2Glyph::operator=(const FT2Glyph &v) {return *this;}
-
         void FT2Glyph::copyNormalBuffer(uint8_t *src, bool invert)
         {
 

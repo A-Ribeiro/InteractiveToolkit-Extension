@@ -14,10 +14,6 @@ namespace ITKExtension
     namespace Atlas
     {
 
-        // private copy constructores, to avoid copy...
-        AtlasElement::AtlasElement(const AtlasElement &v) {}
-        AtlasElement& AtlasElement::operator=(const AtlasElement &v) {return *this;}
-
         AtlasElement::AtlasElement(int w, int h)
         {
 

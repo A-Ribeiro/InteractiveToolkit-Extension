@@ -70,11 +70,12 @@ namespace ITKExtension
         class FontWriter
         {
 
-            // private copy constructores, to avoid copy...
-            FontWriter(const FontWriter &v);
-            FontWriter& operator=(const FontWriter &v);
-
         public:
+
+            //deleted copy constructor and assign operator, to avoid copy...
+            FontWriter(const FontWriter &v) = delete;
+            FontWriter& operator=(const FontWriter &v) = delete;
+
             ITKExtension::Atlas::Atlas *atlas; ///< reference to sprite #Atlas of this font
 
             std::unordered_map<uint32_t, FontWriterGlyph *> glyphmap; ///< the glyphmap (char code to FontWriterGlyph mapping)
