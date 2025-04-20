@@ -65,7 +65,7 @@ namespace ITKExtension
 
             // private copy constructores, to avoid copy...
             FontReader(const FontReader &v);
-            void operator=(const FontReader &v);
+            FontReader& operator=(const FontReader &v);
 
         public:
             float size;                            ///< The font matrix size of the loaded face.

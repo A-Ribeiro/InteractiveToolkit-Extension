@@ -72,7 +72,7 @@ namespace ITKExtension
 
             // private copy constructores, to avoid copy...
             FontWriter(const FontWriter &v);
-            void operator=(const FontWriter &v);
+            FontWriter& operator=(const FontWriter &v);
 
         public:
             ITKExtension::Atlas::Atlas *atlas; ///< reference to sprite #Atlas of this font

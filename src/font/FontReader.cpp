@@ -15,7 +15,7 @@ namespace ITKExtension
 
         // private copy constructores, to avoid copy...
         FontReader::FontReader(const FontReader &v) {}
-        void FontReader::operator=(const FontReader &v) {}
+        FontReader& FontReader::operator=(const FontReader &v) {return *this;}
 
         void FontReader::clear()
         {

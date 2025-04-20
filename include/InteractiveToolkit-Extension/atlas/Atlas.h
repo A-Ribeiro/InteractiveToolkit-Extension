@@ -66,7 +66,7 @@ namespace ITKExtension
 
             // private copy constructores, to avoid copy...
             Atlas(const Atlas &v);
-            void operator=(const Atlas &v);
+            Atlas& operator=(const Atlas &v);
 
             void resetPositions();
 

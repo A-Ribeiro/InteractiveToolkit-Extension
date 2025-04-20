@@ -19,8 +19,9 @@ namespace ITKExtension
         {
         }
 
-        void Atlas::operator=(const Atlas &v)
+        Atlas& Atlas::operator=(const Atlas &v)
         {
+            return *this;
         }
 
         void Atlas::resetPositions()

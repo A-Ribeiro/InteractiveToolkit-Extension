@@ -237,7 +237,7 @@ namespace ITKExtension
                 (*this) = v;
             }
 
-            void operator=(const Light &v)
+            Light& operator=(const Light &v)
             {
                 name = v.name;
 
@@ -258,6 +258,8 @@ namespace ITKExtension
                 colorDiffuse = v.colorDiffuse;
                 colorSpecular = v.colorSpecular;
                 colorAmbient = v.colorAmbient;
+
+                return *this;
             }
 
             

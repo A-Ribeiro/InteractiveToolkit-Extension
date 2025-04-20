@@ -31,7 +31,7 @@ namespace ITKExtension
         {
             // private copy constructores, to avoid copy...
             AtlasElement(const AtlasElement &v);
-            void operator=(const AtlasElement &v);
+            AtlasElement& operator=(const AtlasElement &v);
 
         public:
             AtlasRect rect;   ///< Rectangle of this element inside an #Atlas

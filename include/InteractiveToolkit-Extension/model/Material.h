@@ -57,7 +57,7 @@ namespace ITKExtension
             {
                 (*this) = v;
             }
-            void operator=(const Material &v)
+            Material& operator=(const Material &v)
             {
                 name = v.name;
                 floatValue = v.floatValue;
@@ -67,6 +67,8 @@ namespace ITKExtension
                 vec4Value = v.vec4Value;
                 intValue = v.intValue;
                 textures = v.textures;
+
+                return *this;
             }
         };
 

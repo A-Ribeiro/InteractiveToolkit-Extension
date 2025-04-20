@@ -176,7 +176,7 @@ namespace ITKExtension
                 (*this) = v;
             }
 
-            void operator=(const Texture &v)
+            Texture& operator=(const Texture &v)
             {
                 filename = v.filename;
                 fileext = v.fileext;
@@ -184,6 +184,8 @@ namespace ITKExtension
                 uvIndex = v.uvIndex;
                 op = v.op;
                 mapMode = v.mapMode;
+
+                return *this;
             }
         };
 

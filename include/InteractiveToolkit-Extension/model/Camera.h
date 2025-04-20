@@ -84,7 +84,7 @@ namespace ITKExtension
                 (*this) = v;
             }
 
-            void operator=(const Camera &v)
+            Camera& operator=(const Camera &v)
             {
                 name = v.name;
                 pos = v.pos;
@@ -95,6 +95,8 @@ namespace ITKExtension
                 farPlane = v.farPlane;
                 aspect = v.aspect;
                 verticalFOVrad = v.verticalFOVrad;
+
+                return *this;
             }
         };
 

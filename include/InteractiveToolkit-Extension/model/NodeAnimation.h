@@ -69,7 +69,7 @@ namespace ITKExtension
                 (*this) = v;
             }
 
-            void operator=(const NodeAnimation &v)
+            NodeAnimation& operator=(const NodeAnimation &v)
             {
                 nodeName = v.nodeName;
 
@@ -79,6 +79,8 @@ namespace ITKExtension
 
                 preState = v.preState;
                 postState = v.postState;
+
+                return *this;
             }
 
             

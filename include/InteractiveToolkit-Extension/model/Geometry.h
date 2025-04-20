@@ -141,7 +141,7 @@ namespace ITKExtension
             {
                 (*this) = v;
             }
-            void operator=(const Geometry &v)
+            Geometry& operator=(const Geometry &v)
             {
 
                 name = v.name;
@@ -165,6 +165,8 @@ namespace ITKExtension
                 materialIndex = v.materialIndex;
 
                 bones = v.bones;
+
+                return *this;
             }
 
             

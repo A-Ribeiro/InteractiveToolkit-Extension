@@ -21,7 +21,7 @@ namespace ITKWrappers {
         
         //private copy constructores, to avoid copy...
         FT2Glyph(const FT2Glyph& v);
-        void operator=(const FT2Glyph& v);
+        FT2Glyph& operator=(const FT2Glyph& v);
         
     public:
         

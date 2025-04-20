@@ -46,7 +46,7 @@ namespace ITKExtension
                 (*this) = v;
             }
 
-            void operator=(const Animation &v)
+            Animation& operator=(const Animation &v)
             {
                 name = v.name;
 
@@ -54,6 +54,8 @@ namespace ITKExtension
 
                 ticksPerSecond = v.ticksPerSecond;
                 channels = v.channels;
+
+                return *this;
             }
         };
 

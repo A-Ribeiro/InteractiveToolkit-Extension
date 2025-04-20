@@ -56,11 +56,13 @@ namespace ITKExtension
             {
                 (*this) = v;
             }
-            void operator=(const Bone &v)
+            Bone& operator=(const Bone &v)
             {
                 name = v.name;
                 weights = v.weights;
                 // offset = v.offset;
+
+                return *this;
             }
         };
 

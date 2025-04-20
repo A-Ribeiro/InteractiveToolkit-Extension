@@ -40,12 +40,14 @@ namespace ITKExtension
             {
                 (*this) = v;
             }
-            void operator=(const Node &v)
+            Node& operator=(const Node &v)
             {
                 name = v.name;
                 geometries = v.geometries;
                 children = v.children;
                 transform = v.transform;
+
+                return *this;
             }
         };
 
