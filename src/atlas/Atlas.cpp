@@ -102,6 +102,9 @@ namespace ITKExtension
                     currY = yspacing / 2;
 
                 AtlasElement *element = elements[i];
+                if (element->rect.w == 0 || element->rect.h == 0)
+                    continue;
+
                 possibleInsertPositions = computeInsertPositionArray(screen, currY, i);
 
                 bool foundPlace = false;
@@ -232,6 +235,8 @@ namespace ITKExtension
             for (size_t i = 0; i < elements.size(); i++)
             {
                 AtlasElement *element = elements[i];
+                if (element->rect.w == 0 || element->rect.h == 0)
+                    continue;
                 element->copyToRGBABuffer(result, textureResolution.w * 4, xspacing / 2, yspacing / 2);
             }
 
@@ -261,6 +266,8 @@ namespace ITKExtension
             for (size_t i = 0; i < elements.size(); i++)
             {
                 AtlasElement *element = elements[i];
+                if (element->rect.w == 0 || element->rect.h == 0)
+                    continue;
                 element->copyToABuffer(result, textureResolution.w, xspacing / 2, yspacing / 2);
             }
 
