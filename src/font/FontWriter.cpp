@@ -86,7 +86,7 @@ namespace ITKExtension
         {
             uint8_t *rgbaBuffer = atlas->createRGBA();
             int size;
-            char *result = ITKExtension::Image::PNG::writePNGToMemory(&size, atlas->textureResolution.w, atlas->textureResolution.h, 1, (char *)rgbaBuffer);
+            char *result = ITKExtension::Image::PNG::writePNGToMemory(&size, atlas->textureResolution.w, atlas->textureResolution.h, 4, (char *)rgbaBuffer);
 
             ITK_ABORT(result == nullptr, "Error to write PNG to memory.\n");
 
