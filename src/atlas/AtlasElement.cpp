@@ -17,7 +17,7 @@ namespace ITKExtension
         AtlasElement::AtlasElement(int w, int h)
         {
 
-            ITK_ABORT((w <= 0 || h <= 0), "error assign Atlas Element\n");
+            ITK_ABORT((w < 0 || h < 0), "error assign Atlas Element\n");
             // if (w<=0||h<=0){
             //     fprintf(stderr,"error assign Atlas Element\n");
             //     exit(-1);
