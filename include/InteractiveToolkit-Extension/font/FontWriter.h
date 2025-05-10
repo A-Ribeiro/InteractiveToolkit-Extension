@@ -164,11 +164,11 @@ namespace ITKExtension
             ///
             void setCharacter(uint32_t charcode,
                               float advancex,
-                              uint16_t ftop,
-                              uint16_t fleft,
+                              int16_t ftop,
+                              int16_t fleft,
                               ITKExtension::Atlas::AtlasElement *atlasElementFace,
-                              uint16_t stop,
-                              uint16_t sleft,
+                              int16_t stop,
+                              int16_t sleft,
                               ITKExtension::Atlas::AtlasElement *atlasElementStroke);
 
             /// \brief Save basof2 file
