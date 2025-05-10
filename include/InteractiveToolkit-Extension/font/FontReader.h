@@ -64,17 +64,16 @@ namespace ITKExtension
             void readBitmap(ITKExtension::IO::AdvancedReader *reader);
 
         public:
-
-            //deleted copy constructor and assign operator, to avoid copy...
+            // deleted copy constructor and assign operator, to avoid copy...
             FontReader(const FontReader &v) = delete;
-            FontReader& operator=(const FontReader &v) = delete;
+            FontReader &operator=(const FontReader &v) = delete;
 
             float size;                            ///< The font matrix size of the loaded face.
             float space_width;                     ///< The x advance of a white space character.
             float new_line_height;                 ///< The height of a new line
             std::vector<FontReaderGlyph *> glyphs; ///< All glyphs loaded from this font.
             FontReaderSize bitmapSize;             ///< the bitmap resolution of the atlas
-            char *bitmap;                          ///< The alpha channel bitmap
+            char *bitmap_rgba;                     ///< The rgba bitmap
 
             FontReader();
             ~FontReader();
@@ -126,9 +125,9 @@ namespace ITKExtension
             ///
             /// \author Alessandro Ribeiro
             /// \param glyph asbgt2 filename to load
-            /// \param png_grayscale_8bits PNG image filename to load
+            /// \param png_rgba_8bits PNG image filename to load
             ///
-            void readFromFile(const std::string &glyph, const std::string &png_grayscale_8bits);
+            void readFromFile(const std::string &glyph, const std::string &png_rgba_8bits);
         };
 
     }

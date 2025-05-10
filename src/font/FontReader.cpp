@@ -18,9 +18,9 @@ namespace ITKExtension
             for (size_t i = 0; i < glyphs.size(); i++)
                 delete glyphs[i];
             glyphs.clear();
-            if (bitmap != nullptr)
-                ITKExtension::Image::PNG::closePNG(bitmap);
-            bitmap = nullptr;
+            if (bitmap_rgba != nullptr)
+                ITKExtension::Image::PNG::closePNG(bitmap_rgba);
+            bitmap_rgba = nullptr;
         }
 
         void FontReader::readGlyphTable(ITKExtension::IO::AdvancedReader *reader)
@@ -52,18 +52,18 @@ namespace ITKExtension
             pngBufferSize = (uint32_t)buffer.size;
 
             int w, h, chann, pixel_depth;
-            bitmap = ITKExtension::Image::PNG::readPNGFromMemory((char *)pngBuffer, pngBufferSize, &w, &h, &chann, &pixel_depth);
+            bitmap_rgba = ITKExtension::Image::PNG::readPNGFromMemory((char *)pngBuffer, pngBufferSize, &w, &h, &chann, &pixel_depth);
 
-            ITK_ABORT(bitmap == nullptr, "Error to load image from font definition.\n");
+            ITK_ABORT(bitmap_rgba == nullptr, "Error to load image from font definition.\n");
             ITK_ABORT(w != bitmapSize.w, "Missmatch font resolution reference.\n");
             ITK_ABORT(h != bitmapSize.h, "Missmatch font resolution reference.\n");
-            ITK_ABORT(chann != 1, "FontBitmap not grayscale.\n");
+            ITK_ABORT(chann != 4, "FontBitmap not rgba.\n");
             ITK_ABORT(pixel_depth != 8, "FontBitmap not 8 bits per component.\n");
         }
 
         FontReader::FontReader()
         {
-            bitmap = nullptr;
+            bitmap_rgba = nullptr;
         }
 
         FontReader::~FontReader()
@@ -84,7 +84,7 @@ namespace ITKExtension
             reader.close();
         }
 
-        void FontReader::readFromFile(const std::string &glyph, const std::string &png_grayscale_8bits)
+        void FontReader::readFromFile(const std::string &glyph, const std::string &png_rgba_8bits)
         {
             clear();
 
@@ -103,12 +103,12 @@ namespace ITKExtension
                 reader.close();
                 */
                 int w, h, chann, pixel_depth;
-                bitmap = ITKExtension::Image::PNG::readPNG(png_grayscale_8bits.c_str(), &w, &h, &chann, &pixel_depth);
+                bitmap_rgba = ITKExtension::Image::PNG::readPNG(png_rgba_8bits.c_str(), &w, &h, &chann, &pixel_depth);
 
-                ITK_ABORT(bitmap == nullptr, "Error to load image from font definition.\n");
+                ITK_ABORT(bitmap_rgba == nullptr, "Error to load image from font definition.\n");
                 ITK_ABORT(w != bitmapSize.w, "Missmatch font resolution reference.\n");
                 ITK_ABORT(h != bitmapSize.h, "Missmatch font resolution reference.\n");
-                ITK_ABORT(chann != 1, "FontBitmap not grayscale.\n");
+                ITK_ABORT(chann != 4, "FontBitmap not rgba.\n");
                 ITK_ABORT(pixel_depth != 8, "FontBitmap not 8 bits per component.\n");
             }
         }
