@@ -155,6 +155,8 @@ namespace ITKWrappers {
         /// \param glyph the glyph to release
         ///
         void releaseGlyph(FT2Glyph**glyph);
+
+        float getNewLineHeight(bool use_max_bouding_box = false);
         
     };
     

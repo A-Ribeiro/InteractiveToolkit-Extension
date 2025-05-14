@@ -3,7 +3,6 @@
 // #include <InteractiveToolkit/ITKCommon/ITKCommon.h> // ITKAbort
 #include <InteractiveToolkit/ITKCommon/ITKAbort.h>
 
-
 #define __STDC_CONSTANT_MACROS
 #include <iostream>
 #include <string.h>
@@ -154,6 +153,18 @@ namespace ITKWrappers
         {
             delete *glyph;
             *glyph = nullptr;
+        }
+
+        float FT2::getNewLineHeight(bool use_max_bouding_box)
+        {
+            if (use_max_bouding_box)
+            {
+                int bbox_ymax = FT_MulFix(face->bbox.yMax, face->size->metrics.y_scale);
+                int bbox_ymin = FT_MulFix(face->bbox.yMin, face->size->metrics.y_scale);
+                int height = bbox_ymax - bbox_ymin;
+                return (float)height / 64.0f;
+            }
+            return (float)(face->size->metrics.height) / 64.0f;
         }
     }
 }
