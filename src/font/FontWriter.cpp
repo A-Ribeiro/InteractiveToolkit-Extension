@@ -40,7 +40,8 @@ namespace ITKExtension
                                       ITKExtension::Atlas::AtlasElement *atlasElementFace,
                                       int16_t stop,
                                       int16_t sleft,
-                                      ITKExtension::Atlas::AtlasElement *atlasElementStroke)
+                                      ITKExtension::Atlas::AtlasElement *atlasElementStroke,
+                                      const std::vector<AlgorithmCore::Polygon::Polygon2D<MathCore::vec2f>> &contour)
         {
 
             ITK_ABORT((glyphmap.find(charcode) != glyphmap.end()), "Trying to insert the same character twice.\n");
@@ -51,18 +52,31 @@ namespace ITKExtension
 
             glyphmap[charcode] = new FontWriterGlyph(
                 advancex, ftop, fleft, atlasElementFace,
-                stop, sleft, atlasElementStroke);
+                stop, sleft, atlasElementStroke,
+                contour);
         }
 
         void FontWriter::save(const char *filename)
         {
             ITKExtension::IO::AdvancedWriter writer;
-            //writer.writeToFile(filename);
+            // writer.writeToFile(filename);
             writeGlyphTable(&writer);
             writeBitmap(&writer);
-            //writer.close();
+
+            writeContour(&writer);
+            // writer.close();
 
             writer.writeToFile(filename);
+        }
+
+        void FontWriter::writeContour(ITKExtension::IO::AdvancedWriter *writer)
+        {
+            std::unordered_map<uint32_t, FontWriterGlyph *>::iterator it;
+            for (it = glyphmap.begin(); it != glyphmap.end(); it++)
+            {
+                writer->writeUInt32(it->first); // charcode
+                it->second->writeContour(writer);      // all glyph information
+            }
         }
 
         void FontWriter::writeGlyphTable(ITKExtension::IO::AdvancedWriter *writer)
@@ -93,8 +107,7 @@ namespace ITKExtension
             atlas->releaseRGBA(&rgbaBuffer);
 
             writer->writeBuffer(
-                Platform::ObjectBuffer((uint8_t *)result, (int64_t)size)
-            );
+                Platform::ObjectBuffer((uint8_t *)result, (int64_t)size));
 
             ITKExtension::Image::PNG::closePNG(result);
         }
@@ -102,9 +115,9 @@ namespace ITKExtension
         void FontWriter::saveGlyphTable(const char *filename)
         {
             ITKExtension::IO::AdvancedWriter writer;
-            //writer.writeToFile(filename);
+            // writer.writeToFile(filename);
             writeGlyphTable(&writer);
-            //writer.close();
+            // writer.close();
 
             writer.writeToFile(filename);
         }

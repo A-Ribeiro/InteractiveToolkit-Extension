@@ -6,6 +6,7 @@
 // #include <InteractiveToolkit-Extension/io/AdvancedReader.h>
 
 #include <InteractiveToolkit-Extension/atlas/Atlas.h>
+#include <InteractiveToolkit/AlgorithmCore/Polygon/Polygon2D.h>
 
 namespace ITKExtension
 {
@@ -33,13 +34,15 @@ namespace ITKExtension
         ///
         struct FontWriterGlyph
         {
-            float advancex;       ///< normal face horizontal advance
-            int16_t face_top;     ///< normal face glyph top reference
-            int16_t face_left;    ///< normal face glyph left reference
+            float advancex;                            ///< normal face horizontal advance
+            int16_t face_top;                          ///< normal face glyph top reference
+            int16_t face_left;                         ///< normal face glyph left reference
             ITKExtension::Atlas::AtlasElement *face;   ///< atlas internal rectangle reference (normal face)
-            int16_t stroke_top;   ///< stroke face glyph top reference
-            int16_t stroke_left;  ///< stroke face glyph left reference
+            int16_t stroke_top;                        ///< stroke face glyph top reference
+            int16_t stroke_left;                       ///< stroke face glyph left reference
             ITKExtension::Atlas::AtlasElement *stroke; ///< atlas internal rectangle reference (stroke face)
+
+            std::vector<AlgorithmCore::Polygon::Polygon2D<MathCore::vec2f>> contour; ///< The glyph contour polygon representation
 
             FontWriterGlyph();
 
@@ -81,11 +84,12 @@ namespace ITKExtension
             /// \param _sleft Character stroke origin left
             /// \param _stroke Character stroke face reference
             ///
-            FontWriterGlyph(float _advancex, 
-                            int16_t _top, int16_t _left, 
+            FontWriterGlyph(float _advancex,
+                            int16_t _top, int16_t _left,
                             ITKExtension::Atlas::AtlasElement *_face,
                             int16_t _stop, int16_t _sleft,
-                            ITKExtension::Atlas::AtlasElement *_stroke);
+                            ITKExtension::Atlas::AtlasElement *_stroke,
+                            const std::vector<AlgorithmCore::Polygon::Polygon2D<MathCore::vec2f>> &contour);
 
             /// \brief Write this double glyph
             ///
@@ -112,6 +116,8 @@ namespace ITKExtension
             /// \param writer The #aRibeiro::BinaryWriter instance
             ///
             void write(ITKExtension::IO::AdvancedWriter *writer);
+
+            void writeContour(ITKExtension::IO::AdvancedWriter *writer);
         };
 
     }

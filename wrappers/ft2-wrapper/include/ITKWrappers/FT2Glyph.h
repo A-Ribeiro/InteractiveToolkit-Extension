@@ -5,6 +5,7 @@
 // #include <InteractiveToolkit/InteractiveToolkit.h>
 
 #include "FT2Rect.h"
+#include <InteractiveToolkit/AlgorithmCore/Polygon/Polygon2D.h>
 
 namespace ITKWrappers {
     namespace FT2 {
@@ -38,6 +39,8 @@ namespace ITKWrappers {
         FT2Rect strokeRect;///< Stroke(outline) face rectangle reference (top, left, width, height)
         uint8_t *bitmapGrayStroke;///< RAW grayscale font pixels (size = width*height)
         uint8_t *bitmapRGBAStroke;///< RAW RGBA font pixels (size = width*height*4)
+
+        std::vector<AlgorithmCore::Polygon::Polygon2D<MathCore::vec2f>> contour;///< The glyph contour polygon representation
         
         /// \brief Copy the normal face buffer from FreeType2 to this glyph representation
         ///

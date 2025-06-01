@@ -71,10 +71,9 @@ namespace ITKExtension
         {
 
         public:
-
-            //deleted copy constructor and assign operator, to avoid copy...
+            // deleted copy constructor and assign operator, to avoid copy...
             FontWriter(const FontWriter &v) = delete;
-            FontWriter& operator=(const FontWriter &v) = delete;
+            FontWriter &operator=(const FontWriter &v) = delete;
 
             ITKExtension::Atlas::Atlas *atlas; ///< reference to sprite #Atlas of this font
 
@@ -169,7 +168,8 @@ namespace ITKExtension
                               ITKExtension::Atlas::AtlasElement *atlasElementFace,
                               int16_t stop,
                               int16_t sleft,
-                              ITKExtension::Atlas::AtlasElement *atlasElementStroke);
+                              ITKExtension::Atlas::AtlasElement *atlasElementStroke,
+                              const std::vector<AlgorithmCore::Polygon::Polygon2D<MathCore::vec2f>> &contour);
 
             /// \brief Save basof2 file
             ///
@@ -226,6 +226,10 @@ namespace ITKExtension
             /// \param filename basof2 filename to save
             ///
             void saveGlyphTable(const char *filename);
+
+
+            void writeContour(ITKExtension::IO::AdvancedWriter *writer);
+
 
             /// \brief Write the UTF32 character, double glyph map table
             ///

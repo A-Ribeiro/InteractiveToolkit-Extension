@@ -146,6 +146,57 @@ namespace ITKWrappers
 
             FT_Done_Glyph(glyphDescStroke);
 
+            // get countour polygon
+            FT_CHECK_ERROR(FT_Load_Glyph(face, glyph_index, FT_LOAD_NO_BITMAP | FT_LOAD_NO_HINTING), "Error to load the outline character");
+
+            if (face->glyph->format == FT_GLYPH_FORMAT_OUTLINE)
+            {
+                FT_Outline *outline = &face->glyph->outline;
+                for (int c = 0; c < outline->n_contours; c++)
+                {
+                    int start = (c == 0) ? 0 : outline->contours[c - 1] + 1;
+                    int end = outline->contours[c] + 1;
+                    AlgorithmCore::Polygon::Polygon2D<MathCore::vec2f> polygon;
+                    char last_tag = -1;
+                    int cubic_count = 0;
+                    for (int i = start; i < end; i++)
+                    {
+                        FT_Vector &point = outline->points[i];
+                        char tag = FT_CURVE_TAG(outline->tags[i]);
+                        MathCore::vec2f vertex((float)point.x / 64.0f, (float)point.y / 64.0f);
+                        if (tag == FT_CURVE_TAG_ON) {
+                            polygon.addPoint(vertex);
+                            cubic_count = 0;
+                        } else if (tag == FT_CURVE_TAG_CONIC) {
+                            if (last_tag != FT_CURVE_TAG_ON) {
+                                // printf("Warning: Conic point without previous ON point in glyph 0x%.8x\n", (uint32_t)charcode_utf32);
+                                // two consecutive conic points, add a midpoint
+                                MathCore::vec2f mid_point = (polygon.points.back().vertex + vertex) * 0.5f;
+                                polygon.addPoint(mid_point);
+                                // cubic_count = 0;
+                            }
+                            polygon.addControlPoint(vertex);
+                            cubic_count = 2; // reset cubic count to 2 for conic
+                        }
+                        else if (tag == FT_CURVE_TAG_CUBIC) {
+                            if (cubic_count == 2)
+                            {
+                                printf("Warning: Cubic point after two consecutive cubic points in glyph 0x%.8x\n", (uint32_t)charcode_utf32);
+                                // three consecutive cubic points, or cubic after conic, add a midpoint
+                                MathCore::vec2f mid_point = (polygon.points.back().vertex + vertex) * 0.5f;
+                                polygon.addPoint(mid_point);
+                                cubic_count = 0; // reset cubic count
+                            }
+                            polygon.addControlPoint(vertex);
+                            cubic_count++;
+                        }
+                        last_tag = tag;
+                    }
+                    polygon.computeSignedArea();
+                    result->contour.push_back(std::move(polygon));
+                }
+            }
+
             return result;
         }
 
