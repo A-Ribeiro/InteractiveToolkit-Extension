@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <InteractiveToolkit-Extension/font/FontReaderBitmapRef.h>
+#include <InteractiveToolkit/AlgorithmCore/Polygon/Polygon2D.h>
 
 namespace ITKExtension
 {
@@ -40,6 +41,8 @@ namespace ITKExtension
             FontReaderBitmapRef face;   ///< the normal glyph face
             FontReaderBitmapRef stroke; ///< the stroke glyph of this face
 
+            std::vector<AlgorithmCore::Polygon::Polygon2D<MathCore::vec2f>> contour; ///< The glyph contour polygon representation
+
             /// \brief Read this double glyph metrics from a #aRibeiro::BinaryReader
             ///
             /// Example:
@@ -65,6 +68,9 @@ namespace ITKExtension
             /// \param reader The #aRibeiro::BinaryReader instance
             ///
             void read(ITKExtension::IO::AdvancedReader *reader);
+
+        private:
+            void readContour(ITKExtension::IO::AdvancedReader *reader);
         };
 
     }

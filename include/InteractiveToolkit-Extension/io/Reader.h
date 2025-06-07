@@ -47,7 +47,7 @@ namespace ITKExtension
                     return;
                 }
 
-                ITK_ABORT((readPos + size) > this->buffer.size(), "Error to read buffer. Size greater than the actuan buffer is...");
+                ITK_ABORT((readPos + size) > this->buffer.size(), "Error to read buffer. Size greater than the actual buffer is...");
 
                 if (readPos >= buffer.size())
                 {

@@ -60,6 +60,7 @@ namespace ITKExtension
         {
             void clear();
 
+            // void readContour(ITKExtension::IO::AdvancedReader *reader);
             void readGlyphTable(ITKExtension::IO::AdvancedReader *reader);
             void readBitmap(ITKExtension::IO::AdvancedReader *reader);
 
@@ -68,12 +69,12 @@ namespace ITKExtension
             FontReader(const FontReader &v) = delete;
             FontReader &operator=(const FontReader &v) = delete;
 
-            float size;                            ///< The font matrix size of the loaded face.
-            float space_width;                     ///< The x advance of a white space character.
-            float new_line_height;                 ///< The height of a new line
-            std::vector<FontReaderGlyph *> glyphs; ///< All glyphs loaded from this font.
-            FontReaderSize bitmapSize;             ///< the bitmap resolution of the atlas
-            char *bitmap_rgba;                     ///< The rgba bitmap
+            float size;                          ///< The font matrix size of the loaded face.
+            float space_width;                   ///< The x advance of a white space character.
+            float new_line_height;               ///< The height of a new line
+            std::vector<FontReaderGlyph> glyphs; ///< All glyphs loaded from this font.
+            FontReaderSize bitmapSize;           ///< the bitmap resolution of the atlas
+            char *bitmap_rgba;                   ///< The rgba bitmap
 
             FontReader();
             ~FontReader();

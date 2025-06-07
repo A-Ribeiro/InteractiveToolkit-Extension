@@ -228,7 +228,7 @@ namespace ITKExtension
             void saveGlyphTable(const char *filename);
 
 
-            void writeContour(ITKExtension::IO::AdvancedWriter *writer);
+            // void writeContour(ITKExtension::IO::AdvancedWriter *writer);
 
 
             /// \brief Write the UTF32 character, double glyph map table

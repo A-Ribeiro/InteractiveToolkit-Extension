@@ -38,6 +38,7 @@ namespace ITKExtension
             writer->writeInt16(stroke_top);
             writer->writeInt16(stroke_left);
             stroke->rect.write(writer);
+            writeContour(writer);
         }
 
         void FontWriterGlyph::writeContour(ITKExtension::IO::AdvancedWriter *writer)

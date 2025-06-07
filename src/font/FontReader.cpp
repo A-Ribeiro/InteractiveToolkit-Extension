@@ -15,13 +15,21 @@ namespace ITKExtension
 
         void FontReader::clear()
         {
-            for (size_t i = 0; i < glyphs.size(); i++)
-                delete glyphs[i];
             glyphs.clear();
             if (bitmap_rgba != nullptr)
                 ITKExtension::Image::PNG::closePNG(bitmap_rgba);
             bitmap_rgba = nullptr;
         }
+
+        // void FontReader::readContour(ITKExtension::IO::AdvancedReader *reader)
+        // {
+        //     std::unordered_map<uint32_t, FontWriterGlyph *>::iterator it;
+        //     for (it = glyphmap.begin(); it != glyphmap.end(); it++)
+        //     {
+        //         writer->writeUInt32(it->first); // charcode
+        //         it->second->writeContour(writer);      // all glyph information
+        //     }
+        // }
 
         void FontReader::readGlyphTable(ITKExtension::IO::AdvancedReader *reader)
         {
@@ -32,13 +40,9 @@ namespace ITKExtension
             // can be used to double check the PNG decompression image resolution
             bitmapSize.read(reader);
 
-            uint16_t glyphCount = reader->readUInt16();
-            for (uint16_t i = 0; i < glyphCount; i++)
-            {
-                FontReaderGlyph *glyph = new FontReaderGlyph();
-                glyph->read(reader);
-                glyphs.push_back(glyph);
-            }
+            glyphs.resize((size_t)reader->readUInt16());
+            for(auto& glyph: glyphs)
+               glyph.read(reader);
         }
 
         void FontReader::readBitmap(ITKExtension::IO::AdvancedReader *reader)
@@ -80,6 +84,7 @@ namespace ITKExtension
 
             readGlyphTable(&reader);
             readBitmap(&reader);
+            // readContour(&reader);
 
             reader.close();
         }

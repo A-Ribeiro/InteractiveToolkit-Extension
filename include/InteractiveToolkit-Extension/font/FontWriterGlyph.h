@@ -117,6 +117,7 @@ namespace ITKExtension
             ///
             void write(ITKExtension::IO::AdvancedWriter *writer);
 
+        private:
             void writeContour(ITKExtension::IO::AdvancedWriter *writer);
         };
 

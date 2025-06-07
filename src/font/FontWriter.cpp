@@ -63,21 +63,21 @@ namespace ITKExtension
             writeGlyphTable(&writer);
             writeBitmap(&writer);
 
-            writeContour(&writer);
+            // writeContour(&writer);
             // writer.close();
 
             writer.writeToFile(filename);
         }
 
-        void FontWriter::writeContour(ITKExtension::IO::AdvancedWriter *writer)
-        {
-            std::unordered_map<uint32_t, FontWriterGlyph *>::iterator it;
-            for (it = glyphmap.begin(); it != glyphmap.end(); it++)
-            {
-                writer->writeUInt32(it->first); // charcode
-                it->second->writeContour(writer);      // all glyph information
-            }
-        }
+        // void FontWriter::writeContour(ITKExtension::IO::AdvancedWriter *writer)
+        // {
+        //     std::unordered_map<uint32_t, FontWriterGlyph *>::iterator it;
+        //     for (it = glyphmap.begin(); it != glyphmap.end(); it++)
+        //     {
+        //         writer->writeUInt32(it->first); // charcode
+        //         it->second->writeContour(writer);      // all glyph information
+        //     }
+        // }
 
         void FontWriter::writeGlyphTable(ITKExtension::IO::AdvancedWriter *writer)
         {
