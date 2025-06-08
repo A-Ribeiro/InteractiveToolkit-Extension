@@ -193,6 +193,10 @@ namespace ITKWrappers
                         last_tag = tag;
                     }
                     polygon.computeSignedArea();
+                    // reverse the polygon to have the correct orientation:
+                    // outline -> CCW -> positive area
+                    // hole -> CW -> negative area
+                    polygon.reverse();
                     result->contour.push_back(std::move(polygon));
                 }
             }
