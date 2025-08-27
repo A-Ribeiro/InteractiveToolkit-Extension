@@ -72,7 +72,7 @@ if(LIB_SFML STREQUAL FromSource)
 
         tool_get_dirs(sfml_DOWNLOADED_PATH sfml_BINARY_PATH sfml)
 
-        set(STR_TO_ADD "tool_copy_file_after_build( sfml-audio \"${sfml_DOWNLOADED_PATH}/extlibs/bin/${ARCH_TARGET}/openal32.dll\" )")
+        # set(STR_TO_ADD "tool_copy_file_after_build( sfml-audio \"${sfml_DOWNLOADED_PATH}/extlibs/bin/${ARCH_TARGET}/openal32.dll\" )")
 
         # SFML now uses miniaudio instead OpenAL
         #
@@ -84,13 +84,30 @@ if(LIB_SFML STREQUAL FromSource)
         # endif ()
 
         # replace wrong identifier on VS
-        # file(READ "${ARIBEIRO_LIBS_DIR}/sfml/src/SFML/Graphics/Font.cpp" AUX)
+        # file(READ "${sfml_DOWNLOADED_PATH}/src/SFML/Graphics/Font.cpp" AUX)
         # string(FIND "${AUX}" "//Font::Font(Font&&) noexcept = default;" matchres)
         # if(${matchres} EQUAL -1)
         #     string(REPLACE "Font::Font(Font&&) noexcept = default;" "//Font::Font(Font&&) noexcept = default;" output "${AUX}")
-        #     file(WRITE "${ARIBEIRO_LIBS_DIR}/sfml/src/SFML/Graphics/Font.cpp" "${output}")
+        #     file(WRITE "${sfml_DOWNLOADED_PATH}/src/SFML/Graphics/Font.cpp" "${output}")
         # endif ()
-    
+
+
+
+        # handle window resizing...
+        file(READ "${sfml_DOWNLOADED_PATH}/src/SFML/Window/Win32/WindowImplWin32.cpp" AUX)
+        string(FIND "${AUX}" "void (*AppKit_Window_win32_draw_on_resize_or_move)(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) = nullptr;" matchres)
+        if(${matchres} EQUAL -1)
+            string(REPLACE "#include <SFML/Window/Win32/WindowImplWin32.hpp>" "#include <SFML/Window/Win32/WindowImplWin32.hpp>\nvoid (*AppKit_Window_win32_draw_on_resize_or_move)(HWND handle, UINT message, WPARAM wParam, LPARAM lParam) = nullptr;\n" output "${AUX}")
+            file(WRITE "${sfml_DOWNLOADED_PATH}/src/SFML/Window/Win32/WindowImplWin32.cpp" "${output}")
+        endif ()
+
+        file(READ "${sfml_DOWNLOADED_PATH}/src/SFML/Window/Win32/WindowImplWin32.cpp" AUX)
+        string(FIND "${AUX}" "if (AppKit_Window_win32_draw_on_resize_or_move)\n        AppKit_Window_win32_draw_on_resize_or_move(m_handle, message, wParam, lParam);" matchres)
+        if(${matchres} EQUAL -1)
+            string(REPLACE "switch (message)" "if (AppKit_Window_win32_draw_on_resize_or_move)\n        AppKit_Window_win32_draw_on_resize_or_move(m_handle, message, wParam, lParam);\n    switch (message)" output "${AUX}")
+            file(WRITE "${sfml_DOWNLOADED_PATH}/src/SFML/Window/Win32/WindowImplWin32.cpp" "${output}")
+        endif ()
+
     endif()
 
     #add_definitions(-DSFML_STATIC)
