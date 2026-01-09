@@ -21,6 +21,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 include(cmake/tool.cmake)
 include(cmake/libpng.cmake)
 include(cmake/libjpeg.cmake)
+include(cmake/libmbedtls.cmake)
 
 find_package(InteractiveToolkit REQUIRED QUIET)
 
@@ -70,6 +71,7 @@ PUBLIC
     ${INTERACTIVETOOLKIT_LIBRARIES}
     zlib-wrapper
     md5-wrapper
+    mbedtls-all
 PRIVATE
     libpng
     libjpeg
