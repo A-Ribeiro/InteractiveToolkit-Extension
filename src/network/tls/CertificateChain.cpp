@@ -1,8 +1,12 @@
+#include <InteractiveToolkit/common.h>
+#include <InteractiveToolkit/ITKCommon/FileSystem/File.h>
 #include <InteractiveToolkit-Extension/network/tls/CertificateChain.h>
 #include <InteractiveToolkit-Extension/network/tls/TLSUtils.h>
 #include <InteractiveToolkit-Extension/network/tls/SystemCertificates.h>
-#include <InteractiveToolkit/common.h>
-#include <InteractiveToolkit/ITKCommon/FileSystem/File.h>
+
+#include <mbedtls/x509.h>
+#include <mbedtls/x509_crt.h>
+#include <mbedtls/x509_crl.h>
 
 #include <mbedtls/oid.h>
 
@@ -18,8 +22,8 @@ namespace TLS
     {
         if (!initialized)
         {
-            mbedtls_x509_crt_init(&x509_crt);
-            mbedtls_x509_crl_init(&x509_crl);
+            mbedtls_x509_crt_init(x509_crt.get());
+            mbedtls_x509_crl_init(x509_crl.get());
             initialized = true;
         }
     }
@@ -27,14 +31,16 @@ namespace TLS
     {
         if (initialized)
         {
-            mbedtls_x509_crl_free(&x509_crl);
-            mbedtls_x509_crt_free(&x509_crt);
+            mbedtls_x509_crl_free(x509_crl.get());
+            mbedtls_x509_crt_free(x509_crt.get());
             initialized = false;
         }
     }
 
-    CertificateChain::CertificateChain() : initialized(false), x509_crt{}, x509_crl{}
+    CertificateChain::CertificateChain() : initialized(false)
     {
+        x509_crt = STL_Tools::make_unique<mbedtls_x509_crt>();
+        x509_crl = STL_Tools::make_unique<mbedtls_x509_crl>();
     }
 
     CertificateChain::~CertificateChain()
@@ -62,10 +68,10 @@ namespace TLS
         {
             // PEM format - needs null termination
             std::string dataStr((const char *)data, length);
-            result = mbedtls_x509_crt_parse(&x509_crt, (const unsigned char *)dataStr.c_str(), strlen(dataStr.c_str()) + 1);
+            result = mbedtls_x509_crt_parse(x509_crt.get(), (const unsigned char *)dataStr.c_str(), strlen(dataStr.c_str()) + 1);
         }
         else // DER format (binary)
-            result = mbedtls_x509_crt_parse(&x509_crt, (const unsigned char *)data, length);
+            result = mbedtls_x509_crt_parse(x509_crt.get(), (const unsigned char *)data, length);
         if (result < 0)
             printf("Failed to add certificate: %s\n", TLS::TLSUtils::errorMessageFromReturnCode(result).c_str());
         if (add_all_certificates_is_required)
@@ -98,10 +104,10 @@ namespace TLS
         {
             // PEM format - needs null termination
             std::string dataStr((const char *)data, length);
-            result = mbedtls_x509_crl_parse(&x509_crl, (const unsigned char *)dataStr.c_str(), strlen(dataStr.c_str()) + 1);
+            result = mbedtls_x509_crl_parse(x509_crl.get(), (const unsigned char *)dataStr.c_str(), strlen(dataStr.c_str()) + 1);
         }
         else // DER format (binary)
-            result = mbedtls_x509_crl_parse(&x509_crl, (const unsigned char *)data, length);
+            result = mbedtls_x509_crl_parse(x509_crl.get(), (const unsigned char *)data, length);
         if (result < 0)
             printf("Failed to add certificate: %s\n", TLS::TLSUtils::errorMessageFromReturnCode(result).c_str());
         if (add_all_crl_is_required)
@@ -146,10 +152,21 @@ namespace TLS
             { addCertificateRevokationList(data, size, add_all_crl_is_required); });
     }
 
-    std::string CertificateChain::getCertificateCommonName(mbedtls_x509_crt *x509_crt)
+    std::string CertificateChain::getCertificateCommonName(int position_in_chain)
     {
+        mbedtls_x509_crt *x509_crt_it = x509_crt.get();
+
+        while (position_in_chain > 0 && x509_crt_it != nullptr)
+        {
+            x509_crt_it = x509_crt_it->next;
+            position_in_chain--;
+        }
+
+        if (x509_crt_it == nullptr)
+            return "";
+
         // The subject field contains all the distinguished name components (CN, O, OU, C, etc.)
-        const mbedtls_x509_name *name = &x509_crt->subject;
+        const mbedtls_x509_name *name = &x509_crt_it->subject;
         // Iterate through the subject attributes
         while (name != nullptr)
         {

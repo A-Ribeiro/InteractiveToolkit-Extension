@@ -1,19 +1,22 @@
 #pragma once
 
-#include <mbedtls/pk.h>
+// opaque structs
+struct mbedtls_pk_context;
 
 #include "TLSUtils.h"
 
 namespace TLS
 {
+    class SSLContext;
+    class GlobalSharedState;
 
     class PrivateKey
     {
         bool initialized;
+        std::unique_ptr<mbedtls_pk_context> private_key_context;
 
         PrivateKey();
     public:
-        mbedtls_pk_context private_key_context;
 
         bool isInitialized() const;
 
@@ -32,6 +35,9 @@ namespace TLS
         bool setKeyNotEncryptedFromFile(const char *key_path);
 
         TLS_DECLARE_CREATE_SHARED(PrivateKey)
+
+        friend class TLS::SSLContext;
+        friend class TLS::GlobalSharedState;
 
     };
 

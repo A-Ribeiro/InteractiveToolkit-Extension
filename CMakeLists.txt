@@ -71,8 +71,8 @@ PUBLIC
     ${INTERACTIVETOOLKIT_LIBRARIES}
     zlib-wrapper
     md5-wrapper
-    mbedtls-all
 PRIVATE
     libpng
     libjpeg
+    mbedtls-all
 )

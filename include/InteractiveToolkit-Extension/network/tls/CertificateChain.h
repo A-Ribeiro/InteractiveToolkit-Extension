@@ -1,23 +1,24 @@
 #pragma once
 
-#include <mbedtls/x509.h>
-#include <mbedtls/x509_crt.h>
-#include <mbedtls/x509_crl.h>
+// opaque structs
+struct mbedtls_x509_crt;
+struct mbedtls_x509_crl;
 
 #include "TLSUtils.h"
 
 namespace TLS
 {
+    class SSLContext;
 
     class CertificateChain
     {
         bool initialized;
 
+        std::unique_ptr<mbedtls_x509_crt> x509_crt;
+        std::unique_ptr<mbedtls_x509_crl> x509_crl;
+
         CertificateChain();
     public:
-
-        mbedtls_x509_crt x509_crt;
-        mbedtls_x509_crl x509_crl;
 
         bool isInitialized() const;
 
@@ -35,10 +36,11 @@ namespace TLS
         bool addSystemCertificates(bool add_all_certificates_is_required = false,
                                    bool add_all_crl_is_required = false);
 
-        static std::string getCertificateCommonName(mbedtls_x509_crt *x509_crt);
+        std::string getCertificateCommonName(int position_in_chain = 0);
 
         TLS_DECLARE_CREATE_SHARED(CertificateChain)
 
+        friend class TLS::SSLContext;
     };
 
 }
