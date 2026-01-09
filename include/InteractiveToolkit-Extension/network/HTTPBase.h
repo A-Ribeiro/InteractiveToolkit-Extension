@@ -2,6 +2,7 @@
 
 // #include "SocketTCP_SSL.h"
 #include <InteractiveToolkit/common.h>
+#include <InteractiveToolkit/EventCore/Callback.h>
 
 namespace Platform
 {
@@ -13,20 +14,38 @@ namespace ITKExtension
     namespace Network
     {
 
+        // for receiving
+        const int HTTP_READ_BUFFER_CHUNK_SIZE = 64 * 1024; // 64 KB
+        const int HTTP_MAX_HEADER_RAW_SIZE = HTTP_READ_BUFFER_CHUNK_SIZE - 2;
         const int HTTP_MAX_HEADER_COUNT = 100;
-        const int HTTP_MAX_HEADER_RAW_SIZE = 1024;
-        const int HTTP_READ_BUFFER_CHUNK_SIZE = 4 * 1024; // 4 KB
+
+        // for transmitting
+        const int HTTP_TRANSFER_ENCODING_MAX_SIZE = 16 * 1024; // 16 KB
+
+        // HTTP HTTPRequest & HTTPResponse
         const int HTTP_MAX_BODY_SIZE = 100 * 1024 * 1024; // 100 MB
 
-        const int HTTP_TRANSFER_ENCODING_MAX_SIZE = 16 * 1024; // 16 KB
+        struct HTTPStreamCallbacks
+        {
+            EventCore::Callback<bool(const char *main_header)> onFirstLine;
+            EventCore::Callback<bool(const char *key, const char *value)> onHeader;
+            EventCore::Callback<bool(const uint8_t *remaining_data, uint32_t size)> onHeadersComplete;
+            EventCore::Callback<bool(const uint8_t *data, uint32_t size)> onBodyPart;
+            EventCore::Callback<bool()> onComplete;
+        };
+
+        bool parseHTTPStream(Platform::SocketTCP *socket,
+                             const HTTPStreamCallbacks &callbacks,
+                             uint8_t *input_buffer, uint32_t input_buffer_size, // input_buffer needs to be at least HTTP_MAX_HEADER_RAW_SIZE
+                             uint32_t max_header_size_bytes,
+                             uint32_t max_header_count,
+                             bool read_body_until_connection_close);
 
         class HTTPBase
         {
         protected:
             virtual bool read_first_line(const std::string &firstLine) = 0;
             virtual std::string mount_first_line() = 0;
-
-            static bool is_valid_header_character(char _chr);
 
             std::unordered_map<std::string, std::string> headers;
             std::vector<uint8_t> body;
