@@ -20,6 +20,32 @@ namespace ITKExtension
                    _chr == ' ';
         }
 
+        static inline bool is_string_hex(const char *s2)
+        {
+            bool has_hex_digit = false;
+            for (size_t i = 0; s2[i] != '\0'; i++)
+            {
+                if (isxdigit(s2[i]))
+                    has_hex_digit = true;
+                else if (s2[i] != ' ' && s2[i] != '\t')
+                    return false;
+            }
+            return has_hex_digit;
+        }
+
+        static inline bool is_string_digit(const char *s2)
+        {
+            bool has_digit = false;
+            for (size_t i = 0; s2[i] != '\0'; i++)
+            {
+                if (isdigit(s2[i]))
+                    has_digit = true;
+                else if (s2[i] != ' ' && s2[i] != '\t')
+                    return false;
+            }
+            return has_digit;
+        }
+
         static inline int strcasecmp_custom(const char *s1, const char *s2)
         {
 #if defined(_WIN32)
@@ -34,7 +60,7 @@ namespace ITKExtension
             if (size == 0)
                 return dst;
             // non overlapping buffers
-            if (src > dst + size || dst > src + size)
+            if (src >= dst + size || dst >= src + size)
                 return memcpy(dst, src, size);
             // overlapping buffers, copy byte by byte
             for (uint32_t i = 0; i < size; i++)
@@ -47,9 +73,15 @@ namespace ITKExtension
             if (strcasecmp_custom(key, "Content-Length") != 0)
                 return false;
 
+            if (!is_string_digit(value))
+            {
+                printf("[HTTPBase] Invalid character in Content-Length header value: %s\n", value);
+                return false;
+            }
+
             if (sscanf(value, "%u", content_length) != 1)
             {
-                printf("[HTTPResponse] Invalid content_length code: %s\n", value);
+                printf("[HTTPBase] Invalid content_length code: %s\n", value);
                 return false;
             }
 
@@ -80,7 +112,7 @@ namespace ITKExtension
 
             if (input_buffer_size < max_header_size_bytes + 2)
             {
-                printf("[HTTP] max header size + 2 (CRLF) must fit into input buffer size.\n");
+                printf("[HTTPBase] max header size + 2 (CRLF) must fit into input buffer size.\n");
                 return false;
             }
 
@@ -112,7 +144,7 @@ namespace ITKExtension
                 {
                     if (crlf_pos > max_header_size_bytes)
                     {
-                        printf("[HTTP] HTTP header too large: %u bytes\n", (uint32_t)(crlf_pos + 2));
+                        printf("[HTTPBase] HTTP header too large: %u bytes\n", (uint32_t)(crlf_pos + 2));
                         return false;
                     }
 
@@ -122,7 +154,7 @@ namespace ITKExtension
                     {
                         if (!is_valid_header_character(input_buffer[i]))
                         {
-                            printf("[HTTP] Invalid character in HTTP header: %u\n", (uint8_t)input_buffer[i]);
+                            printf("[HTTPBase] Invalid character in HTTP header: %u\n", (uint8_t)input_buffer[i]);
                             return false;
                         }
                     }
@@ -141,7 +173,7 @@ namespace ITKExtension
                         bool found_key_value = value_pos < crlf_pos;
                         if (!found_key_value)
                         {
-                            printf("[HTTP] Invalid HTTP header format: %s\n", (const char *)input_buffer);
+                            printf("[HTTPBase] Invalid HTTP header format: %s\n", (const char *)input_buffer);
                             return false;
                         }
 
@@ -160,7 +192,7 @@ namespace ITKExtension
                         max_header_count--;
                         if (max_header_count == 0)
                         {
-                            printf("[HTTP] Too many HTTP header lines readed...\n");
+                            printf("[HTTPBase] Too many HTTP header lines readed...\n");
                             return false;
                         }
                     }
@@ -185,21 +217,26 @@ namespace ITKExtension
                     input_buffer_start = input_buffer_end;
                     if (input_buffer_end >= input_buffer_size)
                     {
-                        printf("[HTTP] header parsing overflow, increase the HTTP_MAX_HEADER_RAW_SIZE constant.\n");
+                        printf("[HTTPBase] header parsing overflow, increase the HTTP_MAX_HEADER_RAW_SIZE constant.\n");
                         return false;
                     }
                     if (input_buffer_start > max_header_size_bytes)
                     {
-                        printf("[HTTP] HTTP header too large: %u bytes\n", input_buffer_start);
+                        printf("[HTTPBase] HTTP header too large: %u bytes\n", input_buffer_start);
                         return false;
                     }
                     uint32_t readed_feedback;
                     if (!socket->read_buffer(input_buffer + input_buffer_end, input_buffer_size - input_buffer_end, &readed_feedback))
                     {
                         if (socket->isReadTimedout())
-                            printf("[HTTP] Socket read timed out\n");
+                            printf("[HTTPBase] Socket read timed out\n");
                         else
-                            printf("[HTTP] Connection or thread interrupted with the read feedback: %u (must be 0)\n", input_buffer_end);
+                            printf("[HTTPBase] Connection or thread interrupted with the read feedback: %u (must be 0)\n", input_buffer_end);
+                        return false;
+                    }
+                    if (input_buffer_end > UINT32_MAX - readed_feedback)
+                    {
+                        printf("[HTTPBase] Integer overflow in buffer size calculation\n");
                         return false;
                     }
                     input_buffer_end += readed_feedback;
@@ -245,9 +282,14 @@ namespace ITKExtension
                                     if (state == ReadChunkSize)
                                     {
                                         input_buffer[crlf_pos] = '\0';
+                                        if (!is_string_hex((const char *)input_buffer))
+                                        {
+                                            printf("[HTTPBase] Invalid character in chunk size\n");
+                                            return false;
+                                        }
                                         if (sscanf((const char *)input_buffer, "%x", &chunk_size) != 1)
                                         {
-                                            printf("[HTTP] Invalid chunk size: %s\n", (const char *)input_buffer);
+                                            printf("[HTTPBase] Invalid chunk size: %s\n", (const char *)input_buffer);
                                             return false;
                                         }
                                     }
@@ -257,7 +299,7 @@ namespace ITKExtension
                                         // crlf_pos needs to be 0
                                         if (crlf_pos != 0)
                                         {
-                                            printf("[HTTP] Invalid chunk ending CRLF\n");
+                                            printf("[HTTPBase] Invalid chunk ending CRLF\n");
                                             return false;
                                         }
                                     }
@@ -291,7 +333,7 @@ namespace ITKExtension
                                 uint32_t range = input_buffer_end - input_buffer_start;
                                 if (range > input_buffer_size)
                                 {
-                                    printf("[HTTP] Logic error, chunk data range exceeds input buffer size\n");
+                                    printf("[HTTPBase] Logic error, chunk data range exceeds input buffer size\n");
                                     return false;
                                 }
 
@@ -335,16 +377,21 @@ namespace ITKExtension
                             // read_check_start = readed_bytes_total;
                             if (input_buffer_end >= input_buffer_size)
                             {
-                                printf("[HTTP] Logic error, cannot read more data into buffer\n");
+                                printf("[HTTPBase] Logic error, cannot read more data into buffer\n");
                                 return false;
                             }
                             uint32_t readed_feedback;
                             if (!socket->read_buffer(input_buffer + input_buffer_end, input_buffer_size - input_buffer_end, &readed_feedback))
                             {
                                 if (socket->isReadTimedout())
-                                    printf("[HTTP] Socket read timed out\n");
+                                    printf("[HTTPBase] Socket read timed out\n");
                                 else
-                                    printf("[HTTP] Connection or thread interrupted with the read feedback: %u (must be 0)\n", input_buffer_end);
+                                    printf("[HTTPBase] Connection or thread interrupted with the read feedback: %u (must be 0)\n", input_buffer_end);
+                                return false;
+                            }
+                            if (input_buffer_end > UINT32_MAX - readed_feedback)
+                            {
+                                printf("[HTTPBase] Integer overflow in buffer size calculation\n");
                                 return false;
                             }
                             input_buffer_end += readed_feedback;
@@ -353,7 +400,7 @@ namespace ITKExtension
                 }
                 else
                 {
-                    printf("[HTTP] Unsupported Transfer-Encoding\n");
+                    printf("[HTTPBase] Unsupported Transfer-Encoding\n");
                     return false;
                 }
             }
@@ -362,7 +409,7 @@ namespace ITKExtension
                 uint32_t range = input_buffer_end - input_buffer_start;
                 if (range > input_buffer_size)
                 {
-                    printf("[HTTP] Logic error, chunk data range exceeds input buffer size\n");
+                    printf("[HTTPBase] Logic error, chunk data range exceeds input buffer size\n");
                     return false;
                 }
 
@@ -383,11 +430,11 @@ namespace ITKExtension
                     if (!socket->read_buffer(input_buffer, to_read, &input_buffer_end))
                     {
                         if (socket->isClosed())
-                            printf("[HTTP] Connection closed before reading all body data\n");
+                            printf("[HTTPBase] Connection closed before reading all body data\n");
                         else if (socket->isReadTimedout())
-                            printf("[HTTP] Socket read timed out\n");
+                            printf("[HTTPBase] Socket read timed out\n");
                         else
-                            printf("[HTTP] Connection or thread interrupted with the read feedback: %u (must be 0)\n", input_buffer_end);
+                            printf("[HTTPBase] Connection or thread interrupted with the read feedback: %u (must be 0)\n", input_buffer_end);
                         return false;
                     }
 
@@ -407,7 +454,7 @@ namespace ITKExtension
                     uint32_t range = input_buffer_end - input_buffer_start;
                     if (range > input_buffer_size)
                     {
-                        printf("[HTTP] Logic error, chunk data range exceeds input buffer size\n");
+                        printf("[HTTPBase] Logic error, chunk data range exceeds input buffer size\n");
                         return false;
                     }
                     // the remaining buffer has body data
@@ -424,9 +471,9 @@ namespace ITKExtension
                         if (socket->isClosed())
                             break; // connection closed
                         else if (socket->isReadTimedout())
-                            printf("[HTTP] Socket read timed out\n");
+                            printf("[HTTPBase] Socket read timed out\n");
                         else
-                            printf("[HTTP] Connection or thread interrupted with the read feedback: %u (must be 0)\n", input_buffer_end);
+                            printf("[HTTPBase] Connection or thread interrupted with the read feedback: %u (must be 0)\n", input_buffer_end);
                         return false;
                     }
 
@@ -466,7 +513,7 @@ namespace ITKExtension
                  {
                     if (this->body.size() + size > HTTP_MAX_BODY_SIZE)
                     {
-                        printf("[HTTP] Body size exceeds maximum allowed size: %u bytes\n", HTTP_MAX_BODY_SIZE);
+                        printf("[HTTPBase] Body size exceeds maximum allowed size: %u bytes\n", HTTP_MAX_BODY_SIZE);
                         return false;
                     }
                     this->body.insert(this->body.end(), data, data + size);
@@ -491,7 +538,7 @@ namespace ITKExtension
                 {
                     if (!is_valid_header_character(ch))
                     {
-                        printf("[HTTP] Invalid character in HTTP request line: %u\n", (uint8_t)ch);
+                        printf("[HTTPBase] Invalid character in HTTP request line: %u\n", (uint8_t)ch);
                         return false;
                     }
                 }
@@ -499,7 +546,7 @@ namespace ITKExtension
                 {
                     if (!is_valid_header_character(ch))
                     {
-                        printf("[HTTP] Invalid character in HTTP request line: %u\n", (uint8_t)ch);
+                        printf("[HTTPBase] Invalid character in HTTP request line: %u\n", (uint8_t)ch);
                         return false;
                     }
                 }
@@ -518,13 +565,13 @@ namespace ITKExtension
             {
                 if (getHeader("Content-Length") != std::to_string(body.size()))
                 {
-                    printf("[HTTP] Content-Length header does not match body size\n");
+                    printf("[HTTPBase] Content-Length header does not match body size\n");
                     return false;
                 }
             }
             else if (hasHeader("Content-Length"))
             {
-                printf("[HTTP] Content-Length header set but body is empty\n");
+                printf("[HTTPBase] Content-Length header set but body is empty\n");
                 return false;
             }
 
@@ -533,7 +580,7 @@ namespace ITKExtension
             {
                 if (!is_valid_header_character(ch))
                 {
-                    printf("[HTTP] Invalid character in HTTP request line: %u\n", (uint8_t)ch);
+                    printf("[HTTPBase] Invalid character in HTTP request line: %u\n", (uint8_t)ch);
                     return false;
                 }
             }
