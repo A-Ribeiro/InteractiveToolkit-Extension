@@ -66,6 +66,8 @@ namespace ITKExtension
 
             std::string getHeader(const std::string &key) const;
 
+            void eraseHeader(const std::string &key);
+
             // Case-insensitive header find (HTTP headers are case-insensitive per RFC 7230)
             std::unordered_map<std::string, std::string>::const_iterator findHeaderCaseInsensitive(const std::string &key) const;
 
@@ -79,6 +81,7 @@ namespace ITKExtension
                               const std::string &content_type = "application/octet-stream");
 
             std::string bodyAsString() const;
+            const std::vector<uint8_t> &bodyAsVector() const;
         };
 
     }

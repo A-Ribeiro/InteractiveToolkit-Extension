@@ -464,8 +464,13 @@ namespace ITKExtension
                  // onBodyPart
                  [this](const uint8_t *data, uint32_t size)
                  {
-                        this->body.insert(this->body.end(), data, data + size);
-                        return true; },
+                    if (this->body.size() + size > HTTP_MAX_BODY_SIZE)
+                    {
+                        printf("[HTTP] Body size exceeds maximum allowed size: %u bytes\n", HTTP_MAX_BODY_SIZE);
+                        return false;
+                    }
+                    this->body.insert(this->body.end(), data, data + size);
+                    return true; },
                  // onComplete
                  []()
                  { return true; }},
@@ -635,9 +640,21 @@ namespace ITKExtension
             return "";
         }
 
+        void HTTPBase::eraseHeader(const std::string &key)
+        {
+            auto it = findHeaderCaseInsensitive(key);
+            if (it != headers.end())
+                headers.erase(it);
+        }
+
         HTTPBase &HTTPBase::setHeader(const std::string &key,
                                       const std::string &value)
         {
+            if (value.length() == 0)
+            { // erase header if value is empty
+                eraseHeader(key);
+                return *this;
+            }
             std::string key_copy;
             key_copy.resize(key.length());
             for (int i = 0; i < (int)key.length(); i++)
@@ -687,6 +704,11 @@ namespace ITKExtension
         std::string HTTPBase::bodyAsString() const
         {
             return std::string(body.begin(), body.end());
+        }
+
+        const std::vector<uint8_t> &HTTPBase::bodyAsVector() const
+        {
+            return body;
         }
 
     }
