@@ -210,7 +210,7 @@ namespace TLS
 #endif
         }
 
-        static ThreadingMutexWrapper *ThreadingMutexWrapper::Instance()
+        static ThreadingMutexWrapper *Instance()
         {
             static ThreadingMutexWrapper instance;
             return &instance;
