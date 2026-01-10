@@ -485,7 +485,7 @@ namespace ITKExtension
                  { return true; }},
                 input_buffer.data(),                               // input buffer_a
                 input_buffer.data() + HTTP_READ_BUFFER_CHUNK_SIZE, // input buffer_b
-                input_buffer.size(),                               // input buffer size
+                (uint32_t)input_buffer.size(),                     // input buffer size
                 HTTP_MAX_HEADER_RAW_SIZE,                          // max_header_size_bytes
                 HTTP_MAX_HEADER_COUNT,                             // max header count
                 read_body_until_connection_close                   // read body until connection close
