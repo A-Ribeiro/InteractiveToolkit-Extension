@@ -231,13 +231,20 @@ namespace TLS
                     return 0;
                 Platform::SocketTCP *tcp_socket = static_cast<Platform::SocketTCP *>(context);
                 uint32_t write_feedback;
-                if (!tcp_socket->Platform::SocketTCP::write_buffer(data, (uint32_t)size, &write_feedback))
+                Platform::SocketResult res = tcp_socket->Platform::SocketTCP::write_buffer(data, (uint32_t)size, &write_feedback);
+                if (res != Platform::SOCKET_RESULT_OK)
                 {
+                    if (res == Platform::SOCKET_RESULT_TIMEOUT)
+                        return MBEDTLS_ERR_SSL_TIMEOUT;
+                    // only non-blocking sockets can return WOULD_BLOCK
+                    if (res == Platform::SOCKET_RESULT_WOULD_BLOCK)
+                    {
+                        if (write_feedback == 0)
+                            return MBEDTLS_ERR_SSL_WANT_WRITE;
+                        // partial write
+                        return (int)write_feedback;
+                    }
                     return MBEDTLS_ERR_NET_CONN_RESET;
-                    // if (tcp_socket->Platform::SocketTCP::isClosed())
-                    //     return MBEDTLS_ERR_NET_CONN_RESET;
-                    // else
-                    //     return MBEDTLS_ERR_SSL_WANT_WRITE;
                 }
                 return (int)write_feedback;
             },
@@ -247,16 +254,15 @@ namespace TLS
                     return 0;
                 Platform::SocketTCP *tcp_socket = static_cast<Platform::SocketTCP *>(context);
                 uint32_t read_feedback;
-                // tcp_socket->Platform::SocketTCP::setReadTimeout(0);
-                if (!tcp_socket->Platform::SocketTCP::read_buffer(data, (uint32_t)size, &read_feedback))
+                Platform::SocketResult res = tcp_socket->Platform::SocketTCP::read_buffer(data, (uint32_t)size, &read_feedback);
+                if (res != Platform::SOCKET_RESULT_OK)
                 {
-                    if (tcp_socket->Platform::SocketTCP::isReadTimedout())
+                    if (res == Platform::SOCKET_RESULT_TIMEOUT)
                         return MBEDTLS_ERR_SSL_TIMEOUT;
+                    // only non-blocking sockets can return WOULD_BLOCK
+                    if (res == Platform::SOCKET_RESULT_WOULD_BLOCK)
+                        return MBEDTLS_ERR_SSL_WANT_READ;
                     return MBEDTLS_ERR_NET_CONN_RESET;
-                    // if (tcp_socket->Platform::SocketTCP::isClosed())
-                    //     return MBEDTLS_ERR_NET_CONN_RESET;
-                    // else
-                    //     return MBEDTLS_ERR_SSL_WANT_READ;
                 }
                 return (int)read_feedback;
             },
@@ -266,19 +272,15 @@ namespace TLS
             //     Platform::SocketTCP *tcp_socket = static_cast<Platform::SocketTCP *>(context);
             //     uint32_t read_feedback;
             //     tcp_socket->Platform::SocketTCP::setReadTimeout(timeout_ms);
-            //     if (!tcp_socket->Platform::SocketTCP::read_buffer(data, (uint32_t)size, &read_feedback))
+            //     Platform::SocketResult res = tcp_socket->Platform::SocketTCP::read_buffer(data, (uint32_t)size, &read_feedback);
+            //     if (res != Platform::SOCKET_RESULT_OK)
             //     {
-            //         if (tcp_socket->Platform::SocketTCP::isReadTimedout())
+            //         if (res == Platform::SOCKET_RESULT_TIMEOUT)
             //             return MBEDTLS_ERR_SSL_TIMEOUT;
-            //         else
-            //             return MBEDTLS_ERR_NET_CONN_RESET;
-
-            //         // if (tcp_socket->Platform::SocketTCP::isClosed())
-            //         //     return MBEDTLS_ERR_NET_CONN_RESET;
-            //         // else if (tcp_socket->Platform::SocketTCP::isReadTimedout())
-            //         //     return MBEDTLS_ERR_SSL_TIMEOUT;
-            //         // else
-            //         //     return MBEDTLS_ERR_SSL_WANT_READ;
+            //         // only non-blocking sockets can return WOULD_BLOCK
+            //         if (res == Platform::SOCKET_RESULT_WOULD_BLOCK)
+            //             return MBEDTLS_ERR_SSL_WANT_READ;
+            //         return MBEDTLS_ERR_NET_CONN_RESET;
             //     }
             //     return (int)read_feedback;
             // }
@@ -286,12 +288,12 @@ namespace TLS
         return true;
     }
 
-    bool SSLContext::doHandshake()
+    Platform::SocketResult SSLContext::doHandshake()
     {
         if (this->handshake_done)
-            return true;
+            return Platform::SOCKET_RESULT_OK;
         if (this->certificate_chain == nullptr)
-            return false;
+            return Platform::SOCKET_RESULT_ERROR;
 
         int result;
         bool should_retry;
@@ -310,6 +312,9 @@ namespace TLS
                             result == MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET);
             // if (result == MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA)
             //     mbedtls_ssl_read_early_data(&ssl_context, ...);
+            if (result == MBEDTLS_ERR_SSL_WANT_READ ||
+                result == MBEDTLS_ERR_SSL_WANT_WRITE)
+                return Platform::SOCKET_RESULT_WOULD_BLOCK;
             if (should_retry)
                 Platform::Sleep::millis(1);
         } while (should_retry);
@@ -336,11 +341,11 @@ namespace TLS
             }
 
             release_structures();
-            return false;
+            return Platform::SOCKET_RESULT_ERROR;
         }
 
         handshake_done = true;
-        return true;
+        return Platform::SOCKET_RESULT_OK;
     }
 
     void SSLContext::close()
@@ -371,11 +376,11 @@ namespace TLS
         return "";
     }
 
-    bool SSLContext::write_buffer(const uint8_t *data, uint32_t size, uint32_t *write_feedback)
+    Platform::SocketResult SSLContext::write_buffer(const uint8_t *data, uint32_t size, uint32_t *write_feedback)
     {
         *write_feedback = 0;
         if (!this->handshake_done)
-            return false;
+            return Platform::SOCKET_RESULT_ERROR;
 
         int result;
         bool should_retry;
@@ -402,37 +407,41 @@ namespace TLS
                                );
                 // if (result == MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA)
                 //     mbedtls_ssl_read_early_data(&ssl_context, ...);
+                if (result == MBEDTLS_ERR_SSL_WANT_READ ||
+                    result == MBEDTLS_ERR_SSL_WANT_WRITE)
+                    return Platform::SOCKET_RESULT_WOULD_BLOCK;
                 if (should_retry)
                     Platform::Sleep::millis(1);
             } while (should_retry);
 
-            if (result < 0)
-            {
-                printf("Error writing TLS data: %s\n", TLSUtils::errorMessageFromReturnCode(result).c_str());
-                release_structures();
-                return false;
-            }
-            else if (result == 0 || result == MBEDTLS_ERR_NET_CONN_RESET)
+            if (result == 0 || result == MBEDTLS_ERR_NET_CONN_RESET)
             {
                 // connection was closed
                 printf("TLS connection was closed during write.\n");
                 release_structures();
-                return false;
+                return Platform::SOCKET_RESULT_CLOSED;
             }
+            else if (result < 0)
+            {
+                printf("Error writing TLS data: %s\n", TLSUtils::errorMessageFromReturnCode(result).c_str());
+                release_structures();
+                return Platform::SOCKET_RESULT_ERROR;
+            }
+            
 
             current_pos += (uint32_t)result;
             *write_feedback = current_pos;
         }
 
-        return true;
+        return Platform::SOCKET_RESULT_OK;
     }
 
-    bool SSLContext::read_buffer(uint8_t *data, uint32_t size, uint32_t *read_feedback)
+    Platform::SocketResult SSLContext::read_buffer(uint8_t *data, uint32_t size, uint32_t *read_feedback)
     {
         *read_feedback = 0;
 
         if (!this->handshake_done)
-            return false;
+            return Platform::SOCKET_RESULT_ERROR;
 
         int result;
         bool should_retry;
@@ -452,6 +461,9 @@ namespace TLS
                            );
             // if (result == MBEDTLS_ERR_SSL_RECEIVED_EARLY_DATA)
             //     mbedtls_ssl_read_early_data(&ssl_context, ...);
+            if (result == MBEDTLS_ERR_SSL_WANT_READ ||
+                result == MBEDTLS_ERR_SSL_WANT_WRITE)
+                return Platform::SOCKET_RESULT_WOULD_BLOCK;
             if (should_retry)
                 Platform::Sleep::millis(1);
         } while (should_retry);
@@ -460,17 +472,17 @@ namespace TLS
         {
             printf("TLS connection was closed during read.\n");
             release_structures();
-            return false;
+            return Platform::SOCKET_RESULT_CLOSED;
         }
         else if (result < 0)
         {
             printf("Error reading TLS data: %s\n", TLSUtils::errorMessageFromReturnCode(result).c_str());
             release_structures();
-            return false;
+            return Platform::SOCKET_RESULT_ERROR;
         }
 
         *read_feedback = (uint32_t)result;
 
-        return true;
+        return Platform::SOCKET_RESULT_OK;
     }
 }

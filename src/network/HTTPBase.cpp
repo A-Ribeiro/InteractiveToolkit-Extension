@@ -197,9 +197,10 @@ namespace ITKExtension
                         return false;
                     }
                     uint32_t readed_feedback;
-                    if (!socket->read_buffer(input_buffer_a + input_buffer_end, input_buffer_size - input_buffer_end, &readed_feedback))
+                    Platform::SocketResult res = socket->read_buffer(input_buffer_a + input_buffer_end, input_buffer_size - input_buffer_end, &readed_feedback);
+                    if (res != Platform::SOCKET_RESULT_OK)
                     {
-                        if (socket->isReadTimedout())
+                        if (res == Platform::SOCKET_RESULT_TIMEOUT)
                             printf("[HTTP] Socket read timed out\n");
                         else
                             printf("[HTTP] Connection or thread interrupted with the read feedback: %u (must be 0)\n", readed_feedback);
@@ -344,9 +345,10 @@ namespace ITKExtension
                                 return false;
                             }
                             uint32_t readed_feedback;
-                            if (!socket->read_buffer(input_buffer_a + input_buffer_end, input_buffer_size - input_buffer_end, &readed_feedback))
+                            Platform::SocketResult res = socket->read_buffer(input_buffer_a + input_buffer_end, input_buffer_size - input_buffer_end, &readed_feedback);
+                            if (res != Platform::SOCKET_RESULT_OK)
                             {
-                                if (socket->isReadTimedout())
+                                if (res == Platform::SOCKET_RESULT_TIMEOUT)
                                     printf("[HTTP] Socket read timed out\n");
                                 else
                                     printf("[HTTP] Connection or thread interrupted with the read feedback: %u (must be 0)\n", readed_feedback);
@@ -385,11 +387,12 @@ namespace ITKExtension
                 while (total_read < content_length)
                 {
                     uint32_t to_read = (std::min)(content_length - total_read, input_buffer_size);
-                    if (!socket->read_buffer(input_buffer_a, to_read, &input_buffer_end))
+                    Platform::SocketResult res = socket->read_buffer(input_buffer_a, to_read, &input_buffer_end);
+                    if (res != Platform::SOCKET_RESULT_OK)
                     {
-                        if (socket->isClosed())
+                        if (res == Platform::SOCKET_RESULT_CLOSED)
                             printf("[HTTP] Connection closed before reading all body data\n");
-                        else if (socket->isReadTimedout())
+                        else if (res == Platform::SOCKET_RESULT_TIMEOUT)
                             printf("[HTTP] Socket read timed out\n");
                         else
                             printf("[HTTP] Connection or thread interrupted with the read feedback: %u (must be 0)\n", input_buffer_end);
@@ -424,11 +427,12 @@ namespace ITKExtension
 
                 while (true)
                 {
-                    if (!socket->read_buffer(input_buffer_a, input_buffer_size, &input_buffer_end))
+                    Platform::SocketResult res = socket->read_buffer(input_buffer_a, input_buffer_size, &input_buffer_end);
+                    if (res != Platform::SOCKET_RESULT_OK)
                     {
-                        if (socket->isClosed())
+                        if (res == Platform::SOCKET_RESULT_CLOSED)
                             break; // connection closed
-                        else if (socket->isReadTimedout())
+                        else if (res == Platform::SOCKET_RESULT_TIMEOUT)
                             printf("[HTTP] Socket read timed out\n");
                         else
                             printf("[HTTP] Connection or thread interrupted with the read feedback: %u (must be 0)\n", input_buffer_end);
@@ -545,33 +549,33 @@ namespace ITKExtension
             }
 
             uint32_t write_feedback = 0;
-            if (!socket->write_buffer((uint8_t *)request_line.c_str(), (uint32_t)request_line.length(), &write_feedback))
+            if (socket->write_buffer((uint8_t *)request_line.c_str(), (uint32_t)request_line.length(), &write_feedback) != Platform::SOCKET_RESULT_OK)
                 return false;
 
             // line ending
             const char *line_ending_crlf = "\r\n";
-            if (!socket->write_buffer((uint8_t *)line_ending_crlf, 2, &write_feedback))
+            if (socket->write_buffer((uint8_t *)line_ending_crlf, 2, &write_feedback) != Platform::SOCKET_RESULT_OK)
                 return false;
 
             for (const auto &header_pair : headers)
             {
-                if (!socket->write_buffer((uint8_t *)header_pair.first.c_str(), (uint32_t)header_pair.first.length(), &write_feedback))
+                if (socket->write_buffer((uint8_t *)header_pair.first.c_str(), (uint32_t)header_pair.first.length(), &write_feedback) != Platform::SOCKET_RESULT_OK)
                     return false;
 
                 const char *header_separator = ": ";
-                if (!socket->write_buffer((uint8_t *)header_separator, 2, &write_feedback))
+                if (socket->write_buffer((uint8_t *)header_separator, 2, &write_feedback) != Platform::SOCKET_RESULT_OK)
                     return false;
 
-                if (!socket->write_buffer((uint8_t *)header_pair.second.c_str(), (uint32_t)header_pair.second.length(), &write_feedback))
+                if (socket->write_buffer((uint8_t *)header_pair.second.c_str(), (uint32_t)header_pair.second.length(), &write_feedback) != Platform::SOCKET_RESULT_OK)
                     return false;
 
                 // const char *line_ending_crlf = "\r\n";
-                if (!socket->write_buffer((uint8_t *)line_ending_crlf, 2, &write_feedback))
+                if (socket->write_buffer((uint8_t *)line_ending_crlf, 2, &write_feedback) != Platform::SOCKET_RESULT_OK)
                     return false;
             }
 
             // const char *line_ending_crlf = "\r\n";
-            if (!socket->write_buffer((uint8_t *)line_ending_crlf, 2, &write_feedback))
+            if (socket->write_buffer((uint8_t *)line_ending_crlf, 2, &write_feedback) != Platform::SOCKET_RESULT_OK)
                 return false;
 
             // body
@@ -588,15 +592,15 @@ namespace ITKExtension
                         // Write chunk size in hexadecimal followed by \r\n
                         char chunk_header[32];
                         snprintf(chunk_header, sizeof(chunk_header), "%x\r\n", chunk_size);
-                        if (!socket->write_buffer((uint8_t *)chunk_header, (uint32_t)strlen(chunk_header), &write_feedback))
+                        if (socket->write_buffer((uint8_t *)chunk_header, (uint32_t)strlen(chunk_header), &write_feedback) != Platform::SOCKET_RESULT_OK)
                             return false;
 
                         // Write chunk data
-                        if (!socket->write_buffer((uint8_t *)&body[total_sent], chunk_size, &write_feedback))
+                        if (socket->write_buffer((uint8_t *)&body[total_sent], chunk_size, &write_feedback) != Platform::SOCKET_RESULT_OK)
                             return false;
 
                         // Write trailing \r\n
-                        if (!socket->write_buffer((uint8_t *)line_ending_crlf, 2, &write_feedback))
+                        if (socket->write_buffer((uint8_t *)line_ending_crlf, 2, &write_feedback) != Platform::SOCKET_RESULT_OK)
                             return false;
 
                         total_sent += chunk_size;
@@ -604,13 +608,13 @@ namespace ITKExtension
 
                     // Write final chunk (size 0) to indicate end of chunked data
                     const char *final_chunk = "0\r\n\r\n";
-                    if (!socket->write_buffer((uint8_t *)final_chunk, 5, &write_feedback))
+                    if (socket->write_buffer((uint8_t *)final_chunk, 5, &write_feedback) != Platform::SOCKET_RESULT_OK)
                         return false;
                 }
                 else
                 {
                     // Write body as normal (non-chunked)
-                    if (!socket->write_buffer((uint8_t *)body.data(), (uint32_t)body.size(), &write_feedback))
+                    if (socket->write_buffer((uint8_t *)body.data(), (uint32_t)body.size(), &write_feedback) != Platform::SOCKET_RESULT_OK)
                         return false;
                 }
             }

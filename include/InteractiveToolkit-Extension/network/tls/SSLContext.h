@@ -8,6 +8,7 @@ struct mbedtls_ssl_context;
 struct mbedtls_ssl_config;
 
 #include <InteractiveToolkit/EventCore/Callback.h>
+#include <InteractiveToolkit/Platform/Core/SocketUtils.h>
 
 namespace Platform
 {
@@ -53,14 +54,14 @@ namespace TLS
 
         bool communicateWithThisSocket(Platform::SocketTCP *socket);
 
-        bool doHandshake();
+        Platform::SocketResult doHandshake();
 
         void close();
 
         std::string getUsedCiphersuite() const;
 
-        bool write_buffer(const uint8_t *data, uint32_t size, uint32_t *write_feedback);
-        bool read_buffer(uint8_t *data, uint32_t size, uint32_t *read_feedback);
+        Platform::SocketResult write_buffer(const uint8_t *data, uint32_t size, uint32_t *write_feedback);
+        Platform::SocketResult read_buffer(uint8_t *data, uint32_t size, uint32_t *read_feedback);
 
         TLS_DECLARE_CREATE_SHARED(SSLContext)
 
