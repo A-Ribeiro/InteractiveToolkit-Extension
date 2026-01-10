@@ -15,7 +15,7 @@ namespace ITKExtension
     {
 
         // for receiving
-        const int HTTP_READ_BUFFER_CHUNK_SIZE = 64 * 1024; // 64 KB
+        const int HTTP_READ_BUFFER_CHUNK_SIZE = 32 * 1024; // 32 KB -- the implementation of parseHTTPStream uses 2 buffers with this size
         const int HTTP_MAX_HEADER_RAW_SIZE = HTTP_READ_BUFFER_CHUNK_SIZE - 2;
         const int HTTP_MAX_HEADER_COUNT = 100;
 
@@ -36,7 +36,9 @@ namespace ITKExtension
 
         bool parseHTTPStream(Platform::SocketTCP *socket,
                              const HTTPStreamCallbacks &callbacks,
-                             uint8_t *input_buffer, uint32_t input_buffer_size, // input_buffer needs to be at least HTTP_MAX_HEADER_RAW_SIZE
+                             uint8_t *input_buffer_a, // two buffers to improve memcpy performance
+                             uint8_t *input_buffer_b, // two buffers to improve memcpy performance
+                             uint32_t input_buffer_size, // input_buffer needs to be at least HTTP_MAX_HEADER_RAW_SIZE
                              uint32_t max_header_size_bytes,
                              uint32_t max_header_count,
                              bool read_body_until_connection_close);
