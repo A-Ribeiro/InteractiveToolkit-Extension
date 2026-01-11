@@ -29,467 +29,115 @@ namespace ITKExtension
 #endif
         }
 
-        static inline void *memcpy_custom(uint8_t *dst, const uint8_t *src, uint32_t size)
-        {
-            if (size == 0)
-                return dst;
-            // non overlapping buffers
-            if (src > dst + size || dst > src + size)
-                return memcpy(dst, src, size);
-            // overlapping buffers, copy byte by byte
-            for (uint32_t i = 0; i < size; i++)
-                dst[i] = src[i];
-            return dst;
-        }
-
-        static inline bool checkContentLengthHeader(const char *key, const char *value, uint32_t *content_length)
-        {
-            if (strcasecmp_custom(key, "Content-Length") != 0)
-                return false;
-
-            if (sscanf(value, "%u", content_length) != 1)
-            {
-                printf("[HTTPResponse] Invalid content_length code: %s\n", value);
-                return false;
-            }
-
-            return true;
-        }
-
-        static inline bool checkTransferEncodingHeader(const char *key, const char *value, bool *is_chunked)
-        {
-            if (strcasecmp_custom(key, "Transfer-Encoding") != 0)
-                return false;
-
-            const char *pos = strstr(value, "chunked");
-            // if (pos)
-            //     index = pos - value; // offset from start
-            *is_chunked = pos != nullptr;
-
-            return true;
-        }
-
-        bool parseHTTPStream(Platform::SocketTCP *socket,
-                             const HTTPStreamCallbacks &callbacks,
-                             uint8_t *input_buffer_a, // two buffers to improve memcpy performance
-                             uint8_t *input_buffer_b, // two buffers to improve memcpy performance
-                             uint32_t input_buffer_size,
-                             uint32_t max_header_size_bytes,
-                             uint32_t max_header_count,
-                             bool read_body_until_connection_close)
-        {
-            using namespace AlgorithmCore::PatternMatch;
-
-            if (input_buffer_size < max_header_size_bytes + 2)
-            {
-                printf("[HTTP] max header size + 2 (CRLF) must fit into input buffer size.\n");
-                return false;
-            }
-
-            // reading headers
-            uint32_t input_buffer_start = 0;
-            uint32_t input_buffer_end = 0;
-            bool first_line = true;
-
-            // body special headers
-            uint32_t content_length = 0;
-            bool is_chunked = false;
-
-            bool content_length_present = false;
-            bool transfer_encoding_present = false;
-
-            // parse headers data
-            while (true)
-            {
-                const char *pattern = "\r\n";
-                // Only need to check 1 byte back for boundary case where '\r' is at read_check_start-1
-                // and '\n' is at read_check_start (pattern spans old/new data boundary)
-                uint32_t start_buffer_search = 0;
-                if (input_buffer_start >= 1)
-                    start_buffer_search = input_buffer_start - 1;
-                uint32_t crlf_pos = array_index_of(input_buffer_a, start_buffer_search, input_buffer_end, (const uint8_t *)pattern, 2);
-                bool found_crlf = crlf_pos < input_buffer_end;
-
-                if (found_crlf)
-                {
-                    if (crlf_pos > max_header_size_bytes)
-                    {
-                        printf("[HTTP] HTTP header too large: %u bytes\n", (uint32_t)(crlf_pos + 2));
-                        return false;
-                    }
-
-                    input_buffer_a[crlf_pos] = '\0';
-                    // check header bytes
-                    for (uint32_t i = 0; i < crlf_pos; i++)
-                    {
-                        if (!is_valid_header_character(input_buffer_a[i]))
-                        {
-                            printf("[HTTP] Invalid character in HTTP header: %u\n", (uint8_t)input_buffer_a[i]);
-                            return false;
-                        }
-                    }
-
-                    if (first_line)
-                    {
-                        if (!callbacks.onFirstLine((const char *)input_buffer_a))
-                            return false;
-                        first_line = false;
-                    }
-                    else if (crlf_pos > 0)
-                    {
-                        // normal header
-                        const char *pattern_header = ": ";
-                        size_t value_pos = array_index_of(input_buffer_a, 0, crlf_pos, (const uint8_t *)pattern_header, 2);
-                        bool found_key_value = value_pos < crlf_pos;
-                        if (!found_key_value)
-                        {
-                            printf("[HTTP] Invalid HTTP header format: %s\n", (const char *)input_buffer_a);
-                            return false;
-                        }
-
-                        input_buffer_a[value_pos] = '\0';
-                        const char *key = (const char *)input_buffer_a;
-                        const char *value = (const char *)&input_buffer_a[value_pos + 2];
-
-                        if (!content_length_present)
-                            content_length_present |= checkContentLengthHeader(key, value, &content_length);
-                        if (!transfer_encoding_present)
-                            transfer_encoding_present |= checkTransferEncodingHeader(key, value, &is_chunked);
-
-                        if (!callbacks.onHeader(key, value))
-                            return false;
-
-                        max_header_count--;
-                        if (max_header_count == 0)
-                        {
-                            printf("[HTTP] Too many HTTP header lines readed...\n");
-                            return false;
-                        }
-                    }
-
-                    // move the remaining data to the beginning of the buffer
-                    uint32_t line_ending_pos = crlf_pos + 2;
-                    input_buffer_end -= line_ending_pos;
-                    input_buffer_start = 0;
-                    memcpy_custom(input_buffer_b, &input_buffer_a[line_ending_pos], input_buffer_end);
-                    std::swap(input_buffer_a, input_buffer_b);
-
-                    if (crlf_pos == 0)
-                    {
-                        // headers ending detection
-                        if (!callbacks.onHeadersComplete(input_buffer_a, input_buffer_end))
-                            return false;
-                        break; // end of headers
-                    }
-                }
-                else
-                {
-                    // need more data
-                    input_buffer_start = input_buffer_end;
-                    if (input_buffer_end >= input_buffer_size)
-                    {
-                        printf("[HTTP] header parsing overflow, increase the HTTP_MAX_HEADER_RAW_SIZE constant.\n");
-                        return false;
-                    }
-                    if (input_buffer_start > max_header_size_bytes)
-                    {
-                        printf("[HTTP] HTTP header too large: %u bytes\n", input_buffer_start);
-                        return false;
-                    }
-                    uint32_t readed_feedback;
-                    Platform::SocketResult res = socket->read_buffer(input_buffer_a + input_buffer_end, input_buffer_size - input_buffer_end, &readed_feedback);
-                    if (res != Platform::SOCKET_RESULT_OK)
-                    {
-                        if (res == Platform::SOCKET_RESULT_TIMEOUT)
-                            printf("[HTTP] Socket read timed out\n");
-                        else
-                            printf("[HTTP] Connection or thread interrupted with the read feedback: %u (must be 0)\n", readed_feedback);
-                        return false;
-                    }
-                    input_buffer_end += readed_feedback;
-                }
-            }
-
-            // parse body data
-            if (transfer_encoding_present)
-            {
-                if (is_chunked)
-                {
-                    enum ChunkedState
-                    {
-                        ReadChunkSize,
-                        ReadChunkData,
-                        ReadChunkCRLFAfterData
-                    };
-                    ChunkedState state = ReadChunkSize;
-
-                    uint32_t chunk_expected_data_size = 0;
-                    // parse chunks
-                    while (true)
-                    {
-                        bool action_taken = false;
-
-                        if (input_buffer_end > input_buffer_start)
-                        {
-                            if (state == ReadChunkSize || state == ReadChunkCRLFAfterData)
-                            {
-                                const char *pattern = "\r\n";
-                                // Only need to check 1 byte back for boundary case where '\r' is at read_check_start-1
-                                // and '\n' is at read_check_start (pattern spans old/new data boundary)
-                                uint32_t start_buffer_search = 0;
-                                if (input_buffer_start >= 1)
-                                    start_buffer_search = input_buffer_start - 1;
-                                uint32_t crlf_pos = array_index_of(input_buffer_a, start_buffer_search, input_buffer_end, (const uint8_t *)pattern, 2);
-                                bool found_crlf = crlf_pos < input_buffer_end;
-
-                                if (found_crlf)
-                                {
-                                    action_taken = true;
-                                    uint32_t chunk_size = 0;
-                                    if (state == ReadChunkSize)
-                                    {
-                                        input_buffer_a[crlf_pos] = '\0';
-                                        if (sscanf((const char *)input_buffer_a, "%x", &chunk_size) != 1)
-                                        {
-                                            printf("[HTTP] Invalid chunk size: %s\n", (const char *)input_buffer_a);
-                                            return false;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        // crlf after data
-                                        // crlf_pos needs to be 0
-                                        if (crlf_pos != 0)
-                                        {
-                                            printf("[HTTP] Invalid chunk ending CRLF\n");
-                                            return false;
-                                        }
-                                    }
-
-                                    // move the remaining data to the beginning of the buffer
-                                    uint32_t line_ending_pos = crlf_pos + 2;
-                                    input_buffer_end -= line_ending_pos;
-                                    input_buffer_start = 0;
-                                    memcpy_custom(input_buffer_b, &input_buffer_a[line_ending_pos], input_buffer_end);
-                                    std::swap(input_buffer_a, input_buffer_b);
-
-                                    if (state == ReadChunkSize)
-                                    {
-                                        // ending of chunks detected
-                                        if (chunk_size == 0)
-                                            return callbacks.onComplete();
-                                        // read chunk data until reaches chunk_size
-                                        chunk_expected_data_size = chunk_size;
-                                        state = ReadChunkData;
-                                    }
-                                    else if (state == ReadChunkCRLFAfterData)
-                                        state = ReadChunkSize;
-                                    continue;
-                                }
-                                else
-                                    input_buffer_start = input_buffer_end; // update read_check_start before reading more data
-                            }
-                            else if (state == ReadChunkData)
-                            {
-                                action_taken = true;
-
-                                uint32_t range = input_buffer_end - input_buffer_start;
-                                if (range > input_buffer_size)
-                                {
-                                    printf("[HTTP] Logic error, chunk data range exceeds input buffer size\n");
-                                    return false;
-                                }
-
-                                if (range <= chunk_expected_data_size)
-                                {
-                                    chunk_expected_data_size -= range;
-                                    // all data can be passed to the body part
-                                    if (!callbacks.onBodyPart(&input_buffer_a[input_buffer_start], range))
-                                        return false;
-                                    input_buffer_start = 0;
-                                    input_buffer_end = 0;
-                                }
-                                else
-                                {
-                                    // the readed bytes exceed the chunk expected size
-
-                                    if (!callbacks.onBodyPart(&input_buffer_a[input_buffer_start], chunk_expected_data_size))
-                                        return false;
-
-                                    // move the remaining data to the beginning of the buffer
-                                    uint32_t line_ending_pos = chunk_expected_data_size;
-                                    input_buffer_end -= line_ending_pos;
-                                    input_buffer_start = 0;
-                                    memcpy_custom(input_buffer_b, &input_buffer_a[line_ending_pos], input_buffer_end);
-                                    std::swap(input_buffer_a, input_buffer_b);
-
-                                    chunk_expected_data_size = 0;
-                                }
-
-                                if (chunk_expected_data_size == 0)
-                                {
-                                    // no more data to read, move to CRLF after data state
-                                    state = ReadChunkCRLFAfterData;
-                                    continue;
-                                }
-                            }
-                        }
-
-                        if (!action_taken)
-                        {
-                            // need more data
-                            // read_check_start = readed_bytes_total;
-                            if (input_buffer_end >= input_buffer_size)
-                            {
-                                printf("[HTTP] Logic error, cannot read more data into buffer\n");
-                                return false;
-                            }
-                            uint32_t readed_feedback;
-                            Platform::SocketResult res = socket->read_buffer(input_buffer_a + input_buffer_end, input_buffer_size - input_buffer_end, &readed_feedback);
-                            if (res != Platform::SOCKET_RESULT_OK)
-                            {
-                                if (res == Platform::SOCKET_RESULT_TIMEOUT)
-                                    printf("[HTTP] Socket read timed out\n");
-                                else
-                                    printf("[HTTP] Connection or thread interrupted with the read feedback: %u (must be 0)\n", readed_feedback);
-                                return false;
-                            }
-                            input_buffer_end += readed_feedback;
-                        }
-                    }
-                }
-                else
-                {
-                    printf("[HTTP] Unsupported Transfer-Encoding\n");
-                    return false;
-                }
-            }
-            else if (content_length_present)
-            {
-                uint32_t range = input_buffer_end - input_buffer_start;
-                if (range > input_buffer_size)
-                {
-                    printf("[HTTP] Logic error, chunk data range exceeds input buffer size\n");
-                    return false;
-                }
-
-                uint32_t total_read = (std::min)(range, content_length);
-
-                if (total_read > 0)
-                {
-                    // the remaining buffer has body data
-                    if (!callbacks.onBodyPart(&input_buffer_a[input_buffer_start], total_read))
-                        return false;
-                    input_buffer_start = 0;
-                    input_buffer_end = 0;
-                }
-
-                while (total_read < content_length)
-                {
-                    uint32_t to_read = (std::min)(content_length - total_read, input_buffer_size);
-                    Platform::SocketResult res = socket->read_buffer(input_buffer_a, to_read, &input_buffer_end);
-                    if (res != Platform::SOCKET_RESULT_OK)
-                    {
-                        if (res == Platform::SOCKET_RESULT_CLOSED)
-                            printf("[HTTP] Connection closed before reading all body data\n");
-                        else if (res == Platform::SOCKET_RESULT_TIMEOUT)
-                            printf("[HTTP] Socket read timed out\n");
-                        else
-                            printf("[HTTP] Connection or thread interrupted with the read feedback: %u (must be 0)\n", input_buffer_end);
-                        return false;
-                    }
-
-                    total_read += input_buffer_end;
-
-                    if (!callbacks.onBodyPart(input_buffer_a, input_buffer_end))
-                        return false;
-                }
-
-                return callbacks.onComplete();
-            }
-            else if (read_body_until_connection_close)
-            {
-                // read until connection close
-                if (input_buffer_end > input_buffer_start)
-                {
-                    uint32_t range = input_buffer_end - input_buffer_start;
-                    if (range > input_buffer_size)
-                    {
-                        printf("[HTTP] Logic error, chunk data range exceeds input buffer size\n");
-                        return false;
-                    }
-                    // the remaining buffer has body data
-                    if (!callbacks.onBodyPart(&input_buffer_a[input_buffer_start], range))
-                        return false;
-                    input_buffer_start = 0;
-                    input_buffer_end = 0;
-                }
-
-                while (true)
-                {
-                    Platform::SocketResult res = socket->read_buffer(input_buffer_a, input_buffer_size, &input_buffer_end);
-                    if (res != Platform::SOCKET_RESULT_OK)
-                    {
-                        if (res == Platform::SOCKET_RESULT_CLOSED)
-                            break; // connection closed
-                        else if (res == Platform::SOCKET_RESULT_TIMEOUT)
-                            printf("[HTTP] Socket read timed out\n");
-                        else
-                            printf("[HTTP] Connection or thread interrupted with the read feedback: %u (must be 0)\n", input_buffer_end);
-                        return false;
-                    }
-
-                    if (!callbacks.onBodyPart(input_buffer_a, input_buffer_end))
-                        return false;
-                }
-
-                return callbacks.onComplete();
-            }
-
-            return true;
-        }
-
         bool HTTPBase::readFromStream(Platform::SocketTCP *socket, bool read_body_until_connection_close)
         {
             clear();
-            std::vector<uint8_t> input_buffer(HTTP_READ_BUFFER_CHUNK_SIZE * 2);
-            return parseHTTPStream(
-                socket,
-                {// onFirstLine
-                 [this](const char *main_header)
-                 {
-                     return this->read_first_line(std::string(main_header));
-                 },
-                 // onHeader
-                 [this](const char *key, const char *value)
-                 {
-                        this->headers[std::string(key)] = std::string(value);
-                        return true; },
-                 // onHeadersComplete
-                 [](const uint8_t *remaining_data, uint32_t size)
-                 {
-                        // no special action needed
-                        return true; },
-                 // onBodyPart
-                 [this](const uint8_t *data, uint32_t size)
-                 {
+
+            HTTPParser parser(HTTP_READ_BUFFER_CHUNK_SIZE, HTTP_MAX_HEADER_COUNT);
+            HTTPStreamCallbacks callbacks{
+                // onFirstLine
+                [this](const char *main_header)
+                {
+                    return this->read_first_line(std::string(main_header));
+                },
+                // onHeader
+                [this](const char *key, const char *value)
+                {
+                    this->headers[std::string(key)] = std::string(value);
+                    return true;
+                },
+                // onHeadersComplete
+                [](const uint8_t *remaining_data, uint32_t size)
+                {
+                    // no special action needed
+                    return true;
+                },
+                // onBodyPart
+                [this](const uint8_t *data, uint32_t size)
+                {
                     if (this->body.size() + size > HTTP_MAX_BODY_SIZE)
                     {
                         printf("[HTTP] Body size exceeds maximum allowed size: %u bytes\n", HTTP_MAX_BODY_SIZE);
                         return false;
                     }
                     this->body.insert(this->body.end(), data, data + size);
-                    return true; },
-                 // onComplete
-                 []()
-                 { return true; }},
-                input_buffer.data(),                               // input buffer_a
-                input_buffer.data() + HTTP_READ_BUFFER_CHUNK_SIZE, // input buffer_b
-                (uint32_t)input_buffer.size(),                     // input buffer size
-                HTTP_MAX_HEADER_RAW_SIZE,                          // max_header_size_bytes
-                HTTP_MAX_HEADER_COUNT,                             // max header count
-                read_body_until_connection_close                   // read body until connection close
-            );
+                    return true;
+                },
+                // onComplete
+                []()
+                {
+                    return true;
+                }};
+            parser.initialize(read_body_until_connection_close, callbacks);
+
+            uint8_t reading_buffer[HTTP_READ_BUFFER_CHUNK_SIZE];
+            uint32_t bytes_read = 0;
+            while (parser.state != HTTPParserState::Complete)
+            {
+                Platform::SocketResult res = socket->read_buffer(reading_buffer, sizeof(reading_buffer), &bytes_read);
+                if (res != Platform::SOCKET_RESULT_OK)
+                {
+                    if (res == Platform::SOCKET_RESULT_CLOSED)
+                    {
+                        parser.connectionClosed();
+                        break;
+                    }
+                    printf("[HTTP] Error reading from socket\n");
+                    return false;
+                }
+                if (parser.insertData(reading_buffer, bytes_read) == HTTPParserState::Error)
+                {
+                    printf("[HTTP] Error parsing HTTP stream data\n");
+                    return false;
+                }
+            }
+
+            if (parser.state != HTTPParserState::Complete)
+            {
+                printf("[HTTP] Error parsing HTTP stream\n");
+                return false;
+            }
+
+            return true;
+
+            // std::vector<uint8_t> input_buffer(HTTP_READ_BUFFER_CHUNK_SIZE * 2);
+            // return parseHTTPStream(
+            //     socket,
+            //     {// onFirstLine
+            //      [this](const char *main_header)
+            //      {
+            //          return this->read_first_line(std::string(main_header));
+            //      },
+            //      // onHeader
+            //      [this](const char *key, const char *value)
+            //      {
+            //             this->headers[std::string(key)] = std::string(value);
+            //             return true; },
+            //      // onHeadersComplete
+            //      [](const uint8_t *remaining_data, uint32_t size)
+            //      {
+            //             // no special action needed
+            //             return true; },
+            //      // onBodyPart
+            //      [this](const uint8_t *data, uint32_t size)
+            //      {
+            //         if (this->body.size() + size > HTTP_MAX_BODY_SIZE)
+            //         {
+            //             printf("[HTTP] Body size exceeds maximum allowed size: %u bytes\n", HTTP_MAX_BODY_SIZE);
+            //             return false;
+            //         }
+            //         this->body.insert(this->body.end(), data, data + size);
+            //         return true; },
+            //      // onComplete
+            //      []()
+            //      { return true; }},
+            //     input_buffer.data(),                               // input buffer_a
+            //     input_buffer.data() + HTTP_READ_BUFFER_CHUNK_SIZE, // input buffer_b
+            //     (uint32_t)HTTP_READ_BUFFER_CHUNK_SIZE,             // input buffer size
+            //     HTTP_MAX_HEADER_RAW_SIZE,                          // max_header_size_bytes
+            //     HTTP_MAX_HEADER_COUNT,                             // max header count
+            //     read_body_until_connection_close                   // read body until connection close
+            // );
         }
 
         bool HTTPBase::writeToStream(Platform::SocketTCP *socket)
@@ -521,7 +169,7 @@ namespace ITKExtension
             if (use_chunked_encoding)
             {
                 // Remove Content-Length and add Transfer-Encoding: chunked
-                headers.erase("Content-Length");
+                eraseHeader("Content-Length");
                 headers["Transfer-Encoding"] = "chunked";
             }
             else if (body.size() > 0)
@@ -687,8 +335,8 @@ namespace ITKExtension
             }
             else
             {
-                headers.erase("Content-Type");
-                headers.erase("Content-Length");
+                eraseHeader("Content-Type");
+                eraseHeader("Content-Length");
             }
             this->body = std::vector<uint8_t>(body.begin(), body.end());
             return *this;
@@ -704,8 +352,8 @@ namespace ITKExtension
             }
             else
             {
-                headers.erase("Content-Type");
-                headers.erase("Content-Length");
+                eraseHeader("Content-Type");
+                eraseHeader("Content-Length");
             }
             this->body.assign(body, body + body_size);
             return *this;

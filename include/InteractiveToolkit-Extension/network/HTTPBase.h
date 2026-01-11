@@ -4,6 +4,8 @@
 #include <InteractiveToolkit/common.h>
 #include <InteractiveToolkit/EventCore/Callback.h>
 
+#include "parser/HTTPParser.h"
+
 namespace Platform
 {
     class SocketTCP;
@@ -16,7 +18,7 @@ namespace ITKExtension
 
         // for receiving
         const int HTTP_READ_BUFFER_CHUNK_SIZE = 32 * 1024; // 32 KB -- the implementation of parseHTTPStream uses 2 buffers with this size
-        const int HTTP_MAX_HEADER_RAW_SIZE = HTTP_READ_BUFFER_CHUNK_SIZE - 2;
+        // const int HTTP_MAX_HEADER_RAW_SIZE = HTTP_READ_BUFFER_CHUNK_SIZE - 2;
         const int HTTP_MAX_HEADER_COUNT = 100;
 
         // for transmitting
@@ -24,24 +26,6 @@ namespace ITKExtension
 
         // HTTP HTTPRequest & HTTPResponse
         const int HTTP_MAX_BODY_SIZE = 100 * 1024 * 1024; // 100 MB
-
-        struct HTTPStreamCallbacks
-        {
-            EventCore::Callback<bool(const char *main_header)> onFirstLine;
-            EventCore::Callback<bool(const char *key, const char *value)> onHeader;
-            EventCore::Callback<bool(const uint8_t *remaining_data, uint32_t size)> onHeadersComplete;
-            EventCore::Callback<bool(const uint8_t *data, uint32_t size)> onBodyPart;
-            EventCore::Callback<bool()> onComplete;
-        };
-
-        bool parseHTTPStream(Platform::SocketTCP *socket,
-                             const HTTPStreamCallbacks &callbacks,
-                             uint8_t *input_buffer_a, // two buffers to improve memcpy performance
-                             uint8_t *input_buffer_b, // two buffers to improve memcpy performance
-                             uint32_t input_buffer_size, // input_buffer needs to be at least HTTP_MAX_HEADER_RAW_SIZE
-                             uint32_t max_header_size_bytes,
-                             uint32_t max_header_count,
-                             bool read_body_until_connection_close);
 
         class HTTPBase
         {
