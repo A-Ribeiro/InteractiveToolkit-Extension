@@ -38,7 +38,7 @@ namespace ITKExtension
                     Platform::SocketResult res = sslContext.write_buffer(data + *write_feedback, size - *write_feedback, &written);
                     if (res != Platform::SOCKET_RESULT_OK)
                     {
-                        if (res == Platform::SOCKET_RESULT_WOULD_BLOCK)
+                        if (res == Platform::SOCKET_RESULT_WOULD_BLOCK || res == Platform::SOCKET_RESULT_TIMEOUT)
                         {
                             Platform::Sleep::millis(1);
                             continue;
@@ -63,7 +63,7 @@ namespace ITKExtension
                     Platform::SocketResult res = sslContext.read_buffer(data + *read_feedback, size - *read_feedback, &readed);
                     if (res != Platform::SOCKET_RESULT_OK)
                     {
-                        if (res == Platform::SOCKET_RESULT_WOULD_BLOCK)
+                        if (res == Platform::SOCKET_RESULT_WOULD_BLOCK || res == Platform::SOCKET_RESULT_TIMEOUT)
                         {
                             Platform::Sleep::millis(1);
                             continue;

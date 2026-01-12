@@ -14,9 +14,9 @@ namespace ITKExtension
     namespace Network
     {
 
-        struct HTTPStreamCallbacks
+        struct HTTPParserCallbacks
         {
-            EventCore::Callback<bool(const char *main_header)> onFirstLine;
+            EventCore::Callback<bool(const char *first_line)> onFirstLine;
             EventCore::Callback<bool(const char *key, const char *value)> onHeader;
             EventCore::Callback<bool(const uint8_t *remaining_data, uint32_t size)> onHeadersComplete;
             EventCore::Callback<bool(const uint8_t *data, uint32_t size)> onBodyPart;
@@ -37,7 +37,7 @@ namespace ITKExtension
         class HTTPParser
         {
             // parameters
-            HTTPStreamCallbacks callbacks;
+            HTTPParserCallbacks callbacks;
             std::unique_ptr<uint8_t[]> reading_buffer; // two buffers to improve memcpy performance
 
             uint8_t *input_buffer_a;    // two buffers to improve memcpy performance
@@ -87,7 +87,7 @@ namespace ITKExtension
             ~HTTPParser(); // calls connectionClosed()
 
             void initialize(bool bytes_after_headers_are_body_data,
-                            const HTTPStreamCallbacks &callbacks);
+                            const HTTPParserCallbacks &callbacks);
 
             HTTPParserState insertData(const uint8_t *data, uint32_t size);
 

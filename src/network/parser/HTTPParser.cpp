@@ -10,13 +10,15 @@ namespace ITKExtension
 {
     namespace Network
     {
-        static inline bool is_valid_header_character(char _chr)
+        static inline bool is_valid_http_header_str(const char *_header)
         {
-            return (_chr >= 32 && _chr <= 126) ||
-                   _chr == '\r' ||
-                   _chr == '\n' ||
-                   _chr == '\t' ||
-                   _chr == ' ';
+            for (const char *p = _header; *p != '\0'; p++)
+            {
+                uint8_t ch = (uint8_t)(*p);
+                if ((ch < 32 || ch > 126) && ch != '\r' && ch != '\n' && ch != '\t' && ch != ' ')
+                    return false;
+            }
+            return true;
         }
 
         static inline int strcasecmp_custom(const char *s1, const char *s2)
@@ -85,7 +87,7 @@ namespace ITKExtension
         }
 
         void HTTPParser::initialize(bool bytes_after_headers_are_body_data,
-                                    const HTTPStreamCallbacks &callbacks)
+                                    const HTTPParserCallbacks &callbacks)
         {
             this->callbacks = callbacks;
             this->bytes_after_headers_are_body_data = bytes_after_headers_are_body_data;
@@ -162,14 +164,11 @@ namespace ITKExtension
 
                         input_buffer_a[crlf_pos] = '\0';
                         // check header bytes
-                        for (uint32_t i = 0; i < crlf_pos; i++)
+                        if (!is_valid_http_header_str((const char *)input_buffer_a))
                         {
-                            if (!is_valid_header_character(input_buffer_a[i]))
-                            {
-                                printf("[HTTP] Invalid character in HTTP header: %u\n", (uint8_t)input_buffer_a[i]);
-                                state = HTTPParserState::Error;
-                                return state;
-                            }
+                            printf("[HTTP] Invalid character in HTTP header: %s\n", (const char *)input_buffer_a);
+                            state = HTTPParserState::Error;
+                            return state;
                         }
 
                         if (state == HTTPParserState::ReadingFirstLine)
@@ -487,7 +486,7 @@ namespace ITKExtension
                 uint32_t remaining_to_read = content_length - total_read;
                 input_buffer_end = (std::min)(input_buffer_end, remaining_to_read);
 
-                if (input_buffer_end == 0) 
+                if (input_buffer_end == 0)
                 {
                     printf("[HTTP] Logic error, no data to read but still in ReadingBodyContentLength state\n");
                     state = HTTPParserState::Error;

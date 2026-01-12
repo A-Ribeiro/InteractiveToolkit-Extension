@@ -410,6 +410,8 @@ namespace TLS
                 if (result == MBEDTLS_ERR_SSL_WANT_READ ||
                     result == MBEDTLS_ERR_SSL_WANT_WRITE)
                     return Platform::SOCKET_RESULT_WOULD_BLOCK;
+                if (result == MBEDTLS_ERR_SSL_TIMEOUT)
+                    return Platform::SOCKET_RESULT_TIMEOUT;
                 if (should_retry)
                     Platform::Sleep::millis(1);
             } while (should_retry);
@@ -464,6 +466,8 @@ namespace TLS
             if (result == MBEDTLS_ERR_SSL_WANT_READ ||
                 result == MBEDTLS_ERR_SSL_WANT_WRITE)
                 return Platform::SOCKET_RESULT_WOULD_BLOCK;
+            if (result == MBEDTLS_ERR_SSL_TIMEOUT)
+                return Platform::SOCKET_RESULT_TIMEOUT;
             if (should_retry)
                 Platform::Sleep::millis(1);
         } while (should_retry);

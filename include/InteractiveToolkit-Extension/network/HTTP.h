@@ -1,5 +1,7 @@
 #pragma once
 
-#include "HTTPBase.h"
-#include "HTTPRequest.h"
-#include "HTTPResponse.h"
+#include "HTTPBaseAsync.h"
+#include "HTTPRequestAsync.h"
+#include "HTTPResponseAsync.h"
+
+#include "HTTPConnection.h"
