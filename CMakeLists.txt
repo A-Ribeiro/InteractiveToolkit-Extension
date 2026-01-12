@@ -34,6 +34,8 @@ tool_remove_from_list(PUBLIC_HEADERS ${EXCLUDE_WRAPPERS_DIR_REG_EXP})
 tool_remove_from_list(PUBLIC_INL ${EXCLUDE_WRAPPERS_DIR_REG_EXP})
 tool_remove_from_list(SRC ${EXCLUDE_WRAPPERS_DIR_REG_EXP})
 
+define_source_group(${PUBLIC_HEADERS} ${PUBLIC_INL} ${SRC})
+
 tool_append_if_not_exists_and_make_global(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 if (NOT TARGET zlib-wrapper)
