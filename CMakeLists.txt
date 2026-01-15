@@ -9,6 +9,8 @@ project(InteractiveToolkit-Extension)
 #
 # John 3:16
 
+set(INTERACTIVETOOLKIT_EXTENSION_INCLUDED TRUE)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
 
@@ -41,9 +43,9 @@ tool_append_if_not_exists_and_make_global(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOU
 if (NOT TARGET zlib-wrapper)
     add_subdirectory(wrappers/zlib-wrapper "${CMAKE_BINARY_DIR}/lib/zlib-wrapper")
 endif()
-if (NOT TARGET md5-wrapper)
-    add_subdirectory(wrappers/md5-wrapper "${CMAKE_BINARY_DIR}/lib/md5-wrapper")
-endif()
+# if (NOT TARGET md5-wrapper)
+#     add_subdirectory(wrappers/md5-wrapper "${CMAKE_BINARY_DIR}/lib/md5-wrapper")
+# endif()
 
 add_library(${PROJECT_NAME} STATIC ${PUBLIC_HEADERS} ${PUBLIC_INL} ${SRC})
 
@@ -72,7 +74,7 @@ target_link_libraries(${PROJECT_NAME}
 PUBLIC 
     ${INTERACTIVETOOLKIT_LIBRARIES}
     zlib-wrapper
-    md5-wrapper
+#    md5-wrapper
 PRIVATE
     libpng
     libjpeg

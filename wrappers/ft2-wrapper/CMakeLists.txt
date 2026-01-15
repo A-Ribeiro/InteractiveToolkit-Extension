@@ -2,7 +2,7 @@ project (ft2-wrapper)
 
 find_package(InteractiveToolkit REQUIRED QUIET)
 
-if (NOT TARGET InteractiveToolkit-Extension)
+if (NOT TARGET InteractiveToolkit-Extension AND NOT DEFINED INTERACTIVETOOLKIT_EXTENSION_INCLUDED)
     add_subdirectory(../../ "${CMAKE_BINARY_DIR}/lib/InteractiveToolkit-Extension")
 endif()
 

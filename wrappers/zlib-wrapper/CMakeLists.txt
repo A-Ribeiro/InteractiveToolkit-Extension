@@ -1,12 +1,16 @@
 project (zlib-wrapper)
 
-if (NOT TARGET md5-wrapper)
-    add_subdirectory(../md5-wrapper "${CMAKE_BINARY_DIR}/lib/md5-wrapper")
-endif()
+# if (NOT TARGET md5-wrapper)
+#     add_subdirectory(../md5-wrapper "${CMAKE_BINARY_DIR}/lib/md5-wrapper")
+# endif()
 
 include(../../cmake/libzlib.cmake)
 
 find_package(InteractiveToolkit REQUIRED QUIET)
+
+if (NOT TARGET InteractiveToolkit-Extension AND NOT DEFINED INTERACTIVETOOLKIT_EXTENSION_INCLUDED)
+    add_subdirectory(../../ "${CMAKE_BINARY_DIR}/lib/InteractiveToolkit-Extension")
+endif()
 
 FILE( GLOB_RECURSE PUBLIC_HEADERS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" *.h)
 FILE( GLOB_RECURSE PUBLIC_INL RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" *.inl)
@@ -38,7 +42,8 @@ PRIVATE
 target_link_libraries(${PROJECT_NAME} 
 PUBLIC 
     ${INTERACTIVETOOLKIT_LIBRARIES}
-    md5-wrapper
+    InteractiveToolkit-Extension
+#    md5-wrapper
 PRIVATE
     zlib
 )
