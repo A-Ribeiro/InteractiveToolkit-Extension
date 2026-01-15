@@ -445,7 +445,7 @@ namespace ITKExtension
 
             void random_salt(uint8_t salt[16])
             {
-                ITKCommon::Random64 rng(ITKCommon::RandomDefinition<uint64_t>::randomSeed());
+                ITKCommon::Random64 rng(ITKCommon::Random64::TypeDefinition::randomSeed());
                 for (int i = 0; i < 16; ++i)
                     salt[i] = (uint8_t)rng.getRange<uint8_t>(0, 255); // (i * 17 + 42); // Simple deterministic salt for demo
             }
