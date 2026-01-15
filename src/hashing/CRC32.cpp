@@ -59,9 +59,19 @@ namespace ITKExtension
                 state = crc32_table[(state ^ data[i]) & 0xFF] ^ (state >> 8);
         }
 
-        void CRC32::finalize(uint8_t digest[4])
+        void CRC32::finalize(uint8_t digest[4], CRC32Endianness endianness)
         {
             uint32_t final_crc = state ^ 0xFFFFFFFF;
+
+            if (endianness == CRC32Endianness::BigEndian)
+            {
+                // Store in big-endian format
+                digest[0] = (final_crc >> 24) & 0xFF;
+                digest[1] = (final_crc >> 16) & 0xFF;
+                digest[2] = (final_crc >> 8) & 0xFF;
+                digest[3] = final_crc & 0xFF;
+                return;
+            }
 
             // Store in little-endian format
             digest[0] = final_crc & 0xFF;
@@ -70,24 +80,24 @@ namespace ITKExtension
             digest[3] = (final_crc >> 24) & 0xFF;
         }
 
-        void CRC32::hash(const uint8_t *data, size_t len, uint8_t *digest_output)
+        void CRC32::hash(const uint8_t *data, size_t len, uint8_t *digest_output, CRC32Endianness endianness)
         {
             CRC32 crc32;
             crc32.update(data, len);
-            crc32.finalize(digest_output);
+            crc32.finalize(digest_output, endianness);
         }
 
-        void CRC32::hash(const uint8_t *data, size_t len, uint8_t **digest_output)
+        void CRC32::hash(const uint8_t *data, size_t len, uint8_t **digest_output, CRC32Endianness endianness)
         {
-            hash(data, len, *digest_output);
+            hash(data, len, *digest_output, endianness);
         }
 
-        void CRC32::hash(const uint8_t *data, size_t len, DigestArray4_T *digest_output)
+        void CRC32::hash(const uint8_t *data, size_t len, DigestArray4_T *digest_output, CRC32Endianness endianness)
         {
-            hash(data, len, &(*digest_output)[0]);
+            hash(data, len, &(*digest_output)[0], endianness);
         }
 
-        void CRC32::hashFromFile(const char *filepath, uint8_t *digest_output, std::string *errorStr)
+        void CRC32::hashFromFile(const char *filepath, uint8_t *digest_output, CRC32Endianness endianness, std::string *errorStr)
         {
             CRC32 crc32;
             FILE *file = ITKCommon::FileSystem::File::fopen(filepath, "rb", errorStr);
@@ -102,42 +112,42 @@ namespace ITKExtension
             while ((len = fread(buffer, sizeof(unsigned char), input_buff_size, file)))
                 crc32.update(buffer, len);
             ITKCommon::FileSystem::File::fclose(file, errorStr);
-            crc32.finalize(digest_output);
+            crc32.finalize(digest_output, endianness);
         }
 
-        void CRC32::hashFromFile(const char *file, uint8_t **digest_output, std::string *errorStr)
+        void CRC32::hashFromFile(const char *file, uint8_t **digest_output, CRC32Endianness endianness, std::string *errorStr)
         {
-            hashFromFile(file, *digest_output, errorStr);
+            hashFromFile(file, *digest_output, endianness, errorStr);
         }
 
-        void CRC32::hashFromFile(const char *file, DigestArray4_T *digest_output, std::string *errorStr)
+        void CRC32::hashFromFile(const char *file, DigestArray4_T *digest_output, CRC32Endianness endianness, std::string *errorStr)
         {
-            hashFromFile(file, &(*digest_output)[0], errorStr);
+            hashFromFile(file, &(*digest_output)[0], endianness, errorStr);
         }
 
-        std::string CRC32::hash(const uint8_t *data, size_t len)
+        std::string CRC32::hash(const uint8_t *data, size_t len, CRC32Endianness endianness)
         {
             uint8_t digest[4];
-            hash(data, len, &digest);
+            hash(data, len, &digest, endianness);
             std::string output;
             Encoding::HexString::EncodeToString(digest, 4, &output);
             return output;
         }
 
-        std::string CRC32::hash(const std::string &str)
+        std::string CRC32::hash(const std::string &str, CRC32Endianness endianness)
         {
-            return hash(reinterpret_cast<const uint8_t *>(str.c_str()), str.length());
+            return hash(reinterpret_cast<const uint8_t *>(str.c_str()), str.length(), endianness);
         }
 
-        std::string CRC32::hash(const std::vector<uint8_t> &data)
+        std::string CRC32::hash(const std::vector<uint8_t> &data, CRC32Endianness endianness)
         {
-            return hash(data.data(), data.size());
+            return hash(data.data(), data.size(), endianness);
         }
 
-        std::string CRC32::hashFromFile(const std::string &filepath, std::string *errorStr)
+        std::string CRC32::hashFromFile(const std::string &filepath, CRC32Endianness endianness, std::string *errorStr)
         {
             uint8_t digest[4];
-            hashFromFile(filepath.c_str(), &digest, errorStr);
+            hashFromFile(filepath.c_str(), &digest, endianness, errorStr);
             std::string output;
             Encoding::HexString::EncodeToString(digest, 4, &output);
             return output;
