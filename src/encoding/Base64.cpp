@@ -11,10 +11,10 @@ namespace ITKExtension
         namespace Base64
         {
             // Base64 encoding
-            size_t EncodeComputeOutputSize(size_t len)
-            {
-                return ((len + 2) / 3) * 4;
-            }
+            // size_t EncodeComputeOutputSize(size_t len)
+            // {
+            //     return ((len + 2) / 3) * 4;
+            // }
 
             bool EncodeToBuffer(const uint8_t *data, size_t len, char *outBuffer, size_t outBufferSize)
             {
@@ -63,17 +63,17 @@ namespace ITKExtension
             }
 
             // Base64 decoding
-            size_t DecodeComputeOutputSize(const char *data, size_t len)
-            {
-                if (len <= 2)
-                    return 0;
-                size_t padding = 0;
-                if (data[len - 1] == '=')
-                    padding++;
-                if (data[len - 2] == '=')
-                    padding++;
-                return (len / 4) * 3 - padding;
-            }
+            // size_t DecodeComputeOutputSize(const char *data, size_t len)
+            // {
+            //     if (len < 2)
+            //         return 0;
+            //     size_t padding = 0;
+            //     if (data[len - 1] == '=')
+            //         padding++;
+            //     if (data[len - 2] == '=')
+            //         padding++;
+            //     return (len / 4) * 3 - padding;
+            // }
 
             bool DecodeToBuffer(const char *data, size_t len, uint8_t *outBuffer, size_t outBufferSize)
             {
