@@ -300,7 +300,6 @@ namespace ITKExtension
                 printf("[HTTPConnection] Body size unknown but Transfer-Encoding is not chunked\n");
                 return false;
             }
-http_obj->eraseHeader("Content-Length");
             return true;
         }
 
