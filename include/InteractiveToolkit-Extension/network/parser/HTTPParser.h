@@ -96,7 +96,7 @@ namespace ITKExtension
 
             // mandatory only when bytes_after_headers_are_body_data is true
             void connectionClosed();
-            void headersReadyApplyNextBodyState(uint32_t already_readed_content_length);
+            void headersReadyApplyNextBodyState();
 
             // used in check state without any data...
             void checkOnlyStateTransition();

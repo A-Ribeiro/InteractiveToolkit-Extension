@@ -83,7 +83,8 @@ namespace ITKExtension
             {
                 uint32_t bytes_read = 0;
                 Platform::SocketResult res;
-                if (state == HTTPConnectionState::Server_ReadingRequestBody && socket_buffer_body_init_size > 0)
+                if (socket_buffer_body_init_size > 0 && (state == HTTPConnectionState::Server_ReadingRequestBody ||
+                                                         state == HTTPConnectionState::Client_ReadingResponseBody))
                 {
                     res = Platform::SOCKET_RESULT_OK;
                     std::swap(socket_read_buffer_body_init, socket_read_buffer);
@@ -317,7 +318,7 @@ namespace ITKExtension
                 state = HTTPConnectionState::Error;
                 return false;
             }
-            parser->headersReadyApplyNextBodyState(socket_buffer_body_init_size);
+            parser->headersReadyApplyNextBodyState();
             state = HTTPConnectionState::Server_ReadingRequestBody;
             return true;
         }
@@ -438,7 +439,7 @@ namespace ITKExtension
                 state = HTTPConnectionState::Error;
                 return false;
             }
-            parser->headersReadyApplyNextBodyState(socket_buffer_body_init_size);
+            parser->headersReadyApplyNextBodyState();
             state = HTTPConnectionState::Client_ReadingResponseBody;
             return true;
         }

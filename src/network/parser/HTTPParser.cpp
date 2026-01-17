@@ -270,6 +270,11 @@ namespace ITKExtension
                             //   otherwise, none was consumed
                             *inserted_bytes = (insert_range_begin >= 0) ? 0 : -insert_range_begin;
 
+                            // force reinsert body for separate the parse from headers
+                            input_buffer_start = 0;
+                            input_buffer_end = 0;
+                            total_read = 0;
+
                             // end of headers
                             // check for the body reading mode
                             if (transfer_encoding_present)
@@ -286,7 +291,9 @@ namespace ITKExtension
                                     state = HTTPParserState::ReadingHeadersReady;
                                     chunk_state = ReadChunkSize;
                                     chunk_expected_data_size = 0;
-                                    // break;
+
+                                    // *inserted_bytes will return only the data readed from the headers,
+                                    // and forcing the outside loop to reinsert the body data in next state
                                     return state;
                                 }
                             }
@@ -294,90 +301,18 @@ namespace ITKExtension
                             {
                                 body_state_after_headers = (content_length == 0) ? HTTPParserState::Complete : HTTPParserState::ReadingBodyContentLength;
                                 state = HTTPParserState::ReadingHeadersReady;
-                                // force reinsert body for separate the parse from headers
-                                input_buffer_start = 0;
-                                input_buffer_end = 0;
+
+                                // *inserted_bytes will return only the data readed from the headers,
+                                // and forcing the outside loop to reinsert the body data in next state
                                 return state;
-                                // if (content_length == 0)
-                                // {
-                                //     // for consistency, onComplete must be called even for 0-length bodies
-                                //     state = HTTPParserState::ReadingBodyContentLength;
-                                //     if (!callbacks.onComplete())
-                                //     {
-                                //         state = HTTPParserState::Error;
-                                //         return state;
-                                //     }
-                                //     state = HTTPParserState::Complete;
-                                //     return state;
-                                // }
-                                // else
-                                // {
-                                //     state = HTTPParserState::ReadingBodyContentLength;
-
-                                //     uint32_t range = input_buffer_end - input_buffer_start;
-                                //     if (range > input_buffer_size)
-                                //     {
-                                //         printf("[HTTP] Logic error, chunk data range exceeds input buffer size\n");
-                                //         state = HTTPParserState::Error;
-                                //         return state;
-                                //     }
-
-                                //     total_read = (std::min)(range, content_length);
-                                //     if (total_read > 0)
-                                //     {
-                                //         // the remaining buffer has body data
-                                //         if (!callbacks.onBodyPart(&input_buffer_a[input_buffer_start], total_read))
-                                //         {
-                                //             state = HTTPParserState::Error;
-                                //             return state;
-                                //         }
-                                //         input_buffer_start = 0;
-                                //         input_buffer_end = 0;
-
-                                //         // check is complete
-                                //         if (total_read == content_length)
-                                //         {
-                                //             if (!callbacks.onComplete())
-                                //             {
-                                //                 state = HTTPParserState::Error;
-                                //                 return state;
-                                //             }
-                                //             state = HTTPParserState::Complete;
-                                //             return state;
-                                //         }
-                                //     }
-
-                                //     input_buffer_start = 0;
-                                //     input_buffer_end = 0;
-                                //     // need more data
-                                //     return state;
-                                // }
                             }
                             else if (bytes_after_headers_are_body_data)
                             {
                                 body_state_after_headers = HTTPParserState::ReadingBodyUntilConnectionClose;
                                 state = HTTPParserState::ReadingHeadersReady;
 
-                                // uint32_t range = input_buffer_end - input_buffer_start;
-                                // if (range > input_buffer_size)
-                                // {
-                                //     printf("[HTTP] Logic error, chunk data range exceeds input buffer size\n");
-                                //     state = HTTPParserState::Error;
-                                //     return state;
-                                // }
-
-                                // if (range > 0)
-                                // {
-                                //     // the remaining buffer has body data
-                                //     if (!callbacks.onBodyPart(&input_buffer_a[input_buffer_start], range))
-                                //     {
-                                //         state = HTTPParserState::Error;
-                                //         return state;
-                                //     }
-                                // }
-
-                                input_buffer_start = 0;
-                                input_buffer_end = 0;
+                                // *inserted_bytes will return only the data readed from the headers,
+                                // and forcing the outside loop to reinsert the body data in next state
                                 return state;
                             }
                             else
@@ -607,11 +542,10 @@ namespace ITKExtension
             }
         }
 
-        void HTTPParser::headersReadyApplyNextBodyState(uint32_t already_readed_content_length)
+        void HTTPParser::headersReadyApplyNextBodyState()
         {
             if (state == HTTPParserState::ReadingHeadersReady)
             {
-                total_read = already_readed_content_length;
                 state = HTTPParserState::ReadingHeadersReadyApplyNextBodyState;
             }
             else
