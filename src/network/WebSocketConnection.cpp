@@ -643,6 +643,8 @@ namespace ITKExtension
 
         WebSocketProcessingResult WebSocketConnection::processWriting()
         {
+            Platform::AutoLock auto_lock(&writing_mutex);
+
             bool check_new_frames_for_writing = true;
             while (check_new_frames_for_writing)
             {
@@ -824,6 +826,7 @@ namespace ITKExtension
 
         bool WebSocketConnection::hasOutgoingFrames() const
         {
+            Platform::AutoLock auto_lock(&writing_mutex);
             return !outgoing_frames.empty() || current_write_frame != nullptr;
         }
 

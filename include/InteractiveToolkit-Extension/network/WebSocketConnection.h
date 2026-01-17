@@ -126,7 +126,8 @@ namespace ITKExtension
             std::string websocket_key;
             std::string websocket_accept_key;
 
-            Platform::Mutex writing_mutex;
+            // Mutex for writing operations : mutable to allow locking in const methods
+            mutable Platform::Mutex writing_mutex;
 
             // Helper methods
             bool clientGenerateWebSocketKey();
