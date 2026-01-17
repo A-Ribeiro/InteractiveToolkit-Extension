@@ -5,3 +5,6 @@
 #include "HTTPResponseAsync.h"
 
 #include "HTTPConnection.h"
+
+#include "WebSocketFrame.h"
+#include "WebSocketConnection.h"

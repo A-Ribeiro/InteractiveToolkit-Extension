@@ -83,7 +83,7 @@ namespace ITKExtension
         }
         HTTPParser::~HTTPParser()
         {
-            connectionClosed();
+            connectionClosed(false);
         }
 
         void HTTPParser::initialize(bool bytes_after_headers_are_body_data,
@@ -143,7 +143,7 @@ namespace ITKExtension
             // available memory = input_buffer_size - input_buffer_end
             if (__size > input_buffer_size - input_buffer_end)
             {
-                printf("[HTTP] overflow, increase the input_buffer_size.\n");
+                printf("[HTTPParser] overflow, increase the input_buffer_size.\n");
                 state = HTTPParserState::Error;
                 return state;
             }
@@ -186,7 +186,7 @@ namespace ITKExtension
                     {
                         if (crlf_pos > max_header_size_bytes)
                         {
-                            printf("[HTTP] HTTP header too large: %u bytes\n", (uint32_t)(crlf_pos + 2));
+                            printf("[HTTPParser] HTTP header too large: %u bytes\n", (uint32_t)(crlf_pos + 2));
                             state = HTTPParserState::Error;
                             return state;
                         }
@@ -195,7 +195,7 @@ namespace ITKExtension
                         // check header bytes
                         if (!is_valid_http_header_str((const char *)input_buffer_a))
                         {
-                            printf("[HTTP] Invalid character in HTTP header: %s\n", (const char *)input_buffer_a);
+                            printf("[HTTPParser] Invalid character in HTTP header: %s\n", (const char *)input_buffer_a);
                             state = HTTPParserState::Error;
                             return state;
                         }
@@ -217,7 +217,7 @@ namespace ITKExtension
                             bool found_key_value = value_pos < crlf_pos;
                             if (!found_key_value)
                             {
-                                printf("[HTTP] Invalid HTTP header format: %s\n", (const char *)input_buffer_a);
+                                printf("[HTTPParser] Invalid HTTP header format: %s\n", (const char *)input_buffer_a);
                                 state = HTTPParserState::Error;
                                 return state;
                             }
@@ -240,7 +240,7 @@ namespace ITKExtension
                             max_header_count--;
                             if (max_header_count == 0)
                             {
-                                printf("[HTTP] Too many HTTP header lines readed...\n");
+                                printf("[HTTPParser] Too many HTTP header lines readed...\n");
                                 state = HTTPParserState::Error;
                                 return state;
                             }
@@ -281,7 +281,7 @@ namespace ITKExtension
                             {
                                 if (!is_chunked)
                                 {
-                                    printf("[HTTP] Unsupported Transfer-Encoding\n");
+                                    printf("[HTTPParser] Unsupported Transfer-Encoding\n");
                                     state = HTTPParserState::Error;
                                     return state;
                                 }
@@ -358,7 +358,7 @@ namespace ITKExtension
                                 input_buffer_a[crlf_pos] = '\0';
                                 if (sscanf((const char *)input_buffer_a, "%x", &chunk_size) != 1)
                                 {
-                                    printf("[HTTP] Invalid chunk size: %s\n", (const char *)input_buffer_a);
+                                    printf("[HTTPParser] Invalid chunk size: %s\n", (const char *)input_buffer_a);
                                     state = HTTPParserState::Error;
                                     return state;
                                 }
@@ -369,7 +369,7 @@ namespace ITKExtension
                                 // crlf_pos needs to be 0
                                 if (crlf_pos != 0)
                                 {
-                                    printf("[HTTP] Invalid chunk ending CRLF\n");
+                                    printf("[HTTPParser] Invalid chunk ending CRLF\n");
                                     state = HTTPParserState::Error;
                                     return state;
                                 }
@@ -416,7 +416,7 @@ namespace ITKExtension
                         uint32_t range = input_buffer_end - input_buffer_start;
                         if (range > input_buffer_size)
                         {
-                            printf("[HTTP] Logic error, chunk data range exceeds input buffer size\n");
+                            printf("[HTTPParser] Logic error, chunk data range exceeds input buffer size\n");
                             state = HTTPParserState::Error;
                             return state;
                         }
@@ -481,7 +481,7 @@ namespace ITKExtension
 
                 if (input_buffer_end == 0)
                 {
-                    printf("[HTTP] Logic error, no data to read but still in ReadingBodyContentLength state\n");
+                    printf("[HTTPParser] Logic error, no data to read but still in ReadingBodyContentLength state\n");
                     state = HTTPParserState::Error;
                     return state;
                 }
@@ -527,7 +527,7 @@ namespace ITKExtension
         }
 
         // mandatory only when bytes_after_headers_are_body_data is true
-        void HTTPParser::connectionClosed()
+        void HTTPParser::connectionClosed(bool show_log)
         {
             if (state == HTTPParserState::ReadingBodyUntilConnectionClose)
             {
@@ -538,7 +538,8 @@ namespace ITKExtension
             else if (state != HTTPParserState::Complete)
             {
                 state = HTTPParserState::Error;
-                printf("[HTTP] Connection closed before completing the HTTP parsing.\n");
+                if (show_log)
+                    printf("[HTTPParser] Connection closed before completing the HTTP message\n");
             }
         }
 
@@ -550,7 +551,7 @@ namespace ITKExtension
             }
             else
             {
-                printf("[HTTP] Invalid operation: headersReadyApplyNextBodyState called when not in ReadingHeadersReady state\n");
+                printf("[HTTPParser] Invalid operation: headersReadyApplyNextBodyState called when not in ReadingHeadersReady state\n");
                 state = HTTPParserState::Error;
             }
         }

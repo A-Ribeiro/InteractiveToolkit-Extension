@@ -95,7 +95,7 @@ namespace ITKExtension
             HTTPParserState insertData(const uint8_t *data, uint32_t size, uint32_t *inserted_bytes);
 
             // mandatory only when bytes_after_headers_are_body_data is true
-            void connectionClosed();
+            void connectionClosed(bool show_log = true);
             void headersReadyApplyNextBodyState();
 
             // used in check state without any data...

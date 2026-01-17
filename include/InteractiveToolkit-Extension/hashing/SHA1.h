@@ -1,0 +1,41 @@
+#pragma once
+
+#include <string>
+#include <vector>
+#include <stdint.h>
+
+namespace ITKExtension
+{
+    namespace Hashing
+    {
+        typedef uint8_t DigestArray20_T[20];
+
+        // SHA-1 hashing
+        class SHA1
+        {
+        private:
+            uint32_t state[5];
+            uint64_t count;
+            uint8_t buffer[64];
+            void transform(const uint8_t block[64]);
+
+        public:
+            SHA1();
+            void reset();
+            void update(const uint8_t *data, size_t len);
+            void finalize(uint8_t digest[20]);
+
+            // for convenience
+            static void hash(const uint8_t *data, size_t len, uint8_t *digest_output);
+            static void hash(const uint8_t *data, size_t len, uint8_t **digest_output);
+            static void hash(const uint8_t *data, size_t len, DigestArray20_T *digest_output);
+            static void hashFromFile(const char *filepath, uint8_t *digest_output, std::string *errorStr = nullptr);
+            static void hashFromFile(const char *filepath, uint8_t **digest_output, std::string *errorStr = nullptr);
+            static void hashFromFile(const char *filepath, DigestArray20_T *digest_output, std::string *errorStr = nullptr);
+            static std::string hash(const uint8_t *data, size_t len);
+            static std::string hash(const std::string &str);
+            static std::string hash(const std::vector<uint8_t> &data);
+            static std::string hashFromFile(const std::string &filepath, std::string *errorStr = nullptr);
+        };
+    }
+}

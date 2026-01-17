@@ -57,7 +57,7 @@ namespace ITKExtension
 
         class HTTPConnection
         {
-        private:
+        protected:
 
             bool strategy_read_write_until_socket_would_block;
 
@@ -69,6 +69,9 @@ namespace ITKExtension
 
             std::unique_ptr<uint8_t[]> socket_read_buffer;
             
+            // when headers becomes ready, body
+            // data already read from socket and not consumed by the parser
+            // are stored here
             uint32_t socket_buffer_body_init_size;
             std::unique_ptr<uint8_t[]> socket_read_buffer_body_init;
 
