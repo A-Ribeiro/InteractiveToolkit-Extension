@@ -268,7 +268,7 @@ namespace ITKExtension
                             // update inserted bytes logic
                             //   if insert range begin is negative, part of the inserted data was consumed
                             //   otherwise, none was consumed
-                            *inserted_bytes = (insert_range_begin >= 0) ? 0 : -insert_range_begin;
+                            *inserted_bytes = (uint32_t)((insert_range_begin >= 0) ? 0 : -insert_range_begin);
 
                             // force reinsert body for separate the parse from headers
                             input_buffer_start = 0;

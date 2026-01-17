@@ -181,7 +181,7 @@ namespace ITKExtension
             if (state == WebSocketFrameParserState::ReadingPayload && pos < size)
             {
                 uint64_t remaining = payload_length - payload_bytes_read;
-                uint64_t to_read = std::min((uint64_t)(size - pos), remaining);
+                uint64_t to_read = (std::min)((uint64_t)(size - pos), remaining);
 
                 payload_buffer.insert(payload_buffer.end(), data + pos, data + pos + to_read);
                 payload_bytes_read += to_read;
@@ -303,7 +303,7 @@ namespace ITKExtension
             {
                 uint64_t remaining = payload_size - payload_written;
                 // Cap at 32-bit for socket writes
-                return (uint32_t)std::min(remaining, (uint64_t)0xFFFFFFFF);
+                return (uint32_t)(std::min)(remaining, (uint64_t)0xFFFFFFFF);
             }
             return 0;
         }
