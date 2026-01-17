@@ -40,6 +40,10 @@ namespace ITKExtension
             this->writer_buffer_size = writer_buffer_size;
             this->writing_transfer_encoding_max_size = writing_transfer_encoding_max_size;
             this->socket_read_buffer = STL_Tools::make_unique<uint8_t[]>(socket_buffer_size);
+
+            this->socket_buffer_body_init_size = 0;
+            this->socket_read_buffer_body_init = STL_Tools::make_unique<uint8_t[]>(socket_buffer_size);
+
             this->written_offset = 0;
 
             parser = STL_Tools::make_unique<HTTPParser>(parser_buffer_size, parser_max_header_count);
@@ -49,7 +53,7 @@ namespace ITKExtension
             {
                 request = HTTPRequestAsync::CreateShared();
                 parser->initialize(false, request->getHTTPParserCallbacks());
-                state = HTTPConnectionState::Server_ReadingRequest;
+                state = HTTPConnectionState::Server_ReadingRequestHeaders;
             }
             else
             {
@@ -66,24 +70,63 @@ namespace ITKExtension
 
         HTTPProcessingResult HTTPConnection::processReading()
         {
+            // this call checks for state transitions without data
+            parser->checkOnlyStateTransition();
+            if (parser->state == HTTPParserState::Complete)
+            {
+                state = (mode == HTTPConnectionMode::Server) ? HTTPConnectionState::Server_ReadingRequestBodyComplete
+                                                             : HTTPConnectionState::Client_ReadingResponseBodyComplete;
+                return HTTPProcessingResult::Completed;
+            }
+
             while (true)
             {
                 uint32_t bytes_read = 0;
-                Platform::SocketResult res = socket->read_buffer(socket_read_buffer.get(), socket_buffer_size, &bytes_read);
+                Platform::SocketResult res;
+                if (state == HTTPConnectionState::Server_ReadingRequestBody && socket_buffer_body_init_size > 0)
+                {
+                    res = Platform::SOCKET_RESULT_OK;
+                    std::swap(socket_read_buffer_body_init, socket_read_buffer);
+                    bytes_read = socket_buffer_body_init_size;
+                    socket_buffer_body_init_size = 0;
+                }
+                else
+                    res = socket->read_buffer(socket_read_buffer.get(), socket_buffer_size, &bytes_read);
+
                 if (res == Platform::SOCKET_RESULT_OK)
                 {
-                    if (parser->insertData(socket_read_buffer.get(), bytes_read) == HTTPParserState::Error)
+                    uint32_t total_bytes_parsed = 0;
+                    while (total_bytes_parsed < bytes_read)
                     {
-                        printf("[HTTPConnection] Error parsing HTTP stream\n");
-                        state = HTTPConnectionState::Error;
-                        return HTTPProcessingResult::Error;
+                        uint32_t bytes_parsed;
+                        if (parser->insertData(socket_read_buffer.get(), bytes_read, &bytes_parsed) == HTTPParserState::Error)
+                        {
+                            printf("[HTTPConnection] Error parsing HTTP stream\n");
+                            state = HTTPConnectionState::Error;
+                            return HTTPProcessingResult::Error;
+                        }
+                        if (parser->state == HTTPParserState::ReadingHeadersReady)
+                        {
+                            // save init body data if any
+                            socket_buffer_body_init_size = bytes_read - bytes_parsed;
+                            if (socket_buffer_body_init_size > 0)
+                                memcpy(socket_read_buffer_body_init.get(),
+                                       socket_read_buffer.get() + bytes_parsed,
+                                       socket_buffer_body_init_size);
+
+                            state = (mode == HTTPConnectionMode::Server) ? HTTPConnectionState::Server_ReadingRequestHeadersComplete
+                                                                         : HTTPConnectionState::Client_ReadingResponseHeadersComplete;
+                            return HTTPProcessingResult::InProgress;
+                        }
+                        if (parser->state == HTTPParserState::Complete)
+                        {
+                            state = (mode == HTTPConnectionMode::Server) ? HTTPConnectionState::Server_ReadingRequestBodyComplete
+                                                                         : HTTPConnectionState::Client_ReadingResponseBodyComplete;
+                            return HTTPProcessingResult::Completed;
+                        }
+                        total_bytes_parsed += bytes_parsed;
                     }
-                    if (parser->state == HTTPParserState::Complete)
-                    {
-                        state = (mode == HTTPConnectionMode::Server) ? HTTPConnectionState::Server_ReadingRequestComplete
-                                                                     : HTTPConnectionState::Client_ReadingResponseComplete;
-                        return HTTPProcessingResult::Completed;
-                    }
+
                     // Need more data
                     if (!strategy_read_write_until_socket_would_block)
                         return HTTPProcessingResult::InProgress;
@@ -97,8 +140,8 @@ namespace ITKExtension
                     parser->connectionClosed();
                     if (parser->state == HTTPParserState::Complete)
                     {
-                        state = (mode == HTTPConnectionMode::Server) ? HTTPConnectionState::Server_ReadingRequestComplete
-                                                                     : HTTPConnectionState::Client_ReadingResponseComplete;
+                        state = (mode == HTTPConnectionMode::Server) ? HTTPConnectionState::Server_ReadingRequestBodyComplete
+                                                                     : HTTPConnectionState::Client_ReadingResponseBodyComplete;
                         return HTTPProcessingResult::Completed;
                     }
                     else
@@ -189,9 +232,13 @@ namespace ITKExtension
                 return HTTPProcessingResult::Error;
             }
 
-            if (state == HTTPConnectionState::Server_ReadingRequest || state == HTTPConnectionState::Client_ReadingResponse)
+            if (state == HTTPConnectionState::Server_ReadingRequestHeaders ||
+                state == HTTPConnectionState::Server_ReadingRequestBody ||
+                state == HTTPConnectionState::Client_ReadingResponseHeaders ||
+                state == HTTPConnectionState::Client_ReadingResponseBody)
                 return processReading();
-            else if (state == HTTPConnectionState::Server_WritingResponse || state == HTTPConnectionState::Client_WritingRequest)
+            else if (state == HTTPConnectionState::Server_WritingResponse ||
+                     state == HTTPConnectionState::Client_WritingRequest)
                 return processWriting();
 
             if (state == HTTPConnectionState::Error)
@@ -253,7 +300,26 @@ namespace ITKExtension
                 printf("[HTTPConnection] Body size unknown but Transfer-Encoding is not chunked\n");
                 return false;
             }
+http_obj->eraseHeader("Content-Length");
+            return true;
+        }
 
+        bool HTTPConnection::serverContinueBodyReading()
+        {
+            if (mode != HTTPConnectionMode::Server)
+            {
+                printf("[HTTPConnection] Invalid operation: serverContinueBodyReading called in client mode\n");
+                state = HTTPConnectionState::Error;
+                return false;
+            }
+            if (state != HTTPConnectionState::Server_ReadingRequestHeadersComplete)
+            {
+                printf("[HTTPConnection] Invalid operation: serverContinueBodyReading called before completing request reading headers\n");
+                state = HTTPConnectionState::Error;
+                return false;
+            }
+            parser->headersReadyApplyNextBodyState(socket_buffer_body_init_size);
+            state = HTTPConnectionState::Server_ReadingRequestBody;
             return true;
         }
 
@@ -265,7 +331,8 @@ namespace ITKExtension
                 state = HTTPConnectionState::Error;
                 return false;
             }
-            if (state != HTTPConnectionState::Server_ReadingRequestComplete)
+            if (state != HTTPConnectionState::Server_ReadingRequestBodyComplete &&
+                state != HTTPConnectionState::Server_ReadingRequestHeadersComplete)
             {
                 printf("[HTTPConnection] Invalid operation: serverBeginWriteResponse called before completing request reading\n");
                 state = HTTPConnectionState::Error;
@@ -337,7 +404,7 @@ namespace ITKExtension
             return true;
         }
 
-        bool HTTPConnection::clientBeginReadResponse()
+        bool HTTPConnection::clientBeginReadResponseHeaders()
         {
             if (mode != HTTPConnectionMode::Client)
             {
@@ -353,7 +420,27 @@ namespace ITKExtension
             }
 
             parser->initialize(true, response->getHTTPParserCallbacks());
-            state = HTTPConnectionState::Client_ReadingResponse;
+            state = HTTPConnectionState::Client_ReadingResponseHeaders;
+            socket_buffer_body_init_size = 0;
+            return true;
+        }
+
+        bool HTTPConnection::clientContinueBodyReading()
+        {
+            if (mode != HTTPConnectionMode::Client)
+            {
+                printf("[HTTPConnection] Invalid operation: clientContinueBodyReading called in server mode\n");
+                state = HTTPConnectionState::Error;
+                return false;
+            }
+            if (state != HTTPConnectionState::Client_ReadingResponseHeadersComplete)
+            {
+                printf("[HTTPConnection] Invalid operation: clientContinueBodyReading called before completing response reading headers\n");
+                state = HTTPConnectionState::Error;
+                return false;
+            }
+            parser->headersReadyApplyNextBodyState(socket_buffer_body_init_size);
+            state = HTTPConnectionState::Client_ReadingResponseBody;
             return true;
         }
 

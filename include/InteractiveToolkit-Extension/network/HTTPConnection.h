@@ -15,21 +15,27 @@ namespace ITKExtension
 
         enum class HTTPConnectionState : int
         {
-            // Reading states
-            Server_ReadingRequest,
-            Server_ReadingRequestComplete,
+            // Server: Reading states
+            Server_ReadingRequestHeaders,
+            Server_ReadingRequestHeadersComplete,
 
-            // Writing states
+            Server_ReadingRequestBody,
+            Server_ReadingRequestBodyComplete,
+
+            // Server: Writing states
             Server_WritingResponse,
             Server_WritingResponseComplete,
 
-            // Reading states
+            // Client: Writing states
             Client_WritingRequest,
             Client_WritingRequestComplete,
 
-            // Writing states
-            Client_ReadingResponse,
-            Client_ReadingResponseComplete,
+            // Client: Reading states
+            Client_ReadingResponseHeaders,
+            Client_ReadingResponseHeadersComplete,
+
+            Client_ReadingResponseBody,
+            Client_ReadingResponseBodyComplete,
 
             // Error and close states
             Error,
@@ -62,6 +68,10 @@ namespace ITKExtension
             uint32_t writing_transfer_encoding_max_size;
 
             std::unique_ptr<uint8_t[]> socket_read_buffer;
+            
+            uint32_t socket_buffer_body_init_size;
+            std::unique_ptr<uint8_t[]> socket_read_buffer_body_init;
+
             
             // Socket and buffers
             std::shared_ptr<Platform::SocketTCP> socket;
@@ -120,11 +130,13 @@ namespace ITKExtension
             std::shared_ptr<HTTPResponseAsync> getResponse() const { return response; }
 
             // For server mode: call this after processing request to prepare response
+            bool serverContinueBodyReading();
             bool serverBeginWriteResponse(std::shared_ptr<HTTPResponseAsync> response);
 
             // For client mode: call this to send a request
             bool clientBeginWriteRequest(std::shared_ptr<HTTPRequestAsync> request);
-            bool clientBeginReadResponse();
+            bool clientBeginReadResponseHeaders();
+            bool clientContinueBodyReading();
 
             // Main processing methods
             HTTPProcessingResult process();

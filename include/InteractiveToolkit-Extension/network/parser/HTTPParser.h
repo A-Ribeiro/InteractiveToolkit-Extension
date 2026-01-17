@@ -27,6 +27,8 @@ namespace ITKExtension
         {
             ReadingFirstLine = 0,
             ReadingHeaders,
+            ReadingHeadersReady,
+            ReadingHeadersReadyApplyNextBodyState,
             ReadingBodyUntilConnectionClose,
             ReadingBodyContentLength,
             ReadingBodyChunked,
@@ -52,6 +54,7 @@ namespace ITKExtension
             // reading headers
             uint32_t input_buffer_start;
             uint32_t input_buffer_end;
+            HTTPParserState body_state_after_headers;
             // bool first_line;
 
             // body special headers
@@ -74,7 +77,7 @@ namespace ITKExtension
             // ContentLength State
             uint32_t total_read;
 
-            HTTPParserState _insertData(const uint8_t *data, uint32_t size);
+            HTTPParserState _insertData(const uint8_t *data, uint32_t size, uint32_t *inserted_bytes);
 
         public:
             // delete assign operator and copy constructor
@@ -89,10 +92,14 @@ namespace ITKExtension
             void initialize(bool bytes_after_headers_are_body_data,
                             const HTTPParserCallbacks &callbacks);
 
-            HTTPParserState insertData(const uint8_t *data, uint32_t size);
+            HTTPParserState insertData(const uint8_t *data, uint32_t size, uint32_t *inserted_bytes);
 
             // mandatory only when bytes_after_headers_are_body_data is true
             void connectionClosed();
+            void headersReadyApplyNextBodyState(uint32_t already_readed_content_length);
+
+            // used in check state without any data...
+            void checkOnlyStateTransition();
         };
         
     }
