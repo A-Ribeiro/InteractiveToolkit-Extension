@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PrivateKey.h"
+#include "Certificate.h"
 #include "CertificateChain.h"
 
 // opaque structs
@@ -28,6 +29,9 @@ namespace TLS
         std::unique_ptr<mbedtls_ssl_context> ssl_context;
         std::unique_ptr<mbedtls_ssl_config> ssl_config;
 
+        // Store peer certificate for access after verification failure
+        std::shared_ptr<Certificate> peer_cert_copy;
+
     public:
         bool is_client;
         bool is_server;
@@ -54,7 +58,7 @@ namespace TLS
 
         bool communicateWithThisSocket(Platform::SocketTCP *socket);
 
-        Platform::SocketResult doHandshake();
+        Platform::SocketResult doHandshake(const EventCore::Callback<void(const std::string &error, std::shared_ptr<Certificate> certificate)> &on_verification_error = nullptr);
 
         void close();
 

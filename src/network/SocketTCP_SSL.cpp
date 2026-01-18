@@ -22,9 +22,9 @@ namespace ITKExtension
                    sslContext.communicateWithThisSocket(this);
         }
 
-        Platform::SocketResult SocketTCP_SSL::doHandshake() 
+        Platform::SocketResult SocketTCP_SSL::doHandshake(const EventCore::Callback<void(const std::string &error, std::shared_ptr<TLS::Certificate> certificate)> &on_verification_error) 
         {
-            return sslContext.doHandshake();
+            return sslContext.doHandshake(on_verification_error);
         }
 
         Platform::SocketResult SocketTCP_SSL::write_buffer(const uint8_t *data, uint32_t size, uint32_t *write_feedback, bool block_until_write_size)

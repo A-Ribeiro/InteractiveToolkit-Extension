@@ -9,6 +9,7 @@ struct mbedtls_x509_crl;
 namespace TLS
 {
     class SSLContext;
+    class Certificate;
 
     class CertificateChain
     {
@@ -36,7 +37,8 @@ namespace TLS
         bool addSystemCertificates(bool add_all_certificates_is_required = false,
                                    bool add_all_crl_is_required = false);
 
-        std::string getCertificateCommonName(int position_in_chain = 0);
+        //std::string getCertificateCommonName(int position_in_chain = 0);
+        std::shared_ptr<Certificate> getCertificate(int position_in_chain = 0);
 
         TLS_DECLARE_CREATE_SHARED(CertificateChain)
 

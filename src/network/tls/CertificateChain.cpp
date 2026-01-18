@@ -3,6 +3,7 @@
 #include <InteractiveToolkit-Extension/network/tls/CertificateChain.h>
 #include <InteractiveToolkit-Extension/network/tls/TLSUtils.h>
 #include <InteractiveToolkit-Extension/network/tls/SystemCertificates.h>
+#include <InteractiveToolkit-Extension/network/tls/Certificate.h>
 
 #include <mbedtls/x509.h>
 #include <mbedtls/x509_crt.h>
@@ -152,7 +153,7 @@ namespace TLS
             { addCertificateRevokationList(data, size, add_all_crl_is_required); });
     }
 
-    std::string CertificateChain::getCertificateCommonName(int position_in_chain)
+    std::shared_ptr<Certificate> CertificateChain::getCertificate(int position_in_chain)
     {
         mbedtls_x509_crt *x509_crt_it = x509_crt.get();
 
@@ -163,19 +164,35 @@ namespace TLS
         }
 
         if (x509_crt_it == nullptr)
-            return "";
+            return nullptr;
 
-        // The subject field contains all the distinguished name components (CN, O, OU, C, etc.)
-        const mbedtls_x509_name *name = &x509_crt_it->subject;
-        // Iterate through the subject attributes
-        while (name != nullptr)
-        {
-            // Check if this is the Common Name (CN) field
-            if (MBEDTLS_OID_CMP(MBEDTLS_OID_AT_CN, &name->oid) == 0)
-                return std::string((char *)name->val.p, name->val.len);
-            name = name->next;
-        }
-        return ""; // CN not found
+        return std::shared_ptr<Certificate>(new Certificate(x509_crt_it));
     }
+
+    // std::string CertificateChain::getCertificateCommonName(int position_in_chain)
+    // {
+    //     mbedtls_x509_crt *x509_crt_it = x509_crt.get();
+
+    //     while (position_in_chain > 0 && x509_crt_it != nullptr)
+    //     {
+    //         x509_crt_it = x509_crt_it->next;
+    //         position_in_chain--;
+    //     }
+
+    //     if (x509_crt_it == nullptr)
+    //         return "";
+
+    //     // The subject field contains all the distinguished name components (CN, O, OU, C, etc.)
+    //     const mbedtls_x509_name *name = &x509_crt_it->subject;
+    //     // Iterate through the subject attributes
+    //     while (name != nullptr)
+    //     {
+    //         // Check if this is the Common Name (CN) field
+    //         if (MBEDTLS_OID_CMP(MBEDTLS_OID_AT_CN, &name->oid) == 0)
+    //             return std::string((char *)name->val.p, name->val.len);
+    //         name = name->next;
+    //     }
+    //     return ""; // CN not found
+    // }
 
 }

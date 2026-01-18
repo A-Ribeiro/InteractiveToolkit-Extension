@@ -87,6 +87,9 @@ namespace TLS
             handshake_done = false;
             private_key = nullptr;
             certificate_chain = nullptr;
+            
+            // Free peer certificate copy if exists
+            peer_cert_copy.reset();
         }
     }
 
@@ -133,6 +136,19 @@ namespace TLS
 
         // peer verification mode
         mbedtls_ssl_conf_authmode(ssl_config_ptr, verify_peer ? MBEDTLS_SSL_VERIFY_REQUIRED : MBEDTLS_SSL_VERIFY_NONE);
+
+        // Set custom verification callback to capture peer certificate
+        mbedtls_ssl_conf_verify(ssl_config_ptr,
+            [](void *ctx, mbedtls_x509_crt *crt, int depth, uint32_t *flags) -> int {
+                SSLContext *ssl_ctx = static_cast<SSLContext*>(ctx);
+                // Capture the leaf certificate (depth == 0)
+                if (depth == 0 && crt != nullptr && crt->raw.p != nullptr && crt->raw.len > 0) {
+                    // Create a copy of the certificate
+                    ssl_ctx->peer_cert_copy = std::make_shared<Certificate>(crt->raw.p, crt->raw.len);
+                }
+                // Return 0 to continue with default verification
+                return 0;
+            }, this);
 
         mbedtls_ssl_conf_ca_chain(ssl_config_ptr, certificate_chain->x509_crt.get(), certificate_chain->x509_crl.get());
 
@@ -288,7 +304,7 @@ namespace TLS
         return true;
     }
 
-    Platform::SocketResult SSLContext::doHandshake()
+    Platform::SocketResult SSLContext::doHandshake(const EventCore::Callback<void(const std::string &error, std::shared_ptr<Certificate> certificate)> &on_verification_error)
     {
         if (this->handshake_done)
             return Platform::SOCKET_RESULT_OK;
@@ -315,6 +331,8 @@ namespace TLS
             if (result == MBEDTLS_ERR_SSL_WANT_READ ||
                 result == MBEDTLS_ERR_SSL_WANT_WRITE)
                 return Platform::SOCKET_RESULT_WOULD_BLOCK;
+            if (result == MBEDTLS_ERR_SSL_TIMEOUT)
+                return Platform::SOCKET_RESULT_TIMEOUT;
             if (should_retry)
                 Platform::Sleep::millis(1);
         } while (should_retry);
@@ -338,6 +356,15 @@ namespace TLS
                 if (!errors.empty())
                     errors.resize(errors.size() - 1);
                 printf("TLS certificate verification failed:\n%s\n", errors.c_str());
+
+                if (on_verification_error != nullptr) {
+                    if (peer_cert_copy != nullptr)
+                        on_verification_error(errors, peer_cert_copy);
+                    else {
+                        printf("Warning: Could not retrieve peer certificate for verification error callback\n");
+                        // on_verification_error(errors, nullptr);
+                    }
+                }
             }
 
             release_structures();
@@ -429,7 +456,6 @@ namespace TLS
                 release_structures();
                 return Platform::SOCKET_RESULT_ERROR;
             }
-            
 
             current_pos += (uint32_t)result;
             *write_feedback = current_pos;

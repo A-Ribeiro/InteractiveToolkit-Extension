@@ -3,6 +3,7 @@
 #include <InteractiveToolkit/Platform/SocketTCP.h>
 #include "tls/SSLContext.h"
 #include "tls/GlobalSharedState.h"
+#include <InteractiveToolkit/EventCore/Callback.h>
 
 namespace ITKExtension
 {
@@ -27,7 +28,7 @@ namespace ITKExtension
             bool configureAsServer(std::shared_ptr<TLS::CertificateChain> certificate_chain, std::shared_ptr<TLS::PrivateKey> private_key, bool verify_peer = false);
 
 
-            Platform::SocketResult doHandshake();
+            Platform::SocketResult doHandshake(const EventCore::Callback<void(const std::string &error, std::shared_ptr<TLS::Certificate> certificate)> &on_verification_error = nullptr);
             Platform::SocketResult write_buffer(const uint8_t *data, uint32_t size, uint32_t *write_feedback, bool block_until_write_size = false);
             Platform::SocketResult read_buffer(uint8_t *data, uint32_t size, uint32_t *read_feedback, bool block_until_read_size = false);
             void close();
