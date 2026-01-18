@@ -1,4 +1,21 @@
 if (TARGET mbedtls OR TARGET mbedx509 OR TARGET tfpsacrypto OR TARGET mbedcrypto)
+
+    message(STATUS "[LIB_MBEDTLS] already imported as targets.")
+
+    if (TARGET mbedtls AND TARGET mbedx509 AND TARGET mbedcrypto)
+        add_library(mbedtls-all INTERFACE)
+        target_link_libraries(mbedtls-all INTERFACE mbedtls mbedcrypto mbedx509)
+
+        message(STATUS "MbedTLS Link with:")
+        message(STATUS "  mbedtls mbedcrypto mbedx509")
+    elseif (TARGET mbedtls AND TARGET mbedx509 AND TARGET tfpsacrypto)
+        add_library(mbedtls-all INTERFACE)
+        target_link_libraries(mbedtls-all INTERFACE mbedtls tfpsacrypto mbedx509)
+
+        message(STATUS "MbedTLS Link with:")
+        message(STATUS "  mbedtls tfpsacrypto mbedx509")
+    endif()
+
     return()
 endif()
 

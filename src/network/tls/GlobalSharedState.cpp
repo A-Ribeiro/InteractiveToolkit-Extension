@@ -27,6 +27,11 @@ using mbedtls_thread_type_t = mbedtls_platform_mutex_t;
 #include <mbedtls/pk.h>
 #include <mbedtls/ssl.h>
 
+#ifndef MBEDTLS_ERR_THREADING_USAGE_ERROR
+#define MBEDTLS_ERR_THREADING_USAGE_ERROR MBEDTLS_ERR_THREADING_MUTEX_ERROR
+#endif
+
+
 namespace TLS
 {
 
@@ -38,6 +43,19 @@ namespace TLS
 #error "Mbed TLS not built with threading support error (check your build flags)"
 #elif defined(MBEDTLS_THREADING_ALT)
 
+#if (MBEDTLS_VERSION_MAJOR < 4)
+        static void mutex_init(mbedtls_thread_type_t *ptr)
+        {
+            try
+            {
+                *ptr = static_cast<void *>(new std::mutex());
+            }
+            catch (const std::exception &)
+            {
+                *ptr = nullptr;
+            }
+        }
+#else
         static int mutex_init(mbedtls_thread_type_t *ptr)
         {
             try
@@ -50,6 +68,8 @@ namespace TLS
             }
             return 0;
         }
+#endif
+        
         static void mutex_destroy(mbedtls_thread_type_t *ptr)
         {
             delete static_cast<std::mutex *>(*ptr);
