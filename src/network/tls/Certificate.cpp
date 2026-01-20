@@ -22,7 +22,18 @@ namespace TLS
         mbedtls_x509_crt_init(x509_crt.get());
         crt_ptr = x509_crt.get();
 
-        int ret = mbedtls_x509_crt_parse_der(x509_crt.get(), (const unsigned char *)data, length);
+        const char *pem_begin = "-----BEGIN";
+        bool is_pem = length >= strlen(pem_begin) && memcmp(data, pem_begin, strlen(pem_begin)) == 0;
+
+        int ret;
+        if (is_pem)
+        {
+            // PEM format - needs null termination
+            std::string dataStr((const char *)data, length);
+            ret = mbedtls_x509_crt_parse(x509_crt.get(), (const unsigned char *)dataStr.c_str(), strlen(dataStr.c_str()) + 1);
+        }
+        else // DER format (binary)
+            ret = mbedtls_x509_crt_parse_der(x509_crt.get(), (const unsigned char *)data, length);
     
         if (ret != 0)
             printf("Failed to parse certificate: %s\n", TLS::TLSUtils::errorMessageFromReturnCode(ret).c_str());
