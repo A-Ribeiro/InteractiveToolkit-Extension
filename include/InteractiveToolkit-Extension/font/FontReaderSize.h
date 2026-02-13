@@ -27,20 +27,17 @@ namespace ITKExtension
             uint32_t w; ///< width
             uint32_t h; ///< height
 
-            /// \brief Read the size information from a #aRibeiro::BinaryReader
+            /// \brief Read the size information from a #ITKExtension::IO::AdvancedReader
             ///
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// FontReaderSize size = ...;
             ///
             /// ...
             ///
-            /// BinaryReader reader;
+            /// ITKExtension::IO::AdvancedReader reader;
             /// reader.readFromFile("file.input");
             ///
             /// size.read(&reader);
@@ -49,7 +46,7 @@ namespace ITKExtension
             /// \endcode
             ///
             /// \author Alessandro Ribeiro
-            /// \param reader The #aRibeiro::BinaryReader instance
+            /// \param reader The #ITKExtension::IO::AdvancedReader instance
             ///
             void read(ITKExtension::IO::AdvancedReader *reader);
         };

@@ -12,9 +12,7 @@ namespace ITKWrappers {
         /// Example:
         ///
         /// \code
-        /// #include <aRibeiroData/aRibeiroData.h>
         /// #include <md5-wrapper/md5-wrapper.h>
-        /// using namespace aRibeiro;
         /// using namespace md5Wrapper;
         ///
         /// ...
@@ -37,9 +35,7 @@ namespace ITKWrappers {
         /// Example:
         ///
         /// \code
-        /// #include <aRibeiroData/aRibeiroData.h>
         /// #include <md5-wrapper/md5-wrapper.h>
-        /// using namespace aRibeiro;
         /// using namespace md5Wrapper;
         ///
         /// ...
@@ -65,9 +61,7 @@ namespace ITKWrappers {
         /// Example:
         ///
         /// \code
-        /// #include <aRibeiroData/aRibeiroData.h>
         /// #include <md5-wrapper/md5-wrapper.h>
-        /// using namespace aRibeiro;
         /// using namespace md5Wrapper;
         ///
         /// ...
@@ -89,9 +83,7 @@ namespace ITKWrappers {
         /// Example:
         ///
         /// \code
-        /// #include <aRibeiroData/aRibeiroData.h>
         /// #include <md5-wrapper/md5-wrapper.h>
-        /// using namespace aRibeiro;
         /// using namespace md5Wrapper;
         ///
         /// ...
@@ -112,9 +104,7 @@ namespace ITKWrappers {
         /// Example:
         ///
         /// \code
-        /// #include <aRibeiroData/aRibeiroData.h>
         /// #include <md5-wrapper/md5-wrapper.h>
-        /// using namespace aRibeiro;
         /// using namespace md5Wrapper;
         ///
         /// ...

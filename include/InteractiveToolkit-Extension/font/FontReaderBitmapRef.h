@@ -31,18 +31,15 @@ namespace ITKExtension
         ///
         struct FontReaderBitmapRef
         {
-            int16_t top;            ///< glyph origin top (y coord).
-            int16_t left;           ///< glyph origin left (x coord).
+            int16_t top;                                 ///< glyph origin top (y coord).
+            int16_t left;                                ///< glyph origin left (x coord).
             ITKExtension::Atlas::AtlasRect bitmapBounds; ///< sprite rectangle inside the atlas.
 
-            /// \brief Read this glyph metrics from a #aRibeiro::BinaryReader
+            /// \brief Read this glyph metrics from a #ITKExtension::IO::AdvancedReader
             ///
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// FontReaderBitmapRef bitmapRef = ...;
             ///
@@ -57,7 +54,7 @@ namespace ITKExtension
             /// \endcode
             ///
             /// \author Alessandro Ribeiro
-            /// \param reader The #aRibeiro::BinaryReader instance
+            /// \param reader The #ITKExtension::IO::AdvancedReader instance
             ///
             void read(ITKExtension::IO::AdvancedReader *reader);
         };

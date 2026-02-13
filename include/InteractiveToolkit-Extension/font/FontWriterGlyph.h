@@ -56,9 +56,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// float advancex;
             /// uint16_t face_top, face_left;
@@ -96,9 +93,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// FontWriterGlyph doubleGlyph = ...;
             ///

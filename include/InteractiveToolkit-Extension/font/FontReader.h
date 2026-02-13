@@ -41,10 +41,6 @@ namespace ITKExtension
         /// Example:
         ///
         /// \code
-        /// #include <aRibeiroCore/aRibeiroCore.h>
-        /// #include <aRibeiroData/aRibeiroData.h>
-        /// using namespace aRibeiro;
-        /// using namespace aRibeiro;
         ///
         /// FontReader fontReader;
         ///
@@ -87,9 +83,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// FontReader fontReader;
             ///
@@ -112,9 +105,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// FontReader fontReader;
             ///

@@ -34,10 +34,6 @@ namespace ITKExtension
         /// Example:
         ///
         /// \code
-        /// #include <aRibeiroCore/aRibeiroCore.h>
-        /// #include <aRibeiroData/aRibeiroData.h>
-        /// using namespace aRibeiro;
-        /// using namespace aRibeiro;
         ///
         /// Atlas atlas = ...;
         ///
@@ -94,9 +90,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// Atlas atlas = ...;
             ///
@@ -124,9 +117,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// ...
             ///
@@ -180,9 +170,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// ...
             ///
@@ -208,9 +195,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// ...
             ///
@@ -236,9 +220,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// ...
             ///
@@ -246,7 +227,7 @@ namespace ITKExtension
             ///
             /// ...
             ///
-            /// BinaryWriter writer;
+            /// ITKExtension::IO::AdvancedWriter writer;
             /// writer.writeToFile("file.output");
             ///
             /// fontWriter.writeGlyphTable(&writer);
@@ -255,7 +236,7 @@ namespace ITKExtension
             /// \endcode
             ///
             /// \author Alessandro Ribeiro
-            /// \param writer The #aRibeiro::BinaryWriter instance
+            /// \param writer The #ITKExtension::IO::AdvancedWriter instance
             ///
             void writeGlyphTable(ITKExtension::IO::AdvancedWriter *writer);
 
@@ -264,9 +245,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// ...
             ///
@@ -274,7 +252,7 @@ namespace ITKExtension
             ///
             /// ...
             ///
-            /// BinaryWriter writer;
+            /// ITKExtension::IO::AdvancedWriter writer;
             /// writer.writeToFile("file.output");
             ///
             /// fontWriter.writeBitmap(&writer);
@@ -283,7 +261,7 @@ namespace ITKExtension
             /// \endcode
             ///
             /// \author Alessandro Ribeiro
-            /// \param writer The #aRibeiro::BinaryWriter instance
+            /// \param writer The #ITKExtension::IO::AdvancedWriter instance
             ///
             void writeBitmap(ITKExtension::IO::AdvancedWriter *writer);
         };

@@ -37,9 +37,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// AtlasRect rect = AtlasRect();
             ///
@@ -54,9 +51,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// int x,y,width,height;
             ///
@@ -79,9 +73,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// int width,height;
             ///
@@ -102,9 +93,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// AtlasRect rect = ...;
             ///
@@ -129,9 +117,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// AtlasRect rect = ...;
             ///
@@ -155,9 +140,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// AtlasRect rect = ...;
             ///
@@ -179,9 +161,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// AtlasRect rectA = ...;
             /// AtlasRect rectB = ...;
@@ -212,9 +191,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// AtlasRect rect = ...;
             /// AtlasRect rectAtlas = ...;
@@ -236,14 +212,11 @@ namespace ITKExtension
             ///
             bool inside(const AtlasRect &other, int xspacing = 5, int yspacing = 5) const;
 
-            /// \brief Write this rectangle to a #aRibeiro::BinaryWriter
+            /// \brief Write this rectangle to a #ITKExtension::IO::AdvancedWriter
             ///
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// AtlasRect rect = ...;
             ///
@@ -258,24 +231,21 @@ namespace ITKExtension
             /// \endcode
             ///
             /// \author Alessandro Ribeiro
-            /// \param writer The #aRibeiro::BinaryWriter instance
+            /// \param writer The #ITKExtension::IO::AdvancedWriter instance
             ///
             void write(ITKExtension::IO::AdvancedWriter *writer) const;
 
-            /// \brief Read this rectangle from a #aRibeiro::BinaryReader
+            /// \brief Read this rectangle from a #ITKExtension::IO::AdvancedReader
             ///
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// AtlasRect rect = ...;
             ///
             /// ...
             ///
-            /// BinaryReader reader;
+            /// ITKExtension::IO::AdvancedReader reader;
             /// reader.readFromFile("file.input");
             ///
             /// rect.read(&reader);
@@ -284,7 +254,7 @@ namespace ITKExtension
             /// \endcode
             ///
             /// \author Alessandro Ribeiro
-            /// \param reader The #aRibeiro::BinaryReader instance
+            /// \param reader The #ITKExtension::IO::AdvancedReader instance
             ///
             void read(ITKExtension::IO::AdvancedReader *reader);
         };

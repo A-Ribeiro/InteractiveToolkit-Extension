@@ -15,9 +15,7 @@ namespace ITKExtension
             /// It returns the raw imagem buffer and: width, height, number of channels, pixel_depth.
             ///
             /// \code
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
-            ///
+                    ///
             /// int w, h, chn, depth;
             /// char*bufferChar;
             ///
@@ -48,9 +46,7 @@ namespace ITKExtension
             /// It returns the raw imagem buffer and: width, height, number of channels, pixel_depth.
             ///
             /// \code
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
-            ///
+                    ///
             /// const char *input_buffer;
             /// int input_buffer_size;
             ///
@@ -85,9 +81,7 @@ namespace ITKExtension
             /// Should be called after any success read or memory write JPG image.
             ///
             /// \code
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
-            ///
+                    ///
             /// int w, h, chn, depth;
             /// char*bufferChar;
             ///

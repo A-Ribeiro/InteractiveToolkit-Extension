@@ -43,20 +43,17 @@ namespace ITKExtension
 
             std::vector<AlgorithmCore::Polygon::Polygon2D<MathCore::vec2f>> contour; ///< The glyph contour polygon representation
 
-            /// \brief Read this double glyph metrics from a #aRibeiro::BinaryReader
+            /// \brief Read this double glyph metrics from a #ITKExtension::IO::AdvancedReader
             ///
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// FontReaderGlyph doubleGlyph = ...;
             ///
             /// ...
             ///
-            /// BinaryReader reader;
+            /// ITKExtension::IO::AdvancedReader reader;
             /// reader.readFromFile("file.input");
             ///
             /// doubleGlyph.read(&reader);
@@ -65,7 +62,7 @@ namespace ITKExtension
             /// \endcode
             ///
             /// \author Alessandro Ribeiro
-            /// \param reader The #aRibeiro::BinaryReader instance
+            /// \param reader The #ITKExtension::IO::AdvancedReader instance
             ///
             void read(ITKExtension::IO::AdvancedReader *reader);
 

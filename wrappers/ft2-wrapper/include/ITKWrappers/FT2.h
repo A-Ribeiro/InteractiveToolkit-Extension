@@ -28,10 +28,8 @@ namespace ITKWrappers {
     /// Example:
     ///
     /// \code
-    /// #include <aribeiro/aribeiro.h>
     /// #include <ft2-wrapper/ft2-wrapper.h>
-    /// using namespace aRibeiro;
-    /// using namespace ft2Wrapper;
+    /// using namespace ITKWrappers::FT2;
     ///
     /// ...
     ///

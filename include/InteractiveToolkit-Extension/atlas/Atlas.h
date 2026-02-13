@@ -30,10 +30,6 @@ namespace ITKExtension
         /// Example:
         ///
         /// \code
-        /// #include <aRibeiroCore/aRibeiroCore.h>
-        /// #include <aRibeiroData/aRibeiroData.h>
-        /// using namespace aRibeiro;
-        /// using namespace aRibeiro;
         ///
         /// // Create an atlas with the space between elements of 8 pixels
         /// Atlas atlas( 8, 8 );
@@ -135,9 +131,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// ...
             ///
@@ -173,9 +166,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// ...
             ///
@@ -207,9 +197,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// Atlas atlas( 8, 8 );
             ///
@@ -224,7 +211,7 @@ namespace ITKExtension
             /// \endcode
             ///
             /// \author Alessandro Ribeiro
-            /// \param writer The #aRibeiro::BinaryWriter instance
+            /// \param writer The #ITKExtension::IO::AdvancedWriter instance
             ///
             void write(ITKExtension::IO::AdvancedWriter *writer) const;
 
@@ -233,9 +220,6 @@ namespace ITKExtension
             /// Example:
             ///
             /// \code
-            /// #include <aRibeiroCore/aRibeiroCore.h>
-            /// #include <aRibeiroData/aRibeiroData.h>
-            /// using namespace aRibeiro;
             ///
             /// Atlas atlas( 8, 8 );
             ///
@@ -250,7 +234,7 @@ namespace ITKExtension
             /// \endcode
             ///
             /// \author Alessandro Ribeiro
-            /// \param reader The #aRibeiro::BinaryReader instance
+            /// \param reader The #ITKExtension::IO::AdvancedReader instance
             ///
             void read(ITKExtension::IO::AdvancedReader *reader);
 
