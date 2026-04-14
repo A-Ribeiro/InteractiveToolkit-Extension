@@ -22,10 +22,10 @@ Thumbs.db
 /.vscode/
 
 #/docs/
-/include/InteractiveToolkit/buildFlags.h
+/include/InteractiveToolkit-Extension/buildFlags.h
 #/cmake-modules/InteractiveToolkitConfig.cmake
 /cmake-modules/FindInteractiveToolkit.cmake
-/include/InteractiveToolkit/opts.cmake
+/include/InteractiveToolkit-Extension/opts.cmake
 
 /valgrind-out.txt
 

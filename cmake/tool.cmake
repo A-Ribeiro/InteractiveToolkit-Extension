@@ -274,3 +274,125 @@ macro(tool_replace_in_file FILE SEARCH REPLACE)
     endif ()
 
 endmacro()
+
+
+macro(tool_to_unique_list output)
+    set(${output})
+    foreach(var IN ITEMS ${ARGN})
+        if (NOT "${var}" IN_LIST ${output})
+            list(APPEND ${output} ${var})
+        endif()
+    endforeach()
+endmacro()
+
+macro(tool_configure_build_flags projectname inputfile outputfile)
+
+    #output
+    set(configure_COMPILE_DEFINITIONS "") # generate buildFlags.h
+    set(configure_COMPILE_OPTIONS "") # generate opts.cmake
+    set(configure_LINK_LIBRARIES "") # generate opts.cmake
+    set(configure_LINK_OPTIONS "") # generate opts.cmake
+    set(configure_INCLUDE_DIRECTORIES "") # generate opts.cmake
+    set(configure_LIB_CMAKE_FLAGS "") # generate opts.cmake
+
+    set(target_COMPILE_DEFINITIONS)
+    set(target_COMPILE_OPTIONS)
+    set(target_LINK_LIBRARIES)
+    set(target_LINK_OPTIONS)
+    set(target_INCLUDE_DIRECTORIES)
+
+    if (TARGET ${projectname})
+        get_target_property(target_COMPILE_DEFINITIONS ${projectname} COMPILE_DEFINITIONS)
+        if ("${target_COMPILE_DEFINITIONS}" STREQUAL "target_COMPILE_DEFINITIONS-NOTFOUND")
+            set(target_COMPILE_DEFINITIONS)
+        endif()
+
+        get_target_property(target_COMPILE_OPTIONS ${projectname} COMPILE_OPTIONS)
+        if ("${target_COMPILE_OPTIONS}" STREQUAL "target_COMPILE_OPTIONS-NOTFOUND")
+            set(target_COMPILE_OPTIONS)
+        endif()
+
+        get_target_property(target_LINK_LIBRARIES ${projectname} INTERFACE_LINK_LIBRARIES)
+        if ("${target_LINK_LIBRARIES}" STREQUAL "target_LINK_LIBRARIES-NOTFOUND")
+            set(target_LINK_LIBRARIES)
+        endif()
+
+        get_target_property(target_LINK_OPTIONS ${projectname} INTERFACE_LINK_OPTIONS)
+        if ("${target_LINK_OPTIONS}" STREQUAL "target_LINK_OPTIONS-NOTFOUND")
+            set(target_LINK_OPTIONS)
+        endif()
+
+        get_target_property(target_INCLUDE_DIRECTORIES ${projectname} INTERFACE_INCLUDE_DIRECTORIES)
+        if ("${target_INCLUDE_DIRECTORIES}" STREQUAL "target_INCLUDE_DIRECTORIES-NOTFOUND")
+            set(target_INCLUDE_DIRECTORIES)
+        endif()
+
+    endif()
+
+    # get build flags
+    #get_directory_property(aux COMPILE_DEFINITIONS)
+    #
+    # configure_COMPILE_DEFINITIONS
+    #
+    tool_to_unique_list(aux ${target_COMPILE_DEFINITIONS})
+    foreach(var ${aux})
+        if(NOT "${var}" STREQUAL "NDEBUG" AND "${var}" MATCHES "^ITKEXT_")
+            set(configure_COMPILE_DEFINITIONS "${configure_COMPILE_DEFINITIONS}#ifndef ${var}\n#    define ${var}\n#endif\n")
+        endif()
+    endforeach()
+
+    #unset(INTERACTIVETOOLKIT_INCLUDE_DIRS)
+
+    #
+    # COMPILE_OPTIONS
+    #
+    tool_to_unique_list(aux ${target_COMPILE_OPTIONS})
+    foreach(var ${aux})
+        set(configure_COMPILE_OPTIONS "${configure_COMPILE_OPTIONS}    list(APPEND ITKEXT_COMPILE_OPTIONS \"${var}\")\n")
+    endforeach()
+
+    #
+    # LINK_LIBRARIES
+    #
+    tool_to_unique_list(aux ${target_LINK_LIBRARIES})
+    foreach(var ${aux})
+        set(configure_LINK_LIBRARIES "${configure_LINK_LIBRARIES}    list(APPEND ITKEXT_LIBRARIES \"${var}\")\n")
+    endforeach()
+
+    #
+    # LINK_OPTIONS
+    #
+    tool_to_unique_list(aux ${target_LINK_OPTIONS})
+    foreach(var ${aux})
+        set(configure_LINK_OPTIONS "${configure_LINK_OPTIONS}    list(APPEND ITKEXT_LINK_OPTIONS \"${var}\")\n")
+    endforeach()
+
+    #
+    # INCLUDE_DIRECTORIES
+    #
+    tool_to_unique_list(aux ${target_INCLUDE_DIRECTORIES})
+    foreach(var ${aux})
+        if (var STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}/include")
+            continue()
+        endif()
+        set(configure_INCLUDE_DIRECTORIES "${configure_INCLUDE_DIRECTORIES}    list(APPEND ITKEXT_INCLUDE_DIRECTORIES \"${var}\")\n")
+    endforeach()
+
+    #
+    # CMAKE LIB_FLAGS
+    #
+
+    set(configure_LIB_CMAKE_FLAGS "${configure_LIB_CMAKE_FLAGS}    set(ITKEXT_BCRYPT ${ITKEXT_BCRYPT})\n")
+    set(configure_LIB_CMAKE_FLAGS "${configure_LIB_CMAKE_FLAGS}    set(ITKEXT_FONT ${ITKEXT_FONT})\n")
+    set(configure_LIB_CMAKE_FLAGS "${configure_LIB_CMAKE_FLAGS}    set(ITKEXT_IMAGE ${ITKEXT_IMAGE})\n")
+    set(configure_LIB_CMAKE_FLAGS "${configure_LIB_CMAKE_FLAGS}    set(ITKEXT_IMAGE_ATLAS ${ITKEXT_IMAGE_ATLAS})\n")
+    set(configure_LIB_CMAKE_FLAGS "${configure_LIB_CMAKE_FLAGS}    set(ITKEXT_MODEL ${ITKEXT_MODEL})\n")
+    set(configure_LIB_CMAKE_FLAGS "${configure_LIB_CMAKE_FLAGS}    set(ITKEXT_NETWORK ${ITKEXT_NETWORK})\n")
+    set(configure_LIB_CMAKE_FLAGS "${configure_LIB_CMAKE_FLAGS}    set(ITKEXT_NETWORK_TLS ${ITKEXT_NETWORK_TLS})\n")
+
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/${inputfile}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/${outputfile}"
+        @ONLY
+    )
+endmacro()

@@ -1,0 +1,5 @@
+@configure_COMPILE_OPTIONS@
+@configure_LINK_LIBRARIES@
+@configure_LINK_OPTIONS@
+@configure_INCLUDE_DIRECTORIES@
+@configure_LIB_CMAKE_FLAGS@
