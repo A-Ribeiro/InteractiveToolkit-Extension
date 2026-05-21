@@ -139,9 +139,16 @@ namespace ITKExtension
             std::string fileext;
             TextureType type;
             TextureOp op;
-            TextureMapMode mapMode_s;
-            TextureMapMode mapMode_t;
-            TextureMapMode mapMode_r;
+            union
+            {
+                TextureMapMode mapMode_array[3];
+                struct
+                {
+                    TextureMapMode mapMode_s;
+                    TextureMapMode mapMode_t;
+                    TextureMapMode mapMode_r;
+                };
+            };
 
             int uvIndex;
 
