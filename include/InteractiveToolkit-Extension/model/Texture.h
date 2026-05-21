@@ -139,7 +139,9 @@ namespace ITKExtension
             std::string fileext;
             TextureType type;
             TextureOp op;
-            TextureMapMode mapMode;
+            TextureMapMode mapMode_s;
+            TextureMapMode mapMode_t;
+            TextureMapMode mapMode_r;
 
             int uvIndex;
 
@@ -149,7 +151,7 @@ namespace ITKExtension
                 writer->writeString(fileext);
                 writer->writeUInt8(type);
                 writer->writeUInt8(op);
-                writer->writeUInt8(mapMode);
+                writer->writeUInt8(mapMode_s || mapMode_t << 2 || mapMode_r << 4);
                 writer->writeUInt32(uvIndex);
             }
 
@@ -159,7 +161,10 @@ namespace ITKExtension
                 fileext = reader->readString();
                 type = (TextureType)reader->readUInt8();
                 op = (TextureOp)reader->readUInt8();
-                mapMode = (TextureMapMode)reader->readUInt8();
+                uint8_t mapMode = reader->readUInt8();
+                mapMode_s = (TextureMapMode)(mapMode & 0x3);
+                mapMode_t = (TextureMapMode)((mapMode >> 2) & 0x3);
+                mapMode_r = (TextureMapMode)((mapMode >> 4) & 0x3);
                 uvIndex = reader->readUInt32();
             }
 
@@ -167,7 +172,9 @@ namespace ITKExtension
             {
                 type = TextureType_NONE;
                 op = TextureOp_Multiply;
-                mapMode = TextureMapMode_Wrap;
+                mapMode_s = TextureMapMode_Wrap;
+                mapMode_t = TextureMapMode_Wrap;
+                mapMode_r = TextureMapMode_Wrap;
                 uvIndex = 0;
             }
 
@@ -183,7 +190,9 @@ namespace ITKExtension
                 type = v.type;
                 uvIndex = v.uvIndex;
                 op = v.op;
-                mapMode = v.mapMode;
+                mapMode_s = v.mapMode_s;
+                mapMode_t = v.mapMode_t;
+                mapMode_r = v.mapMode_r;
 
                 return *this;
             }
