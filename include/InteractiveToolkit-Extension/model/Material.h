@@ -14,6 +14,7 @@ namespace ITKExtension
         public:
             std::string name;
 
+            std::unordered_map<std::string, std::string> stringValue;
             std::unordered_map<std::string, float> floatValue;
             std::unordered_map<std::string, MathCore::vec2f> vec2Value;
             std::unordered_map<std::string, MathCore::vec3f> vec3Value;
@@ -28,6 +29,7 @@ namespace ITKExtension
             void write(ITKExtension::IO::AdvancedWriter *writer) const
             {
                 writer->writeString(name);
+                writer->write<std::unordered_map<std::string, std::string>>(stringValue);
                 writer->write<std::unordered_map<std::string, float>>(floatValue);
                 writer->write<std::unordered_map<std::string, MathCore::vec2f>>(vec2Value);
                 writer->write<std::unordered_map<std::string, MathCore::vec3f>>(vec3Value);
@@ -40,6 +42,7 @@ namespace ITKExtension
             void read(ITKExtension::IO::AdvancedReader *reader)
             {
                 name = reader->readString();
+                stringValue = reader->read<std::unordered_map<std::string, std::string>>();
                 floatValue = reader->read<std::unordered_map<std::string, float>>();
                 vec2Value = reader->read<std::unordered_map<std::string, MathCore::vec2f>>();
                 vec3Value = reader->read<std::unordered_map<std::string, MathCore::vec3f>>();
