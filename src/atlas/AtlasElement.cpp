@@ -24,27 +24,28 @@ namespace ITKExtension
             // }
 
             rect = AtlasRect(w, h);
-            buffer = new uint8_t[w * h * 4];
+            buffer = STL_Tools::make_unique<uint8_t[]>(w * h * 4);
         }
 
         AtlasElement::~AtlasElement()
         {
-            if (buffer != nullptr)
-                delete[] buffer;
+            // if (buffer != nullptr)
+            //     delete[] buffer;
         }
 
         AtlasElement::AtlasElement()
         {
-            buffer = nullptr;
+            // buffer = nullptr;
         }
 
         void AtlasElement::read(ITKExtension::IO::AdvancedReader *reader)
         {
-            if (buffer != nullptr)
-            {
-                delete[] buffer;
-                buffer = nullptr;
-            }
+            // if (buffer != nullptr)
+            // {
+            //     delete[] buffer;
+            //     buffer = nullptr;
+            // }
+            buffer.reset();
             name = reader->readString();
             rect.read(reader);
         }
@@ -139,7 +140,7 @@ namespace ITKExtension
 
         void AtlasElement::savePNG(const std::string &filename)
         {
-            ITKExtension::Image::PNG::writePNG(filename.c_str(), rect.w, rect.h, 4, (char *)buffer);
+            ITKExtension::Image::PNG::writePNG(filename.c_str(), rect.w, rect.h, 4, (char *)buffer.get());
         }
 
     }

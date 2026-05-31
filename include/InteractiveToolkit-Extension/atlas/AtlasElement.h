@@ -30,15 +30,15 @@ namespace ITKExtension
         class AtlasElement
         {
         public:
-
-            //deleted copy constructor and assign operator, to avoid copy...
+            // deleted copy constructor and assign operator, to avoid copy...
             AtlasElement(const AtlasElement &v) = delete;
-            AtlasElement& operator=(const AtlasElement &v) = delete;
+            AtlasElement &operator=(const AtlasElement &v) = delete;
 
             AtlasRect rect;   ///< Rectangle of this element inside an #Atlas
-            uint8_t *buffer;  ///< The RGBA raw buffer
+            std::unique_ptr<uint8_t[]> buffer;  ///< The RGBA raw buffer
             std::string name; ///< The sprite name
 
+        private:
             /// \brief Constructor with a width and height
             ///
             /// When this constructor is called, it will create the RGBA buffer with it.
@@ -79,6 +79,7 @@ namespace ITKExtension
             ///
             AtlasElement();
 
+        public:
             ~AtlasElement();
 
             /// \brief Read this single atlas internal rectangle and name references
@@ -241,6 +242,8 @@ namespace ITKExtension
             /// \param filename PNG File to write to.
             ///
             void savePNG(const std::string &filename);
+
+            ITK_DECLARE_CREATE_SHARED(AtlasElement)
         };
 
     }

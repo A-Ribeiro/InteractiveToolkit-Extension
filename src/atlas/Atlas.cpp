@@ -27,7 +27,7 @@ namespace ITKExtension
         {
             for (size_t i = 0; i < maxIterate; i++)
             {
-                AtlasElement *element = elements[i];
+                AtlasElement *element = elements[i].get();
                 if (base_element->rect.overlaps(element->rect, xspacing, yspacing))
                     return true;
             }
@@ -46,7 +46,7 @@ namespace ITKExtension
 
             for (size_t i = 0; i < maxIterate; i++)
             {
-                AtlasElement *element = elements[i];
+                AtlasElement *element = elements[i].get();
                 if (!overlapTest.overlaps(element->rect, xspacing, yspacing))
                     continue;
 
@@ -70,7 +70,7 @@ namespace ITKExtension
 
             for (size_t i = 0; i < maxIterate; i++)
             {
-                AtlasElement *element = elements[i];
+                AtlasElement *element = elements[i].get();
                 if (!overlapTest.overlaps(element->rect, xspacing, yspacing))
                     continue;
 
@@ -101,7 +101,7 @@ namespace ITKExtension
                 if (!fastMode)
                     currY = yspacing / 2;
 
-                AtlasElement *element = elements[i];
+                AtlasElement *element = elements[i].get();
                 if (element->rect.w == 0 || element->rect.h == 0)
                     continue;
 
@@ -138,10 +138,10 @@ namespace ITKExtension
 
         void Atlas::clearElements()
         {
-            for (size_t i = 0; i < elements.size(); i++)
-            {
-                delete elements[i];
-            }
+            // for (size_t i = 0; i < elements.size(); i++)
+            // {
+            //     delete elements[i];
+            // }
             elements.clear();
         }
 
@@ -161,12 +161,18 @@ namespace ITKExtension
             clearElements();
         }
 
-        AtlasElement *Atlas::addElement(const std::string &name, int w, int h)
+        std::shared_ptr<AtlasElement> Atlas::addElement(const std::string &name, int w, int h)
         {
-            AtlasElement *result = new AtlasElement(w, h);
+            std::shared_ptr<AtlasElement> result = AtlasElement::CreateShared(w, h);
             result->name = name;
             elements.push_back(result);
             return result;
+        }
+
+        void Atlas::removeLastInsertedElement()
+        {
+            if (!elements.empty())
+                elements.pop_back();
         }
 
         void Atlas::organizePositions(bool fastMode)
@@ -207,7 +213,7 @@ namespace ITKExtension
             repositionAllElements(textureResolution, fastMode);
         }
 
-        uint8_t *Atlas::createRGBA() const
+        std::shared_ptr<uint8_t[]> Atlas::createRGBA() const
         {
 
             ITK_ABORT((textureResolution.w == 0 || textureResolution.h == 0), "Error to create texture from atlas.\n");
@@ -216,10 +222,10 @@ namespace ITKExtension
             //     exit(-1);
             // }
 
-            uint8_t *result = new uint8_t[textureResolution.w * textureResolution.h * 4];
+            std::shared_ptr<uint8_t[]> result = std::shared_ptr<uint8_t[]>(new uint8_t[textureResolution.w * textureResolution.h * 4], std::default_delete<uint8_t[]>());
 
             // set all color to 0
-            memset(result, 0, sizeof(uint8_t) * textureResolution.w * textureResolution.h * 4);
+            memset(result.get(), 0, sizeof(uint8_t) * textureResolution.w * textureResolution.h * 4);
 
             /*
             for (int y = 0; y < textureResolution.h; y++) {
@@ -234,22 +240,21 @@ namespace ITKExtension
 
             for (size_t i = 0; i < elements.size(); i++)
             {
-                AtlasElement *element = elements[i];
+                AtlasElement *element = elements[i].get();
                 if (element->rect.w == 0 || element->rect.h == 0)
                     continue;
-                element->copyToRGBABuffer(result, textureResolution.w * 4, xspacing / 2, yspacing / 2);
+                element->copyToRGBABuffer(result.get(), textureResolution.w * 4, xspacing / 2, yspacing / 2);
             }
 
             return result;
         }
 
-        void Atlas::releaseRGBA(uint8_t **data) const
-        {
-            delete[] *data;
-            *data = nullptr;
-        }
+        // void Atlas::releaseRGBA(std::shared_ptr<uint8_t[]> *data) const
+        // {
+        //     data->reset();
+        // }
 
-        uint8_t *Atlas::createA() const
+        std::shared_ptr<uint8_t[]> Atlas::createA() const
         {
 
             ITK_ABORT((textureResolution.w == 0 || textureResolution.h == 0), "Error to create texture from atlas.\n");
@@ -258,26 +263,25 @@ namespace ITKExtension
             //     exit(-1);
             // }
 
-            uint8_t *result = new uint8_t[textureResolution.w * textureResolution.h];
+            std::shared_ptr<uint8_t[]> result = std::shared_ptr<uint8_t[]>(new uint8_t[textureResolution.w * textureResolution.h], std::default_delete<uint8_t[]>());
 
             // set all color to 0
-            memset(result, 0, sizeof(uint8_t) * textureResolution.w * textureResolution.h);
+            memset(result.get(), 0, sizeof(uint8_t) * textureResolution.w * textureResolution.h);
 
             for (size_t i = 0; i < elements.size(); i++)
             {
-                AtlasElement *element = elements[i];
+                AtlasElement *element = elements[i].get();
                 if (element->rect.w == 0 || element->rect.h == 0)
                     continue;
-                element->copyToABuffer(result, textureResolution.w, xspacing / 2, yspacing / 2);
+                element->copyToABuffer(result.get(), textureResolution.w, xspacing / 2, yspacing / 2);
             }
 
             return result;
         }
-        void Atlas::releaseA(uint8_t **data) const
-        {
-            delete[] *data;
-            *data = nullptr;
-        }
+        // void Atlas::releaseA(std::shared_ptr<uint8_t[]> *data) const
+        // {
+        //     data->reset();
+        // }
 
         void Atlas::write(ITKExtension::IO::AdvancedWriter *writer) const
         {
@@ -295,7 +299,7 @@ namespace ITKExtension
             elements.resize(reader->readUInt32());
             for (size_t i = 0; i < elements.size(); i++)
             {
-                AtlasElement *element = new AtlasElement();
+                std::shared_ptr<AtlasElement> element = AtlasElement::CreateShared();
                 element->read(reader);
                 elements[i] = element;
             }
@@ -303,16 +307,16 @@ namespace ITKExtension
 
         void Atlas::savePNG(const std::string &filename) const
         {
-            uint8_t *image = createRGBA();
-            ITKExtension::Image::PNG::writePNG(filename.c_str(), textureResolution.w, textureResolution.h, 4, (char *)image);
-            releaseRGBA(&image);
+            auto image = createRGBA();
+            ITKExtension::Image::PNG::writePNG(filename.c_str(), textureResolution.w, textureResolution.h, 4, (char *)image.get());
+            // releaseRGBA(&image);
         }
 
         void Atlas::savePNG_Alpha(const std::string &filename) const
         {
-            uint8_t *image = createA();
-            ITKExtension::Image::PNG::writePNG(filename.c_str(), textureResolution.w, textureResolution.h, 1, (char *)image);
-            releaseRGBA(&image);
+            auto image = createA();
+            ITKExtension::Image::PNG::writePNG(filename.c_str(), textureResolution.w, textureResolution.h, 1, (char *)image.get());
+            // releaseA(&image);
         }
 
         void Atlas::writeTable(const std::string &filename) const

@@ -39,7 +39,7 @@ namespace ITKExtension
         /// {
         ///     char* rgbaElement;
         ///     int width, height;
-        ///     AtlasElement* atlasElement = atlas.addElement("element",width,height);
+        ///     std::shared_ptr<AtlasElement> atlasElement = atlas.addElement("element",width,height);
         ///     atlasElement->copyFromRGBABuffer(rgbaElement, width * 4);
         /// }
         ///
@@ -72,7 +72,7 @@ namespace ITKExtension
 
             bool repositionAllElements(const AtlasRect &screen, bool fastMode);
 
-            std::vector<AtlasElement *> elements;
+            std::vector<std::shared_ptr<AtlasElement>> elements;
 
             void clearElements();
 
@@ -109,7 +109,13 @@ namespace ITKExtension
             /// \param h Height
             /// \return Pointer to a created AtlasElement
             ///
-            AtlasElement *addElement(const std::string &name, int w, int h);
+            std::shared_ptr<AtlasElement> addElement(const std::string &name, int w, int h);
+
+            /// \brief Remove Last Inserted Element
+            ///
+            /// \author Alessandro Ribeiro
+            ///
+            void removeLastInsertedElement();
 
             /// \brief Organize the positions of the sprites in a single image.
             ///
@@ -148,14 +154,14 @@ namespace ITKExtension
             /// \author Alessandro Ribeiro
             /// \return A pointer to an allocated image in RGBA format
             ///
-            uint8_t *createRGBA() const;
+            std::shared_ptr<uint8_t[]> createRGBA() const;
 
             /// \brief Release the memory allocated with #createRGBA method
             ///
             /// \author Alessandro Ribeiro
             /// \param[out] data Pointer to the data you need to release
             ///
-            void releaseRGBA(uint8_t **data) const;
+            // void releaseRGBA(std::shared_ptr<uint8_t[]> *data) const;
 
             /// \brief Create an image with all sprite elements inside an Atlas (Just Alpha Channel)
             ///
@@ -183,14 +189,14 @@ namespace ITKExtension
             /// \author Alessandro Ribeiro
             /// \return A pointer to an allocated image in Alpha format
             ///
-            uint8_t *createA() const;
+            std::shared_ptr<uint8_t[]> createA() const;
 
             /// \brief Release the memory allocated with #createA method
             ///
             /// \author Alessandro Ribeiro
             /// \param[out] data Pointer to the data you need to release
             ///
-            void releaseA(uint8_t **data) const;
+            // void releaseA(std::shared_ptr<uint8_t[]> *data) const;
 
             /// \brief Write the internal bitmap references table of this Atlas
             ///

@@ -98,13 +98,13 @@ namespace ITKExtension
         }
         void FontWriter::writeBitmap(ITKExtension::IO::AdvancedWriter *writer)
         {
-            uint8_t *rgbaBuffer = atlas->createRGBA();
+            auto rgbaBuffer = atlas->createRGBA();
             int size;
-            char *result = ITKExtension::Image::PNG::writePNGToMemory(&size, atlas->textureResolution.w, atlas->textureResolution.h, 4, (char *)rgbaBuffer);
+            char *result = ITKExtension::Image::PNG::writePNGToMemory(&size, atlas->textureResolution.w, atlas->textureResolution.h, 4, (char *)rgbaBuffer.get());
 
             ITK_ABORT(result == nullptr, "Error to write PNG to memory.\n");
 
-            atlas->releaseRGBA(&rgbaBuffer);
+            // atlas->releaseRGBA(&rgbaBuffer);
 
             writer->writeBuffer(
                 Platform::ObjectBuffer((uint8_t *)result, (int64_t)size));
