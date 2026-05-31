@@ -63,13 +63,32 @@ namespace ITKExtension
             Material& operator=(const Material &v)
             {
                 name = v.name;
-                floatValue = v.floatValue;
 
+                stringValue = v.stringValue;
+                floatValue = v.floatValue;
                 vec2Value = v.vec2Value;
                 vec3Value = v.vec3Value;
                 vec4Value = v.vec4Value;
                 intValue = v.intValue;
                 textures = v.textures;
+
+                return *this;
+            }
+            Material(Material &&v)
+            {
+                (*this) = std::move(v);
+            }
+            Material& operator=(Material &&v)
+            {
+                name = std::move(v.name);
+
+                stringValue = std::move(v.stringValue);
+                floatValue = std::move(v.floatValue);
+                vec2Value = std::move(v.vec2Value);
+                vec3Value = std::move(v.vec3Value);
+                vec4Value = std::move(v.vec4Value);
+                intValue = std::move(v.intValue);
+                textures = std::move(v.textures);
 
                 return *this;
             }
