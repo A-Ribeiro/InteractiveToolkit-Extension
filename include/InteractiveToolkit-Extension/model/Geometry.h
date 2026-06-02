@@ -46,7 +46,7 @@ namespace ITKExtension
 
         //};
 
-        class  Geometry
+        class Geometry
         {
 
         public:
@@ -141,7 +141,7 @@ namespace ITKExtension
             {
                 (*this) = v;
             }
-            Geometry& operator=(const Geometry &v)
+            Geometry &operator=(const Geometry &v)
             {
 
                 name = v.name;
@@ -169,8 +169,14 @@ namespace ITKExtension
                 return *this;
             }
 
-            
-        } ;
+            bool is_uv_compatible_with_texture_atlas(int UV_index) const
+            {
+                for (const auto &uv : this->uv[UV_index])
+                    if (uv.x < 0 || uv.x > 1 || uv.y < 0 || uv.y > 1)
+                        return false;
+                return true;
+            }
+        };
 
     }
 

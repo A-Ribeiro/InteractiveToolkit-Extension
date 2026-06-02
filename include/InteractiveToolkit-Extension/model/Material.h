@@ -60,7 +60,7 @@ namespace ITKExtension
             {
                 (*this) = v;
             }
-            Material& operator=(const Material &v)
+            Material &operator=(const Material &v)
             {
                 name = v.name;
 
@@ -78,7 +78,7 @@ namespace ITKExtension
             {
                 (*this) = std::move(v);
             }
-            Material& operator=(Material &&v)
+            Material &operator=(Material &&v)
             {
                 name = std::move(v.name);
 
@@ -92,6 +92,32 @@ namespace ITKExtension
 
                 return *this;
             }
+
+            bool is_opaque() const
+            {
+                if (stringValue.find("gltf.alphaMode") != stringValue.end())
+                    return stringValue.at("gltf.alphaMode") == "OPAQUE";
+                else if (floatValue.find("opacity") != floatValue.end())
+                    return floatValue.at("opacity") >= 1.0f;
+                return true;
+            }
+
+            bool is_unlit() const
+            {
+                if (intValue.find("gltf.unlit") != intValue.end())
+                    return intValue.at("gltf.unlit") != 0;
+                else if (stringValue.find("shadingm") != stringValue.end())
+                    return stringValue.at("shadingm") == "NO_SHADING";
+                return true;
+            }
+
+            bool is_two_sided() const
+            {
+                if (intValue.find("twosided") != intValue.end())
+                    return intValue.at("twosided") != 0;
+                return false;
+            }
+            
         };
 
     }
