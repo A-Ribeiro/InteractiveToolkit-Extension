@@ -158,7 +158,7 @@ namespace ITKExtension
                 writer->writeString(fileext);
                 writer->writeUInt8(type);
                 writer->writeUInt8(op);
-                writer->writeUInt8(mapMode_s || mapMode_t << 2 || mapMode_r << 4);
+                writer->writeUInt8((uint8_t)mapMode_s || ((uint8_t)mapMode_t << 2) || ((uint8_t)mapMode_r << 4));
                 writer->writeUInt32(uvIndex);
             }
 
