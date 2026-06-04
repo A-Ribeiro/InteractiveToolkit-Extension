@@ -74,7 +74,7 @@ namespace ITKExtension
                 png_infop info_ptr;
                 fp = ITKCommon::FileSystem::File::fopen(file_name, "wb", errorStr);
                 if (!fp)
-                   return false;                                           // error
+                    return false;                                           // error
                 png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, // png_voidp_nullptr,
                                                   0,                        // png_error_ptr_nullptr,
                                                   0                         // png_error_ptr_nullptr
@@ -167,7 +167,7 @@ namespace ITKExtension
                 // png_uint_32 width, height;
                 //   int bit_depth, color_type, interlace_type;
                 FILE *fp;
-                
+
                 fp = ITKCommon::FileSystem::File::fopen(file_name, "rb", errorStr);
                 if (!fp)
                     return nullptr;
@@ -177,7 +177,14 @@ namespace ITKExtension
                  * the compiler header file version, so that we know if the application
                  * was compiled with a compatible version of the library.  REQUIRED
                  */
-                png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+                png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr,
+                                                 [](png_structp png_ptr, png_const_charp msg)
+                                                 {
+                                                     // Warning fnc
+                                                     // we can get here if the file is not a valid PNG or if there is an error reading the file
+                                                     // printf("Warning libpng: %s\n", msg);
+                                                     // longjmp(png_jmpbuf(png_ptr), 1);
+                                                 });
                 if (png_ptr == nullptr)
                 {
                     fclose(fp);
@@ -240,12 +247,12 @@ namespace ITKExtension
                 png_uint_32 height = png_get_image_height(png_ptr, info_ptr);
                 png_byte channels = png_get_channels(png_ptr, info_ptr);
                 png_byte depth = png_get_bit_depth(png_ptr, info_ptr);
-                
-                printf("PNG READED (w: %i h: %i chn:%i bits: %i)\n",
-                       width,
-                       height,
-                       channels,
-                       depth);
+
+                // printf("PNG READED (w: %i h: %i chn:%i bits: %i)\n",
+                //        width,
+                //        height,
+                //        channels,
+                //        depth);
 
                 // char* retorno = new char[width*height*channels*(depth / 8)];
                 char *retorno = (char *)ITKCommon::Memory::malloc(width * height * channels * (depth / 8));
@@ -294,7 +301,14 @@ namespace ITKExtension
                  * the compiler header file version, so that we know if the application
                  * was compiled with a compatible version of the library.  REQUIRED
                  */
-                png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+                png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr,
+                                                 [](png_structp png_ptr, png_const_charp msg)
+                                                 {
+                                                     // Warning fnc
+                                                     // we can get here if the file is not a valid PNG or if there is an error reading the file
+                                                     // printf("Warning libpng: %s\n", msg);
+                                                     // longjmp(png_jmpbuf(png_ptr), 1);
+                                                 });
                 if (png_ptr == nullptr)
                 {
                     return (nullptr);
@@ -351,11 +365,11 @@ namespace ITKExtension
                 png_uint_32 height = png_get_image_height(png_ptr, info_ptr);
                 png_byte channels = png_get_channels(png_ptr, info_ptr);
                 png_byte depth = png_get_bit_depth(png_ptr, info_ptr);
-                printf("PNG READED (w: %i h: %i chn:%i bits: %i)\n",
-                       width,
-                       height,
-                       channels,
-                       depth);
+                // printf("PNG READED (w: %i h: %i chn:%i bits: %i)\n",
+                //        width,
+                //        height,
+                //        channels,
+                //        depth);
                 // char* retorno = new char[width*height*channels*(depth / 8)];
                 char *retorno = (char *)ITKCommon::Memory::malloc(width * height * channels * (depth / 8));
                 *w = width;
