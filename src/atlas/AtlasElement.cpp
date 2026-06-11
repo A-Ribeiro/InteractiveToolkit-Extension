@@ -64,6 +64,38 @@ namespace ITKExtension
             }
         }
 
+        void AtlasElement::copyFromRGBBuffer(uint8_t *src)
+        {
+            for (int y = 0; y < rect.h; y++)
+            {
+                for (int x = 0; x < rect.w; x++)
+                {
+                    int target_idx = (y * rect.w + x) * 4;
+                    int source_idx = (y * rect.w + x) * 3;
+                    buffer[target_idx] = src[source_idx];
+                    buffer[target_idx + 1] = src[source_idx + 1];
+                    buffer[target_idx + 2] = src[source_idx + 2];
+                    buffer[target_idx + 3] = 0xff;
+                }
+            }
+        }
+
+        void AtlasElement::copyFromGrayBuffer(uint8_t *src)
+        {
+            for (int y = 0; y < rect.h; y++)
+            {
+                for (int x = 0; x < rect.w; x++)
+                {
+                    int target_idx = (y * rect.w + x) * 4;
+                    int source_idx = (y * rect.w + x);
+                    buffer[target_idx] = src[source_idx];
+                    buffer[target_idx + 1] = src[source_idx];
+                    buffer[target_idx + 2] = src[source_idx];
+                    buffer[target_idx + 3] = 0xff;
+                }
+            }
+        }
+
         void AtlasElement::copyToRGBABuffer(uint8_t *dst, int strideX, int xspacing, int yspacing)
         {
             for (int y = 0; y < rect.h; y++)
@@ -96,6 +128,90 @@ namespace ITKExtension
                     dst[(rect.x + x) * 4 + strideX * (y + rect.y) + 1] = buffer[(srcX + srcY * rect.w) * 4 + 1];
                     dst[(rect.x + x) * 4 + strideX * (y + rect.y) + 2] = buffer[(srcX + srcY * rect.w) * 4 + 2];
                     dst[(rect.x + x) * 4 + strideX * (y + rect.y) + 3] = 0; // alpha 0
+                }
+            }
+        }
+
+        void AtlasElement::copyToRGBBuffer(uint8_t *dst, int xspacing, int yspacing)
+        {
+            for (int y = 0; y < rect.h; y++)
+                for (int x = 0; x < rect.w; x++)
+                {
+                    int dst_idx = (y * rect.w + x) * 3;
+                    int source_idx = (y * rect.w + x) * 4;
+
+                    dst[dst_idx] = buffer[source_idx];
+                    dst[dst_idx + 1] = buffer[source_idx + 1];
+                    dst[dst_idx + 2] = buffer[source_idx + 2];
+                }
+
+            // borders
+            for (int y = -yspacing; y < rect.h + yspacing; y++)
+            {
+                int srcY = y;
+                if (y < 0)
+                    srcY = 0;
+                else if (y >= rect.h)
+                    srcY = rect.h - 1;
+
+                for (int x = -xspacing; x < rect.w + xspacing; x++)
+                {
+
+                    if (x >= 0 && x < rect.w && y >= 0 && y < rect.h)
+                        continue;
+
+                    int srcX = x;
+                    if (x < 0)
+                        srcX = 0;
+                    else if (x >= rect.w)
+                        srcX = rect.w - 1;
+
+                    int dst_idx = (y * rect.w + x) * 3;
+                    int source_idx = (srcY * rect.w + srcX) * 4;
+
+                    dst[dst_idx] = buffer[source_idx];
+                    dst[dst_idx + 1] = buffer[source_idx + 1];
+                    dst[dst_idx + 2] = buffer[source_idx + 2];
+                }
+            }
+        }
+
+        void AtlasElement::copyToGrayBuffer(uint8_t *dst, int xspacing, int yspacing)
+        {
+            for (int y = 0; y < rect.h; y++)
+                for (int x = 0; x < rect.w; x++)
+                {
+                    int dst_idx = (y * rect.w + x);
+                    int source_idx = (y * rect.w + x) * 4;
+
+                    dst[dst_idx] = buffer[source_idx];
+                }
+
+            // borders
+            for (int y = -yspacing; y < rect.h + yspacing; y++)
+            {
+                int srcY = y;
+                if (y < 0)
+                    srcY = 0;
+                else if (y >= rect.h)
+                    srcY = rect.h - 1;
+
+                for (int x = -xspacing; x < rect.w + xspacing; x++)
+                {
+
+                    if (x >= 0 && x < rect.w && y >= 0 && y < rect.h)
+                        continue;
+
+                    int srcX = x;
+                    if (x < 0)
+                        srcX = 0;
+                    else if (x >= rect.w)
+                        srcX = rect.w - 1;
+
+                    int dst_idx = (y * rect.w + x);
+                    int source_idx = (srcY * rect.w + srcX) * 4;
+
+                    dst[dst_idx] = buffer[source_idx];
                 }
             }
         }

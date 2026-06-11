@@ -161,6 +161,9 @@ namespace ITKExtension
             /// \param strideX The amount of bytes that need to skip 1 line in the src buffer
             ///
             void copyFromRGBABuffer(uint8_t *src, int strideX);
+            void copyFromRGBBuffer(uint8_t *src);
+            void copyFromGrayBuffer(uint8_t *src);
+
 
             /// \brief Copy the RGBA from internal buffer to the parameter.
             ///
@@ -193,6 +196,8 @@ namespace ITKExtension
             /// \param yspacing The spacing between the sprites (vertical)
             ///
             void copyToRGBABuffer(uint8_t *dst, int strideX, int xspacing, int yspacing);
+            void copyToRGBBuffer(uint8_t *dst, int xspacing, int yspacing);
+            void copyToGrayBuffer(uint8_t *dst, int xspacing, int yspacing);
 
             /// \brief Copy the Alpha from internal buffer to the parameter.
             ///

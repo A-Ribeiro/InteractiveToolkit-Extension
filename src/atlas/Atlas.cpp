@@ -215,29 +215,9 @@ namespace ITKExtension
 
         std::shared_ptr<uint8_t[]> Atlas::createRGBA() const
         {
-
             ITK_ABORT((textureResolution.w == 0 || textureResolution.h == 0), "Error to create texture from atlas.\n");
-            // if (textureResolution.w == 0 || textureResolution.h == 0){
-            //     fprintf(stderr,"Error to create texture from atlas.\n");
-            //     exit(-1);
-            // }
-
             std::shared_ptr<uint8_t[]> result = std::shared_ptr<uint8_t[]>(new uint8_t[textureResolution.w * textureResolution.h * 4], std::default_delete<uint8_t[]>());
-
-            // set all color to 0
             memset(result.get(), 0, sizeof(uint8_t) * textureResolution.w * textureResolution.h * 4);
-
-            /*
-            for (int y = 0; y < textureResolution.h; y++) {
-                for (int x = 0; x < textureResolution.w; x++) {
-                    result[(x + y * textureResolution.w) * 4 + 0] = 0;
-                    result[(x + y * textureResolution.w) * 4 + 1] = 0;
-                    result[(x + y * textureResolution.w) * 4 + 2] = 0;
-                    result[(x + y * textureResolution.w) * 4 + 3] = 0;
-                }
-            }
-            */
-
             for (size_t i = 0; i < elements.size(); i++)
             {
                 AtlasElement *element = elements[i].get();
@@ -245,7 +225,38 @@ namespace ITKExtension
                     continue;
                 element->copyToRGBABuffer(result.get(), textureResolution.w * 4, xspacing / 2, yspacing / 2);
             }
+            return result;
+        }
 
+        std::shared_ptr<uint8_t[]> Atlas::createRGB() const
+        {
+            ITK_ABORT((textureResolution.w == 0 || textureResolution.h == 0), "Error to create texture from atlas.\n");
+            std::shared_ptr<uint8_t[]> result = std::shared_ptr<uint8_t[]>(new uint8_t[textureResolution.w * textureResolution.h * 3], std::default_delete<uint8_t[]>());
+            // set all color to 0
+            memset(result.get(), 0, sizeof(uint8_t) * textureResolution.w * textureResolution.h * 3);
+            for (size_t i = 0; i < elements.size(); i++)
+            {
+                AtlasElement *element = elements[i].get();
+                if (element->rect.w == 0 || element->rect.h == 0)
+                    continue;
+                element->copyToRGBBuffer(result.get(), xspacing / 2, yspacing / 2);
+            }
+            return result;
+        }
+
+        std::shared_ptr<uint8_t[]> Atlas::createGray() const
+        {
+            ITK_ABORT((textureResolution.w == 0 || textureResolution.h == 0), "Error to create texture from atlas.\n");
+            std::shared_ptr<uint8_t[]> result = std::shared_ptr<uint8_t[]>(new uint8_t[textureResolution.w * textureResolution.h], std::default_delete<uint8_t[]>());
+            // set all color to 0
+            memset(result.get(), 0, sizeof(uint8_t) * textureResolution.w * textureResolution.h);
+            for (size_t i = 0; i < elements.size(); i++)
+            {
+                AtlasElement *element = elements[i].get();
+                if (element->rect.w == 0 || element->rect.h == 0)
+                    continue;
+                element->copyToGrayBuffer(result.get(), xspacing / 2, yspacing / 2);
+            }
             return result;
         }
 

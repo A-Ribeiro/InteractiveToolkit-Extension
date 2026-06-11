@@ -155,6 +155,8 @@ namespace ITKExtension
             /// \return A pointer to an allocated image in RGBA format
             ///
             std::shared_ptr<uint8_t[]> createRGBA() const;
+            std::shared_ptr<uint8_t[]> createRGB() const;
+            std::shared_ptr<uint8_t[]> createGray() const;
 
             /// \brief Release the memory allocated with #createRGBA method
             ///
