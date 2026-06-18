@@ -174,14 +174,14 @@ macro(tool_copy_file_after_build PROJECT_NAME)
 			get_filename_component(FILENAME_WITHOUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}" NAME)
             add_custom_command(
                 TARGET ${PROJECT_NAME} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
                         ${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}
                         $<TARGET_FILE_DIR:${PROJECT_NAME}>/${FILENAME_WITHOUT_PATH} )
         elseif(EXISTS "${FILENAME}")
 			get_filename_component(FILENAME_WITHOUT_PATH "${FILENAME}" NAME)
             add_custom_command(
                 TARGET ${PROJECT_NAME} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
                         ${FILENAME}
                         $<TARGET_FILE_DIR:${PROJECT_NAME}>/${FILENAME_WITHOUT_PATH} )
         else()
@@ -193,11 +193,17 @@ endmacro()
 macro(tool_copy_directory_after_build PROJECT_NAME)
     foreach(DIRECTORY IN ITEMS ${ARGN})
         if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DIRECTORY}")
-            add_custom_command(
-                TARGET ${PROJECT_NAME} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_directory
-                        ${CMAKE_CURRENT_SOURCE_DIR}/${DIRECTORY}
-                        $<TARGET_FILE_DIR:${PROJECT_NAME}>/${DIRECTORY} )
+            file(GLOB_RECURSE COPY_FILES 
+                RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/${DIRECTORY}"
+                "${CMAKE_CURRENT_SOURCE_DIR}/${DIRECTORY}/*")
+            
+            foreach(COPY_FILE ${COPY_FILES})
+                add_custom_command(
+                    TARGET ${PROJECT_NAME} POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                            "${CMAKE_CURRENT_SOURCE_DIR}/${DIRECTORY}/${COPY_FILE}"
+                            "$<TARGET_FILE_DIR:${PROJECT_NAME}>/${DIRECTORY}/${COPY_FILE}" )
+            endforeach()
         else()
             message(FATAL_ERROR "Directory Does Not Exists: ${DIRECTORY}")
         endif()
