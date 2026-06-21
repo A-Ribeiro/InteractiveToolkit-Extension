@@ -13,7 +13,7 @@ unset(PNG_LIBRARIES CACHE)
 set( LIB_PNG TryFindPackageFirst CACHE STRING "Choose the Library Source." )
 set_property(CACHE LIB_PNG PROPERTY STRINGS None TryFindPackageFirst UsingFindPackage FromSource)
 
-if(LIB_PNG STREQUAL TryFindPackageFirst)
+if(LIB_PNG STREQUAL "TryFindPackageFirst")
     find_package(PNG QUIET)
     if (PNG_FOUND)
         message(STATUS "[LIB_PNG] using system lib.")
@@ -24,7 +24,7 @@ if(LIB_PNG STREQUAL TryFindPackageFirst)
     endif()
 endif()
 
-if(LIB_PNG STREQUAL FromSource)
+if(LIB_PNG STREQUAL "FromSource")
 
     set(LIBS_REPOSITORY_URL "https://github.com/A-Ribeiro/public_libs/raw/main")
     tool_download_lib_package(${LIBS_REPOSITORY_URL} libpng)
@@ -66,7 +66,7 @@ if(LIB_PNG STREQUAL FromSource)
         target_compile_definitions(png_static PUBLIC PNG_ARM_NEON_FILE="arm_neon.h")
     endif()
 
-elseif(LIB_PNG STREQUAL UsingFindPackage)
+elseif(LIB_PNG STREQUAL "UsingFindPackage")
 
     find_package(PNG REQUIRED QUIET)
 

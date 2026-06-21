@@ -27,7 +27,7 @@ set_property(CACHE LIB_MBEDTLS PROPERTY STRINGS None TryFindPackageFirst UsingFi
 
 tool_append_if_not_exists_and_make_global(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake-modules")
 
-if(LIB_MBEDTLS STREQUAL TryFindPackageFirst)
+if(LIB_MBEDTLS STREQUAL "TryFindPackageFirst")
     find_package(MbedTLS COMPONENTS mbedtls tfpsacrypto mbedx509 QUIET)
     if (MBEDTLS_FOUND)
         message(STATUS "[LIB_MBEDTLS] using system lib.")
@@ -38,7 +38,7 @@ if(LIB_MBEDTLS STREQUAL TryFindPackageFirst)
     endif()
 endif()
 
-if(LIB_MBEDTLS STREQUAL FromSource)
+if(LIB_MBEDTLS STREQUAL "FromSource")
 
     message(STATUS "")
     message(STATUS "BUILDING MBEDTLS FROM SOURCE")
@@ -63,7 +63,7 @@ if(LIB_MBEDTLS STREQUAL FromSource)
         string(REPLACE "//#define MBEDTLS_THREADING_ALT" "#define MBEDTLS_THREADING_ALT" MBEDTLS_CONFIG_CONTENTS "${MBEDTLS_CONFIG_CONTENTS}")
         string(REPLACE "//#define MBEDTLS_THREADING_C" "#define MBEDTLS_THREADING_C" MBEDTLS_CONFIG_CONTENTS "${MBEDTLS_CONFIG_CONTENTS}")
         
-        if (NOT MBEDTLS_CONFIG_CONTENTS_BEFORE STREQUAL MBEDTLS_CONFIG_CONTENTS)
+        if (NOT MBEDTLS_CONFIG_CONTENTS_BEFORE STREQUAL "${MBEDTLS_CONFIG_CONTENTS}")
             file(WRITE "${mbedtls_DOWNLOADED_PATH}/tf-psa-crypto/include/psa/crypto_config.h" "${MBEDTLS_CONFIG_CONTENTS}")
         endif()
 
@@ -82,7 +82,7 @@ if(LIB_MBEDTLS STREQUAL FromSource)
             string(REPLACE "//#define MBEDTLS_THREADING_ALT" "#define MBEDTLS_THREADING_ALT" MBEDTLS_CONFIG_CONTENTS "${MBEDTLS_CONFIG_CONTENTS}")
             string(REPLACE "//#define MBEDTLS_THREADING_C" "#define MBEDTLS_THREADING_C" MBEDTLS_CONFIG_CONTENTS "${MBEDTLS_CONFIG_CONTENTS}")
 
-            if (NOT MBEDTLS_CONFIG_CONTENTS_BEFORE STREQUAL MBEDTLS_CONFIG_CONTENTS)
+            if (NOT MBEDTLS_CONFIG_CONTENTS_BEFORE STREQUAL "${MBEDTLS_CONFIG_CONTENTS}")
                 file(WRITE "${mbedtls_DOWNLOADED_PATH}/include/mbedtls/mbedtls_config.h" "${MBEDTLS_CONFIG_CONTENTS}")
             endif()
         
@@ -204,7 +204,7 @@ if(LIB_MBEDTLS STREQUAL FromSource)
         target_link_libraries(mbedtls-all INTERFACE ${SECURITY_FRAMEWORK} ${COREFRAMEWORK_FRAMEWORK})
     endif()
 
-elseif(LIB_MBEDTLS STREQUAL UsingFindPackage)
+elseif(LIB_MBEDTLS STREQUAL "UsingFindPackage")
 
     message(STATUS "MbedTLS FIND PACKAGE - Link with:")
     message(STATUS "  mbedtls mbedcrypto mbedx509")

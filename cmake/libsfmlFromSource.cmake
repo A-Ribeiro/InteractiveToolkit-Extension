@@ -7,7 +7,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/tool.cmake)
 set( LIB_SFML FromSource CACHE STRING "Choose the Library Source." )
 set_property(CACHE LIB_SFML PROPERTY STRINGS None TryFindPackageFirst UsingFindPackage FromSource)
 
-if(LIB_SFML STREQUAL TryFindPackageFirst)
+if(LIB_SFML STREQUAL "TryFindPackageFirst")
     find_package(SFML 2 COMPONENTS system window graphics audio network QUIET)
 
     # if (SFML_INCLUDE_DIR AND SFML_LIBRARIES)
@@ -26,7 +26,7 @@ if(LIB_SFML STREQUAL TryFindPackageFirst)
     endif()
 endif()
 
-if(LIB_SFML STREQUAL FromSource)
+if(LIB_SFML STREQUAL "FromSource")
 
     message(STATUS "")
     message(STATUS "BUILDING SFML FROM SOURCE")
@@ -161,7 +161,7 @@ if(LIB_SFML STREQUAL FromSource)
     
     include_directories("${ARIBEIRO_LIBS_DIR}/sfml/include/")
 
-elseif(LIB_SFML STREQUAL UsingFindPackage)
+elseif(LIB_SFML STREQUAL "UsingFindPackage")
 
     #message(FATAL_ERROR "SFML FIND PACKAGE NOT IMPLEMENTED")
 

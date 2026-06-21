@@ -11,7 +11,7 @@ unset(JPEG_LIBRARIES CACHE)
 set( LIB_JPEG TryFindPackageFirst CACHE STRING "Choose the Library Source." )
 set_property(CACHE LIB_JPEG PROPERTY STRINGS None TryFindPackageFirst UsingFindPackage FromSource)
 
-if(LIB_JPEG STREQUAL TryFindPackageFirst)
+if(LIB_JPEG STREQUAL "TryFindPackageFirst")
     find_package(JPEG QUIET)
     if (JPEG_FOUND)
         message(STATUS "[LIB_JPEG] using system lib.")
@@ -22,7 +22,7 @@ if(LIB_JPEG STREQUAL TryFindPackageFirst)
     endif()
 endif()
 
-if(LIB_JPEG STREQUAL FromSource)
+if(LIB_JPEG STREQUAL "FromSource")
 
     set(LIBS_REPOSITORY_URL "https://github.com/A-Ribeiro/public_libs/raw/main")
     tool_download_lib_package(${LIBS_REPOSITORY_URL} libjpeg)
@@ -43,7 +43,7 @@ if(LIB_JPEG STREQUAL FromSource)
 
     #include_directories("${ARIBEIRO_GEN_INCLUDE_DIR}/libjpeg/")
 
-elseif(LIB_JPEG STREQUAL UsingFindPackage)
+elseif(LIB_JPEG STREQUAL "UsingFindPackage")
 
     find_package(JPEG REQUIRED QUIET)
     

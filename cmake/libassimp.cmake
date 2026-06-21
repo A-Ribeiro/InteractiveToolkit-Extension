@@ -12,7 +12,7 @@ unset(assimp_FOUND CACHE)
 set( LIB_ASSIMP TryFindPackageFirst CACHE STRING "Choose the Library Source." )
 set_property(CACHE LIB_ASSIMP PROPERTY STRINGS None TryFindPackageFirst UsingFindPackage FromSource)
 
-if(LIB_ASSIMP STREQUAL TryFindPackageFirst)
+if(LIB_ASSIMP STREQUAL "TryFindPackageFirst")
     #find_package(assimp QUIET)
     find_path(
         assimp_INCLUDE_DIRS
@@ -49,7 +49,7 @@ if(LIB_ASSIMP STREQUAL TryFindPackageFirst)
     tool_make_global(assimp_FOUND)
 endif()
 
-if(LIB_ASSIMP STREQUAL FromSource)
+if(LIB_ASSIMP STREQUAL "FromSource")
 
     # if (NOT LIBS_REPOSITORY_URL)
     #     message(FATAL_ERROR "You need to define the LIBS_REPOSITORY_URL to use the FromSource option for any lib.")
@@ -105,7 +105,7 @@ if(LIB_ASSIMP STREQUAL FromSource)
     tool_make_global(assimp_LIBRARIES)
     tool_make_global(assimp_FOUND)
 
-elseif(LIB_ASSIMP STREQUAL UsingFindPackage)
+elseif(LIB_ASSIMP STREQUAL "UsingFindPackage")
 
     if (NOT TARGET assimp)
         

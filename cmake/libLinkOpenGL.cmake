@@ -5,7 +5,7 @@ endif()
 set( LIB_OPENGL UsingFindPackage CACHE STRING "Choose the Library Source." )
 set_property(CACHE LIB_OPENGL PROPERTY STRINGS None UsingFindPackage)
 
-if(LIB_OPENGL STREQUAL UsingFindPackage)
+if(LIB_OPENGL STREQUAL "UsingFindPackage")
 
     if (NOT TARGET LinkOpenGL)
         message(STATUS "[LIB_OPENGL] using system lib.")

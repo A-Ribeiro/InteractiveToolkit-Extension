@@ -13,7 +13,7 @@ unset(FREETYPE_LIBRARIES CACHE)
 set( LIB_FREETYPE TryFindPackageFirst CACHE STRING "Choose the Library Source." )
 set_property(CACHE LIB_FREETYPE PROPERTY STRINGS None TryFindPackageFirst UsingFindPackage FromSource)
 
-if(LIB_FREETYPE STREQUAL TryFindPackageFirst)
+if(LIB_FREETYPE STREQUAL "TryFindPackageFirst")
     find_package(Freetype QUIET)
     if (FREETYPE_FOUND)
         message(STATUS "[LIB_FREETYPE] using system lib.")
@@ -24,7 +24,7 @@ if(LIB_FREETYPE STREQUAL TryFindPackageFirst)
     endif()
 endif()
 
-if(LIB_FREETYPE STREQUAL FromSource)
+if(LIB_FREETYPE STREQUAL "FromSource")
 
     set(LIBS_REPOSITORY_URL "https://github.com/A-Ribeiro/public_libs/raw/main")
     tool_download_lib_package(${LIBS_REPOSITORY_URL} freetype)
@@ -50,7 +50,7 @@ if(LIB_FREETYPE STREQUAL FromSource)
 
     #include_directories("${ARIBEIRO_GEN_INCLUDE_DIR}/freetype/")
 
-elseif(LIB_FREETYPE STREQUAL UsingFindPackage)
+elseif(LIB_FREETYPE STREQUAL "UsingFindPackage")
 
     if (NOT TARGET freetype)
 

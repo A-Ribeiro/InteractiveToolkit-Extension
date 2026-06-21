@@ -13,7 +13,7 @@ unset(ZLIB_FOUND CACHE)
 set( LIB_ZLIB TryFindPackageFirst CACHE STRING "Choose the Library Source." )
 set_property(CACHE LIB_ZLIB PROPERTY STRINGS None TryFindPackageFirst UsingFindPackage FromSource)
 
-if(LIB_ZLIB STREQUAL TryFindPackageFirst)
+if(LIB_ZLIB STREQUAL "TryFindPackageFirst")
     
     find_package(ZLIB QUIET)
     if (ZLIB_FOUND)
@@ -25,7 +25,7 @@ if(LIB_ZLIB STREQUAL TryFindPackageFirst)
     endif()
 endif()
 
-if(LIB_ZLIB STREQUAL FromSource)
+if(LIB_ZLIB STREQUAL "FromSource")
 
     set(LIBS_REPOSITORY_URL "https://github.com/A-Ribeiro/public_libs/raw/main")
     tool_download_lib_package(${LIBS_REPOSITORY_URL} zlib)
@@ -70,7 +70,7 @@ if(LIB_ZLIB STREQUAL FromSource)
 
     # target_include_directories(zlib PUBLIC ${ZLIB_INCLUDE_DIR})
 
-elseif(LIB_ZLIB STREQUAL UsingFindPackage)
+elseif(LIB_ZLIB STREQUAL "UsingFindPackage")
 
     # if (NOT TARGET zlib)
 
