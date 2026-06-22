@@ -23,7 +23,7 @@ public:                                                            \
         result->mSelf = std::weak_ptr<ClassName>(result);          \
         return result;                                             \
     }                                                              \
-    inline std::shared_ptr<ClassName> self()                       \
+    inline std::shared_ptr<ClassName> self() const                 \
     {                                                              \
         return std::shared_ptr<ClassName>(mSelf);                  \
     }
