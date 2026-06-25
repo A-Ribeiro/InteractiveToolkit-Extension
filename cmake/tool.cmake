@@ -170,6 +170,11 @@ endmacro()
 
 macro(tool_copy_file_after_build PROJECT_NAME)
     foreach(FILENAME IN ITEMS ${ARGN})
+        if (NOT WIN32)
+            # bugfix for sh copy files with parentheses in the name
+            string( REPLACE "(" "\\(" FILENAME "${FILENAME}" )
+            string( REPLACE ")" "\\)" FILENAME "${FILENAME}" )
+        endif()
         if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}")
 			get_filename_component(FILENAME_WITHOUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}" NAME)
             add_custom_command(
@@ -198,6 +203,11 @@ macro(tool_copy_directory_after_build PROJECT_NAME)
                 "${CMAKE_CURRENT_SOURCE_DIR}/${DIRECTORY}/*")
             
             foreach(COPY_FILE ${COPY_FILES})
+                if (NOT WIN32)
+                    # bugfix for sh copy files with parentheses in the name
+                    string( REPLACE "(" "\\(" COPY_FILE "${COPY_FILE}" )
+                    string( REPLACE ")" "\\)" COPY_FILE "${COPY_FILE}" )
+                endif()
                 add_custom_command(
                     TARGET ${PROJECT_NAME} POST_BUILD
                     COMMAND ${CMAKE_COMMAND} -E copy_if_different
